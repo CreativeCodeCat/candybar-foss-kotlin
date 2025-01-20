@@ -155,11 +155,6 @@ public class LauncherHelper {
                 R.drawable.ic_launcher_holohd,
                 new String[]{"com.mobint.hololauncher.hd"},
                 false),
-        ION_LAUNCHER(
-                "Ion Launcher",
-                R.drawable.ic_launcher_ion,
-                new String[]{"one.zagura.IonLauncher"},
-                true),
         LAWNCHAIR(
                 "Lawnchair",
                 R.drawable.ic_launcher_lawnchair,
@@ -188,12 +183,15 @@ public class LauncherHelper {
                 "Lucid",
                 R.drawable.ic_launcher_lucid,
                 new String[]{"com.powerpoint45.launcher"},
-                true),
-        MLAUNCHER(
-                "mLauncher",
-                R.drawable.ic_launcher_mlauncher,
-                new String[]{"app.mlauncher"},
-                true),
+                new DirectApply() {
+                    @Override
+                    public void run(Context context, String packageName) throws ActivityNotFoundException, NullPointerException {
+                        final Intent lucid = new Intent("com.powerpoint45.action.APPLY_THEME", null);
+                        lucid.putExtra("icontheme", context.getPackageName());
+                        context.startActivity(lucid);
+                        ((AppCompatActivity) context).finish();
+                    }
+                }),
         NOTHING(
                 "Nothing",
                 R.drawable.ic_launcher_nothing,
@@ -249,15 +247,15 @@ public class LauncherHelper {
                 R.drawable.ic_launcher_poco,
                 new String[]{"com.mi.android.globallauncher"},
                 false),
-        MICROSOFT(
-                "Microsoft",
-                R.drawable.ic_launcher_microsoft,
-                new String[]{"com.microsoft.launcher"},
-                false),
         MOTO(
                 "Moto Launcher",
                 R.drawable.ic_launcher_moto,
                 new String[]{"com.motorola.launcher3"},
+                false),
+        MICROSOFT(
+                "Microsoft",
+                R.drawable.ic_launcher_microsoft,
+                new String[]{"com.microsoft.launcher"},
                 false),
         BLACKBERRY(
                 "BlackBerry",
@@ -628,24 +626,6 @@ public class LauncherHelper {
             case HYPERION:
                 applyManual(context, launcherPackage, launcherName, "projekt.launcher.activities.SettingsActivity");
                 break;
-            case ION_LAUNCHER:
-                try {
-                    Intent ion = new Intent();
-                    ion.setComponent(new ComponentName("one.zagura.IonLauncher", "one.zagura.IonLauncher.ui.settings.iconPackPicker.IconPackPickerActivity"));
-                    ion.putExtra("pkgname", context.getPackageName());
-                    context.startActivity(ion);
-                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                            "click",
-                            new HashMap<String, Object>() {{
-                                put("section", "apply");
-                                put("action", "confirm");
-                                put("launcher", launcherPackage);
-                            }}
-                    );
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
-                break;
             case KISS:
                 applyWithInstructions(
                         context,
@@ -690,39 +670,10 @@ public class LauncherHelper {
                 launcherIncompatible(context, launcherName);
                 break;
             case LUCID:
-                try {
-                    final Intent lucid = new Intent("com.powerpoint45.action.APPLY_THEME", null);
-                    lucid.putExtra("icontheme", context.getPackageName());
-                    context.startActivity(lucid);
-                    ((AppCompatActivity) context).finish();
-                    logLauncherDirectApply(launcherPackage);
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
+                launcher.applyDirectly(context, launcherPackage, true);
                 break;
             case MICROSOFT:
                 applyManual(context, launcherPackage, launcherName, null);
-                break;
-            case MLAUNCHER:
-                try {
-                    final Intent mlauncher = new Intent("app.mlauncher.APPLY_ICONS", null);
-                    mlauncher.putExtra("packageName", context.getPackageName());
-                    context.startActivity(mlauncher);
-                    ((AppCompatActivity) context).finish();
-                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                            "click",
-                            new HashMap<String, Object>() {{
-                                put("section", "apply");
-                                put("action", "confirm");
-                                put("launcher", launcherPackage);
-                            }}
-                    );
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    openGooglePlay(context, launcherPackage, launcherName);
-                }
-                break;
-            case MOTO:
-                applyManual(context, launcherPackage, launcherName, "com.motorola.personalize.app.IconPacksActivity");
                 break;
             case NIAGARA:
                 try {
@@ -797,6 +748,9 @@ public class LauncherHelper {
                 break;
             case TINYBIT:
                 applyManual(context, launcherPackage, launcherName, "rocks.tbog.tblauncher.SettingsActivity");
+                break;
+            case MOTO:
+                applyManual(context, launcherPackage, launcherName, "com.motorola.personalize.app.IconPacksActivity");
                 break;
             case SMART:
                 try {
