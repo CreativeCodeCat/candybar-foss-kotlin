@@ -399,7 +399,7 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
         if (mIcons.isEmpty()) {
             CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                     "click",
-                    new HashMap<String, Object>() {{
+                    new HashMap<>() {{
                         put("section", "icons");
                         put("action", "search");
                         put("item", query);
@@ -410,7 +410,7 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
         } else {
             CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                     "click",
-                    new HashMap<String, Object>() {{
+                    new HashMap<>() {{
                         put("section", "icons");
                         put("action", "search");
                         put("item", query);

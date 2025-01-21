@@ -44,9 +44,6 @@ public class LauncherHelper {
 
     private static final String thirdPartyHelperURL = "https://play.google.com/store/apps/details?id=rk.android.app.shortcutmaker";
 
-    private static final Launcher.DirectApply DIRECT_APPLY_NOT_SUPPORTED = null;
-    private static final Launcher.ManualApply MANUAL_APPLY_NOT_SUPPORTED = null;
-
     public enum Launcher {
         UNKNOWN,
 
@@ -54,194 +51,108 @@ public class LauncherHelper {
                 "Action",
                 R.drawable.ic_launcher_action,
                 new String[]{"com.actionlauncher.playstore", "com.chrislacy.actionlauncher.pro"},
-                (context, launcherPackageName) -> context.getPackageManager().getLaunchIntentForPackage(launcherPackageName)
-                    .putExtra("apply_icon_pack", context.getPackageName())
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         ADW(
                 "ADW",
                 R.drawable.ic_launcher_adw,
                 new String[]{"org.adw.launcher", "org.adwfreak.launcher"},
-                (context, launcherPackageName) -> new Intent("org.adw.launcher.SET_THEME")
-                        .putExtra("org.adw.launcher.theme.NAME", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         APEX(
                 "Apex",
                 R.drawable.ic_launcher_apex,
                 new String[]{"com.anddoes.launcher", "com.anddoes.launcher.pro"},
-                (context, launcherPackageName) -> new Intent("com.anddoes.launcher.SET_THEME")
-                        .putExtra("com.anddoes.launcher.THEME_PACKAGE_NAME", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         BEFORE(
                 "Before",
                 R.drawable.ic_launcher_before,
                 new String[]{"com.beforesoft.launcher"},
-                (context, launcherPackageName) -> new Intent("com.beforesoftware.launcher.APPLY_ICONS")
-                        .putExtra("packageName", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         CMTHEME(
                 "CM Theme",
                 R.drawable.ic_launcher_cm,
                 new String[]{"org.cyanogenmod.theme.chooser"},
-                (context, launcherPackageName) -> new Intent("android.intent.action.MAIN")
-                    .setComponent(new ComponentName(launcherPackageName, "org.cyanogenmod.theme.chooser.ChooserActivity"))
-                    .putExtra("pkgName", context.getPackageName()),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         COLOR_OS(
                 "ColorOS",
                 R.drawable.ic_launcher_color_os,
-                new String[]{"com.oppo.launcher"}),
+                new String[]{"com.oppo.launcher"},
+                false),
         GO(
                 "GO EX",
                 R.drawable.ic_launcher_go,
                 new String[]{"com.gau.go.launcherex"},
-                new DirectApply() {
-                    @Override
-                    public Intent getActivity(Context context, String launcherPackageName) {
-                        return context.getPackageManager().getLaunchIntentForPackage("com.gau.go.launcherex")
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    }
-
-                    @Override
-                    public Intent getBroadcast(Context context) {
-                        return new Intent("com.gau.go.launcherex.MyThemes.mythemeaction")
-                                .putExtra("type", 1)
-                                .putExtra("pkgname", context.getPackageName());
-                    }
-                },
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         HIOS(
                 "HiOS",
                 R.drawable.ic_launcher_hios,
-                new String[]{"com.transsion.hilauncher"}),
+                new String[]{"com.transsion.hilauncher"},
+                false),
         HOLO(
                 "Holo",
                 R.drawable.ic_launcher_holo,
-                new String[]{"com.mobint.hololauncher"}),
+                new String[]{"com.mobint.hololauncher"},
+                false),
         HOLOHD(
                 "Holo HD",
                 R.drawable.ic_launcher_holohd,
-                new String[]{"com.mobint.hololauncher.hd"}),
+                new String[]{"com.mobint.hololauncher.hd"},
+                false),
         LAWNCHAIR(
                 "Lawnchair",
                 R.drawable.ic_launcher_lawnchair,
                 new String[]{"ch.deletescape.lawnchair.plah", "ch.deletescape.lawnchair.ci", "app.lawnchair"},
-                new DirectApply() {
-                    @Override
-                    public boolean isSupported(String packageName) {
-                        // Lawnchair 12 (app.lawnchair) doesn't support direct apply
-                        return !packageName.startsWith("app");
-                    }
-
-                    @Override
-                    public Intent getActivity(Context context, String launcherName) {
-                        return new Intent("ch.deletescape.lawnchair.APPLY_ICONS", null)
-                                .putExtra("packageName", context.getPackageName());
-                    }
-                },
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                // Lawnchair 12 (app.lawnchair) doesn't support direct apply
+                (pkg) -> !pkg.startsWith("app")),
         LGHOME(
                 "LG Home",
                 R.drawable.ic_launcher_lg,
-                new String[]{"com.lge.launcher2", "com.lge.launcher3"}),
+                new String[]{"com.lge.launcher2", "com.lge.launcher3"},
+                false),
         LUCID(
                 "Lucid",
                 R.drawable.ic_launcher_lucid,
                 new String[]{"com.powerpoint45.launcher"},
-                (context, launcherPackageName) -> new Intent("com.powerpoint45.action.APPLY_THEME", null)
-                        .putExtra("icontheme", context.getPackageName()),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         NOTHING(
                 "Nothing",
                 R.drawable.ic_launcher_nothing,
-                new String[]{"com.nothing.launcher"}),
+                new String[]{"com.nothing.launcher"},
+                false),
         NOUGAT(
                 "Nougat",
                 R.drawable.ic_launcher_nougat,
                 new String[]{"me.craftsapp.nlauncher"},
-                (context, launcherPackageName) -> new Intent("me.craftsapp.nlauncher")
-                    .setAction("me.craftsapp.nlauncher.SET_THEME")
-                    .putExtra("me.craftsapp.nlauncher.theme.NAME", context.getPackageName())
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         NOVA(
                 "Nova",
                 R.drawable.ic_launcher_nova,
                 new String[]{"com.teslacoilsw.launcher", "com.teslacoilsw.launcher.prime"},
-                (context, launcherPackageName) -> {
-                    final Intent nova = new Intent("com.teslacoilsw.launcher.APPLY_ICON_THEME");
-                    nova.setPackage("com.teslacoilsw.launcher");
-                    nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_TYPE", "GO");
-                    nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_PACKAGE", context.getPackageName());
-                    String reshapeSetting = context.getResources().getString(R.string.nova_reshape_legacy_icons);
-                    if (!reshapeSetting.equals("KEEP")) {
-                        // Allowed values are ON, OFF and AUTO
-                        nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_RESHAPE", reshapeSetting);
-                    }
-                    nova.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    return nova;
-                },
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         OXYGEN_OS(
                 "OxygenOS",
                 R.drawable.ic_launcher_oxygen_os,
-                new String[]{"net.oneplus.launcher"}),
+                new String[]{"net.oneplus.launcher"},
+                false),
         PIXEL(
                 "Pixel",
                 R.drawable.ic_launcher_pixel,
-                new String[]{"com.google.android.apps.nexuslauncher"}),
+                new String[]{"com.google.android.apps.nexuslauncher"},
+                false),
         PROJECTIVY(
                 "Projectivy",
                 R.drawable.ic_launcher_projectivy,
                 new String[]{"com.spocky.projengmenu"},
-                (context, launcherPackageName) -> new Intent("com.spocky.projengmenu.APPLY_ICONPACK")
-                        .setPackage("com.spocky.projengmenu")
-                        .putExtra("com.spocky.projengmenu.extra.ICONPACK_PACKAGENAME", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         SMART(
                 "Smart",
                 R.drawable.ic_launcher_smart,
                 new String[]{"ginlemon.flowerfree", "ginlemon.flowerpro", "ginlemon.flowerpro.special"},
-                (context, launcherPackageName) -> new Intent("ginlemon.smartlauncher.setGSLTHEME")
-                        .putExtra("package", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         SOLO(
                 "Solo",
                 R.drawable.ic_launcher_solo,
                 new String[]{"home.solo.launcher.free"},
-                new DirectApply() {
-                    @Override
-                    public Intent getActivity(Context context, String launcherPackageName) {
-                        return context.getPackageManager().getLaunchIntentForPackage("home.solo.launcher.free")
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    }
-
-                    @Override
-                    public Intent getBroadcast(Context context) {
-                        return new Intent("home.solo.launcher.free.APPLY_THEME")
-                                .putExtra("EXTRA_THEMENAME", context.getResources().getString(R.string.app_name))
-                                .putExtra("EXTRA_PACKAGENAME", context.getPackageName());
-                    }
-                },
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         STOCK_LEGACY(
                 /*
                  * Historically, ColorOS, OxygenOS and realme UI were standalone launcher variants
@@ -250,378 +161,112 @@ public class LauncherHelper {
                  */
                 isColorOS() ? "ColorOS" : isRealmeUI() ? "realme UI" : "Stock Launcher",
                 isColorOS() ? R.drawable.ic_launcher_color_os : isRealmeUI() ? R.drawable.ic_launcher_realme_ui : R.drawable.ic_launcher_android,
-                new String[]{"com.android.launcher"}),
+                new String[]{"com.android.launcher"},
+                false),
         POCO(
                 "POCO",
                 R.drawable.ic_launcher_poco,
-                new String[]{"com.mi.android.globallauncher"}),
+                new String[]{"com.mi.android.globallauncher"},
+                false),
         MOTO(
                 "Moto Launcher",
                 R.drawable.ic_launcher_moto,
-                new String[]{"com.motorola.launcher3"}),
+                new String[]{"com.motorola.launcher3"},
+                false),
         MICROSOFT(
                 "Microsoft",
                 R.drawable.ic_launcher_microsoft,
-                new String[]{"com.microsoft.launcher"}),
+                new String[]{"com.microsoft.launcher"},
+                false),
         BLACKBERRY(
                 "BlackBerry",
                 R.drawable.ic_launcher_blackberry,
-                new String[]{"com.blackberry.blackberrylauncher"}),
+                new String[]{"com.blackberry.blackberrylauncher"},
+                false),
         FLICK(
                 "Flick",
                 R.drawable.ic_launcher_flick,
                 new String[]{"com.universallauncher.universallauncher"},
-                new DirectApply() {
-                    @Override
-                    public Intent getActivity(Context context, String launcherPackageName) {
-                        return context.getPackageManager().getLaunchIntentForPackage("com.universallauncher.universallauncher")
-                                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    }
-                    @Override
-                    public Intent getBroadcast(Context context) {
-                        return new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER")
-                                .putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName())
-                                .setComponent(new ComponentName("com.universallauncher.universallauncher", "com.android.launcher3.icon.ApplyIconPack"));
-                    }
-                }, MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         SQUARE(
                 "Square",
                 R.drawable.ic_launcher_square,
                 new String[]{"com.ss.squarehome2"},
-                (context, launcherPackageName) -> new Intent("com.ss.squarehome2.ACTION_APPLY_ICONPACK")
-                        .setComponent(ComponentName.unflattenFromString("com.ss.squarehome2/.ApplyThemeActivity"))
-                        .putExtra("com.ss.squarehome2.EXTRA_ICONPACK", context.getPackageName()),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         NIAGARA(
                 "Niagara",
                 R.drawable.ic_launcher_niagara,
                 new String[]{"bitpit.launcher"},
-                (context, launcherPackageName) -> new Intent("bitpit.launcher.APPLY_ICONS")
-                        .putExtra("packageName", context.getPackageName()),
-                MANUAL_APPLY_NOT_SUPPORTED
-        ),
+                true),
         HYPERION(
                 "Hyperion",
                 R.drawable.ic_launcher_hyperion,
-                new String[]{"projekt.launcher"}),
+                new String[]{"projekt.launcher"},
+                false),
         KISS(
                 "KISS",
                 R.drawable.ic_launcher_kiss,
-                new String[]{"fr.neamar.kiss"}),
+                new String[]{"fr.neamar.kiss"},
+                false),
         Kvaesitso(
                 "Kvaesitso",
                 R.drawable.ic_launcher_kvaesitso,
-                new String[]{"de.mm20.launcher2.release"}),
+                new String[]{"de.mm20.launcher2.release"},
+                false),
         ONEUI(
                 "Samsung One UI",
                 R.drawable.ic_launcher_one_ui,
-                new String[]{"com.sec.android.app.launcher"}),
+                new String[]{"com.sec.android.app.launcher"},
+                false),
         TINYBIT(
                 "TinyBit",
                 R.drawable.ic_launcher_tinybit,
-                new String[]{"rocks.tbog.tblauncher"}),
+                new String[]{"rocks.tbog.tblauncher"},
+                false),
         ZENUI(
                 "ZenUI",
                 R.drawable.ic_launcher_zenui,
                 new String[]{"com.asus.launcher"},
-                (context, launcherPackageName) -> new Intent("com.asus.launcher")
-                        .setAction("com.asus.launcher.intent.action.APPLY_ICONPACK")
-                        .addCategory(Intent.CATEGORY_DEFAULT)
-                        .putExtra("com.asus.launcher.iconpack.PACKAGE_NAME", context.getPackageName())
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                MANUAL_APPLY_NOT_SUPPORTED
-        );
+                true);
 
-        /**
-         * Interface for launchers to implement when they support applying icons directly, without
-         * the need to open the icon pack app. The {@code run()} method should be self-contained
-         * and make sure to finish the activity after applying the icon pack.
-         */
-        private interface DirectApply {
-            default boolean isSupported(String packageName) { return true; }
-
-            Intent getActivity(Context context, String launcherPackageName);
-            default Intent getBroadcast(Context context) { return null; }
-
-            default void run(Context context, String launcherPackageName) throws ActivityNotFoundException, NullPointerException {
-                final Intent activity = getActivity(context, launcherPackageName);
-                final Intent broadcast = getBroadcast(context);
-                if (getBroadcast(context) != null) {
-                    context.sendBroadcast(broadcast);
-                }
-                context.startActivity(activity);
-                ((AppCompatActivity) context).finish();
-            }
-        }
-
-        /**
-         * Interface for launchers to implement when they support icon packs but not direct apply.
-         * They should provide an overall compatibility description and a list of instructions for
-         * users to follow step by step on their device. The {@code run()} method should be
-         * self-contained and either launch a deep link into the launcher's settings where the icon
-         * pack can be applied, or simply display a dialog with the instructions.
-         *
-         * @see Launcher#applyWithInstructions(Context, String, String, String[])
-         */
-        private interface ManualApply {
-            default boolean isSupported(String packageName) { return true; }
-
-            default Intent getSettingsActivity(Context context, String launcherPackageName) { return null; }
-
-            default String getCompatibilityMessage(Context context, String launcherName) {
-                return context.getResources().getString(
-                        R.string.apply_manual,
-                        launcherName,
-                        context.getResources().getString(R.string.app_name)
-                );
-            }
-
-            String[] getInstructionSteps(Context context, String launcherName);
-
-            default void run(Context context, String launcherPackageName, String launcherName) throws ActivityNotFoundException, NullPointerException {
-                applyWithInstructions(
-                        context,
-                        launcherName,
-                        getCompatibilityMessage(context, launcherName),
-                        getInstructionSteps(context, launcherName),
-                        getSettingsActivity(context, launcherPackageName)
-                );
-            }
-        }
-
-        /**
-         * Exception thrown when the launcher isn't installed on the device. Catch this when you
-         * want to provide user-friendly feedback to the user or fall back on other methods such
-         * as opening Google Play. If you want to open Google Play as a default, take note of the
-         * overloaded method `applyDirectly` that accepts a boolean parameter for opening Google
-         * Play upon error.
-         *
-         * @see Launcher#applyDirectly(Context, String, boolean)
-         */
-        public static class LauncherNotInstalledException extends ActivityNotFoundException {
-            public LauncherNotInstalledException(Throwable cause) {
-                super("The launcher is not installed on the device");
-                initCause(cause); // preserves the original exceptions information
-            }
-        }
-
-        /**
-         * Exception thrown when the launcher doesn't support applying icon packs directly but if
-         * the method `applyDirectly` is called anyway. CandyBar handles this gracefully in-app by
-         * showing instructions for how to apply the pack manually. If you see this exception, it
-         * means you forgot to respect `supportsDirectApply` before calling `applyDirectly`.
-         *
-         * @see Launcher#supportsDirectApply(String)
-         */
-        public static class LauncherDirectApplyNotSupported extends ActivityNotFoundException {
-            public LauncherDirectApplyNotSupported(Throwable cause) {
-                super("The launcher does not support direct apply");
-                initCause(cause); // preserves the original exceptions information
-            }
-        }
-
-        public static class LauncherManualApplyNotSupported extends ActivityNotFoundException {
-            public LauncherManualApplyNotSupported(Throwable cause) {
-                super("The launcher does not support manual apply");
-                initCause(cause); // preserves the original exceptions information
-            }
-        }
-        /**
-         * Exception thrown when the icon pack couldn't be applied to the launcher directly. Catch
-         * this when you want to show a user-friendly message to the user or offer the user to send
-         * a bug report. In the wild, this exception could indicate that the launcher has been
-         * updated by the developers and its interface for applying icon packs has changed.
-         * For cases when the launcher isn't installed, use `LauncherNotInstalledException`.
-         *
-         * @see LauncherNotInstalledException
-         */
-        public static class LauncherDirectApplyFailed extends ActivityNotFoundException {
-            public LauncherDirectApplyFailed(Throwable cause) {
-                super("The launcher supports direct apply but applying the icon pack failed");
-                initCause(cause); // preserves the original exceptions information
-            }
-        }
-
-        /**
-         * Exception thrown when the launcher's activity couldn't be run. Catch this when you want
-         * to show a user-friendly message to the user or offer the user to send a bug report. In
-         * the wild, this exception could indicate that the launcher has been updated by the
-         * developers and its activity names have changed.
-         * For cases when the launcher isn't installed, use `LauncherNotInstalledException`.
-         *
-         * @see LauncherNotInstalledException
-         */
-        public static class LauncherManualApplyFailed extends ActivityNotFoundException {
-            public LauncherManualApplyFailed(Throwable cause) {
-                super("The launcher supports manual apply but launching the activity failed");
-                initCause(cause); // preserves the original exceptions information
-            }
+        private interface DirectApplyFunc {
+            boolean check(String packageName);
         }
 
         public final String name;
         public final @DrawableRes
         int icon;
         public final String[] packages;
-        private DirectApply directApplyFunc = null;
-        private ManualApply manualApplyFunc = null;
+        private final boolean directApply;
+        private DirectApplyFunc directApplyFunc = null;
 
         Launcher() {
             this.name = null;
             this.icon = 0;
             this.packages = null;
+            this.directApply = false;
         }
 
-        Launcher(String name, @DrawableRes int icon, String[] packages) {
+        Launcher(String name, @DrawableRes int icon, String[] packages, boolean directApply) {
             this.name = name;
             this.icon = icon;
             this.packages = packages;
+            this.directApply = directApply;
         }
 
-        Launcher(String name, @DrawableRes int icon, String[] packages, DirectApply directApplyFunc, ManualApply manualApplyFunc) {
+        Launcher(String name, @DrawableRes int icon, String[] packages, DirectApplyFunc directApplyFunc) {
             this.name = name;
             this.icon = icon;
             this.packages = packages;
+            this.directApply = true;
             this.directApplyFunc = directApplyFunc;
-            this.manualApplyFunc = manualApplyFunc;
         }
 
-        /**
-         * Check if the launcher supports direct apply of icon packs. Not all launchers do, and it's
-         * on the launcher developers to provide the necessary interfaces to allow this. Note that
-         * when you use `applyDirectly` it's still possible for it to throw an exception (see
-         * exception `LauncherDirectApplyFailed`) because newer versions or OS-specific variants of
-         * the launcher might not support it.
-         * Consider the return value of this method as a hint, not a guarantee.
-         * @param launcherPackageName The package name of the launcher to check.
-         * @return true if the launcher supports direct apply, false otherwise.
-         */
         public boolean supportsDirectApply(String launcherPackageName) {
             if (directApplyFunc != null) {
-                return directApplyFunc.isSupported(launcherPackageName);
+                return directApplyFunc.check(launcherPackageName);
             }
-            return false;
-        }
-
-        /**
-         * Check if the launcher supports applying icon packs manually.
-         * @param launcherPackageName The package name of the launcher to check
-         * @return true if the launcher supports manual apply, false otherwise
-         */
-        public boolean supportsManualApply(String launcherPackageName) {
-            if (manualApplyFunc != null) {
-                return manualApplyFunc.isSupported(launcherPackageName);
-            }
-            return false;
-        }
-
-        /**
-         * Check if the launcher supports icon packs. Not all launchers do specifically not those
-         * that want to stay close to Vanilla Android.
-         * @param launcherPackageName The package name of the launcher to check
-         * @return true if the launcher supports icon packs, false otherwise
-         */
-        public boolean supportsIconPacks(String launcherPackageName) {
-            return !supportsDirectApply(launcherPackageName) && !supportsManualApply(launcherPackageName);
-        }
-
-        /**
-         * Tries to apply the icon pack directly. Before calling this, you can ask the launcher with
-         * {@code supportsDirectApply} if it supports this method. Note that this is just a hint,
-         * not a guarantee, so make sure to catch the exceptions thrown by this method and handle
-         * them gracefully.
-         *
-         * <p>
-         *  <sup>
-         *      <b>Credit where credit is due ♥</b><br>
-         *
-         *     The instructions, logic and fallback behind this simple method are the
-         *     collective work of dozens of open source developers and translators carried
-         *     out over many years. If you use this method outside of the CandyBar dashboard,
-         *     please credit the contributors.<br>
-         *     • <b>Contributors:</b> com/candybar/lib/src/main/res/xml/dashboard_contributors.xml<br>
-         *     • <b>Translators:</b> com/candybar/lib/src/main/res/xml/dashboard_translator.xml
-         *  </sup>
-         * </p>
-         *
-         * @param launcherPackageName The package name of the launcher to apply the icon pack to.
-         * @throws LauncherNotInstalledException If the launcher isn't installed on the device.
-         * @throws LauncherDirectApplyNotSupported If the launcher doesn't support applying icon packs directly.
-         * @throws LauncherDirectApplyFailed If the icon pack couldn't be applied to the launcher directly. This is never an expected case. If it happens, it might indicate that the launcher interface changed.
-         *
-         * @see Launcher#supportsDirectApply(String)
-         */
-        public void applyDirectly(Context context, String launcherPackageName) throws ActivityNotFoundException, NullPointerException {
-            if (!isInstalled(context, launcherPackageName)) throw new LauncherNotInstalledException(new ActivityNotFoundException());
-            if (directApplyFunc == null) throw new LauncherDirectApplyNotSupported(new ActivityNotFoundException());
-            if (!directApplyFunc.isSupported(launcherPackageName)) throw new LauncherDirectApplyNotSupported(new ActivityNotFoundException());
-            try {
-                directApplyFunc.run(context, launcherPackageName);
-                logLauncherDirectApply(launcherPackageName);
-            } catch (Exception e) {
-                throw new LauncherDirectApplyFailed(e);
-            }
-        }
-
-        /**
-         * Try to apply the icon pack directly. In case of any errors, open launcher in Google Play.
-         * This is a convenience method to preserve backwards compatibility in CandyBar. If you
-         * rather handle exceptions yourself, use `applyDirectly` without the boolean parameter
-         * and catch exceptions `LauncherNotInstalledException`, `LauncherDirectApplyFailed` and
-         * `LauncherDirectApplyNotSupported`.
-         *
-         * @param launcherPackageName The package name of the launcher to apply the icon pack to.
-         * @param openGooglePlayUponError If true, open Google Play if the launcher isn't installed.
-         */
-        public void applyDirectly(Context context, String launcherPackageName, boolean openGooglePlayUponError) throws ActivityNotFoundException, NullPointerException {
-            try {
-                applyDirectly(context, launcherPackageName);
-            } catch (ActivityNotFoundException | NullPointerException e) {
-                if (openGooglePlayUponError) {
-                    openGooglePlay(context, launcherPackageName, name);
-                } else {
-                    throw e;
-                }
-            }
-        }
-
-        /**
-         * Show manual instructions to the user on how to apply the icon pack to the launcher. In
-         * case the launcher offers a dedicated settings activity, it will be called after the user
-         * confirms the dialog. (If the user cancels the dialog, nothing happens.)
-         *
-         * <p>
-         *  <sup>
-         *      <b>Credit where credit is due ♥</b><br>
-         *
-         *     The instructions, logic and fallback behind this simple method are the
-         *     collective work of dozens of open source developers and translators carried
-         *     out over many years. If you use this method outside of the CandyBar dashboard,
-         *     please credit the contributors.<br>
-         *     • <b>Contributors:</b> com/candybar/lib/src/main/res/xml/dashboard_contributors.xml<br>
-         *     • <b>Translators:</b> com/candybar/lib/src/main/res/xml/dashboard_translator.xml
-         *  </sup>
-         * </p>
-         *
-         * @param launcherPackageName The package name of the launcher to apply the icon pack to.
-         * @param launcherName The name of the launcher to display in the dialog.
-         * @throws LauncherNotInstalledException If the launcher isn't installed on the device.
-         * @throws LauncherManualApplyNotSupported If the launcher doesn't support applying icon packs manually.
-         * @throws LauncherManualApplyFailed If an associated settings activity could not be launched. This is never an expected case. If it happens, it might indicate that the launcher interface changed.
-         *
-         */
-        public void applyManually(Context context, String launcherPackageName, String launcherName) throws ActivityNotFoundException, NullPointerException {
-            if (!isInstalled(context, launcherPackageName)) throw new LauncherNotInstalledException(new ActivityNotFoundException());
-            if (manualApplyFunc == null) throw new LauncherManualApplyNotSupported(new ActivityNotFoundException());
-            if (!manualApplyFunc.isSupported(launcherPackageName)) throw new LauncherManualApplyNotSupported(new ActivityNotFoundException());
-
-            try {
-                manualApplyFunc.run(context, launcherPackageName, launcherName);
-                //logLauncherManualApply(launcherPackageName);
-            } catch (Exception e) {
-                throw new LauncherManualApplyFailed(e);
-            }
+            return directApply;
         }
     }
 
@@ -652,31 +297,81 @@ public class LauncherHelper {
         applyLauncher(context, packageName, launcherName, getLauncher(packageName));
     }
 
-    private static void logLauncherDirectApply(String launcherPackage) {
-        CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                "click",
-                new HashMap<>() {{
-                    put("section", "apply");
-                    put("action", "confirm");
-                    put("launcher", launcherPackage);
-                }}
-        );
-    }
-
     private static void applyLauncher(@NonNull Context context, String launcherPackage, String launcherName, Launcher launcher) {
         switch (launcher) {
             case ACTION:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent action = context.getPackageManager().getLaunchIntentForPackage(
+                            launcherPackage);
+                    action.putExtra("apply_icon_pack", context.getPackageName());
+                    action.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(action);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case ADW:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent adw = new Intent("org.adw.launcher.SET_THEME");
+                    adw.putExtra("org.adw.launcher.theme.NAME", context.getPackageName());
+                    adw.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(adw);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case APEX:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent apex = new Intent("com.anddoes.launcher.SET_THEME");
+                    apex.putExtra("com.anddoes.launcher.THEME_PACKAGE_NAME", context.getPackageName());
+                    apex.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(apex);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case BEFORE:
                 try {
-                    launcher.applyDirectly(context, launcherPackage, false);
+                    final Intent before = new Intent("com.beforesoftware.launcher.APPLY_ICONS");
+                    before.putExtra("packageName", context.getPackageName());
+                    before.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(before);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     applyWithInstructions(
                             context,
@@ -696,11 +391,23 @@ public class LauncherHelper {
                 }
                 break;
             case BLACKBERRY:
-                applyManualInApp(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
+                applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
                 break;
             case CMTHEME:
                 try {
-                    launcher.applyDirectly(context, launcherPackage, false);
+                    final Intent cmtheme = new Intent("android.intent.action.MAIN");
+                    cmtheme.setComponent(new ComponentName(launcherPackage,
+                            "org.cyanogenmod.theme.chooser.ChooserActivity"));
+                    cmtheme.putExtra("pkgName", context.getPackageName());
+                    context.startActivity(cmtheme);
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     Toast.makeText(context, R.string.apply_cmtheme_not_available,
                             Toast.LENGTH_LONG).show();
@@ -770,10 +477,49 @@ public class LauncherHelper {
                 }
                 break;
             case FLICK:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent flick = context.getPackageManager().getLaunchIntentForPackage("com.universallauncher.universallauncher");
+                    final Intent flickAction = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
+                    flickAction.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
+                    flickAction.setComponent(new ComponentName("com.universallauncher.universallauncher", "com.android.launcher3.icon.ApplyIconPack"));
+                    flick.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.sendBroadcast(flickAction);
+                    context.startActivity(flick);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case GO:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent goex = context.getPackageManager().getLaunchIntentForPackage(
+                            "com.gau.go.launcherex");
+                    final Intent go = new Intent("com.gau.go.launcherex.MyThemes.mythemeaction");
+                    go.putExtra("type", 1);
+                    go.putExtra("pkgname", context.getPackageName());
+                    goex.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.sendBroadcast(go);
+                    context.startActivity(goex);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case HIOS:
                 applyWithInstructions(
@@ -794,10 +540,10 @@ public class LauncherHelper {
                 break;
             case HOLO:
             case HOLOHD:
-                applyManualInApp(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
+                applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
                 break;
             case HYPERION:
-                applyManualInApp(context, launcherPackage, launcherName, "projekt.launcher.activities.SettingsActivity");
+                applyManual(context, launcherPackage, launcherName, "projekt.launcher.activities.SettingsActivity");
                 break;
             case KISS:
                 applyWithInstructions(
@@ -833,23 +579,69 @@ public class LauncherHelper {
                 );
                 break;
             case LAWNCHAIR:
-                if (launcher.supportsDirectApply(launcherPackage)) {
-                    launcher.applyDirectly(context, launcherPackage, true);
-                } else {
-                    applyManualInApp(context, launcherPackage, launcherName, "app.lawnchair.ui.preferences.PreferenceActivity");
+                if (launcherPackage.startsWith("app")) {
+                    // Lawnchair 12 (app.lawnchair) does not support direct apply yet
+                    applyManual(context, launcherPackage, launcherName, "app.lawnchair.ui.preferences.PreferenceActivity");
+                    break;
+                }
+
+                try {
+                    final Intent lawnchair = new Intent("ch.deletescape.lawnchair.APPLY_ICONS", null);
+                    lawnchair.putExtra("packageName", context.getPackageName());
+                    context.startActivity(lawnchair);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
             case LGHOME:
                 launcherIncompatible(context, launcherName);
                 break;
             case LUCID:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent lucid = new Intent("com.powerpoint45.action.APPLY_THEME", null);
+                    lucid.putExtra("icontheme", context.getPackageName());
+                    context.startActivity(lucid);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case MICROSOFT:
-                applyManualInApp(context, launcherPackage, launcherName, null);
+                applyManual(context, launcherPackage, launcherName, null);
                 break;
             case NIAGARA:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent niagara = new Intent("bitpit.launcher.APPLY_ICONS");
+                    niagara.putExtra("packageName", context.getPackageName());
+                    context.startActivity(niagara);
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case NOTHING:
                 applyWithInstructions(
@@ -872,34 +664,126 @@ public class LauncherHelper {
                 );
                 break;
             case NOVA:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent nova = new Intent("com.teslacoilsw.launcher.APPLY_ICON_THEME");
+                    nova.setPackage("com.teslacoilsw.launcher");
+                    nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_TYPE", "GO");
+                    nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_PACKAGE", context.getPackageName());
+                    String reshapeSetting = context.getResources().getString(R.string.nova_reshape_legacy_icons);
+                    if (!reshapeSetting.equals("KEEP")) {
+                        // Allowed values are ON, OFF and AUTO
+                        nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_RESHAPE", reshapeSetting);
+                    }
+                    nova.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(nova);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case PIXEL:
                 launcherIncompatible(context, launcherName);
                 break;
             case POCO:
-                applyManualInApp(context, launcherPackage, launcherName, "com.miui.home.settings.HomeSettingsActivity");
+                applyManual(context, launcherPackage, launcherName, "com.miui.home.settings.HomeSettingsActivity");
                 break;
             case PROJECTIVY:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent projectivy = new Intent("com.spocky.projengmenu.APPLY_ICONPACK");
+                    projectivy.setPackage("com.spocky.projengmenu");
+                    projectivy.putExtra("com.spocky.projengmenu.extra.ICONPACK_PACKAGENAME", context.getPackageName());
+                    projectivy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(projectivy);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case ONEUI:
                 applyOneUI(context, launcherName);
                 break;
             case TINYBIT:
-                applyManualInApp(context, launcherPackage, launcherName, "rocks.tbog.tblauncher.SettingsActivity");
+                applyManual(context, launcherPackage, launcherName, "rocks.tbog.tblauncher.SettingsActivity");
                 break;
             case MOTO:
-                applyManualInApp(context, launcherPackage, launcherName, "com.motorola.personalize.app.IconPacksActivity");
+                applyManual(context, launcherPackage, launcherName, "com.motorola.personalize.app.IconPacksActivity");
                 break;
             case SMART:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent smart = new Intent("ginlemon.smartlauncher.setGSLTHEME");
+                    smart.putExtra("package", context.getPackageName());
+                    smart.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(smart);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case SOLO:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent solo = context.getPackageManager().getLaunchIntentForPackage(
+                            "home.solo.launcher.free");
+                    final Intent soloAction = new Intent("home.solo.launcher.free.APPLY_THEME");
+                    soloAction.putExtra("EXTRA_THEMENAME", context.getResources().getString(
+                            R.string.app_name));
+                    soloAction.putExtra("EXTRA_PACKAGENAME", context.getPackageName());
+                    solo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.sendBroadcast(soloAction);
+                    context.startActivity(solo);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case SQUARE:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent square = new Intent("com.ss.squarehome2.ACTION_APPLY_ICONPACK");
+                    square.setComponent(ComponentName.unflattenFromString("com.ss.squarehome2/.ApplyThemeActivity"));
+                    square.putExtra("com.ss.squarehome2.EXTRA_ICONPACK", context.getPackageName());
+                    context.startActivity(square);
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case STOCK_LEGACY:
                 applyWithInstructions(
@@ -922,16 +806,57 @@ public class LauncherHelper {
                 );
                 break;
             case NOUGAT:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    /*
+                     * Just want to let anyone who is going to copy
+                     * It's not easy searching for this
+                     * I will be grateful if you take this with a proper credit
+                     * Thank you
+                     */
+                    final Intent nougat = new Intent("me.craftsapp.nlauncher");
+                    nougat.setAction("me.craftsapp.nlauncher.SET_THEME");
+                    nougat.putExtra("me.craftsapp.nlauncher.theme.NAME", context.getPackageName());
+                    nougat.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(nougat);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
             case ZENUI:
-                launcher.applyDirectly(context, launcherPackage, true);
+                try {
+                    final Intent asus = new Intent("com.asus.launcher");
+                    asus.setAction("com.asus.launcher.intent.action.APPLY_ICONPACK");
+                    asus.addCategory(Intent.CATEGORY_DEFAULT);
+                    asus.putExtra("com.asus.launcher.iconpack.PACKAGE_NAME", context.getPackageName());
+                    asus.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(asus);
+                    ((AppCompatActivity) context).finish();
+                    CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
+                            "click",
+                            new HashMap<>() {{
+                                put("section", "apply");
+                                put("action", "confirm");
+                                put("launcher", launcherPackage);
+                            }}
+                    );
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
                 break;
         }
     }
 
     @SuppressLint("StringFormatInvalid")
-    private static void applyManualInApp(Context context, String launcherPackage, String launcherName, String activity) {
+    private static void applyManual(Context context, String launcherPackage, String launcherName, String activity) {
         if (isInstalled(context, launcherPackage)) {
             new MaterialDialog.Builder(context)
                     .typeface(TypefaceHelper.getMedium(context), TypefaceHelper.getRegular(context))
@@ -943,7 +868,7 @@ public class LauncherHelper {
                     .onPositive((dialog, which) -> {
                         CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                                 "click",
-                                new HashMap<>() {{
+                                new HashMap<String, Object>() {{
                                     put("section", "apply");
                                     put("action", "manual_open_confirm");
                                     put("launcher", launcherPackage);
@@ -969,7 +894,7 @@ public class LauncherHelper {
                     .onNegative(((dialog, which) -> {
                         CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                                 "click",
-                                new HashMap<>() {{
+                                new HashMap<String, Object>() {{
                                     put("section", "apply");
                                     put("action", "manual_open_cancel");
                                     put("launcher", launcherPackage);
@@ -997,12 +922,12 @@ public class LauncherHelper {
         new MaterialDialog.Builder(context)
                 .typeface(TypefaceHelper.getMedium(context), TypefaceHelper.getRegular(context))
                 .title(launcherName)
-                .content(description + ((steps.length > 0) ? "\n\n\t• " : "") + String.join("\n\t• ", steps))
-                .positiveText(android.R.string.ok)
+                .content(description + "\n\n\t• " + String.join("\n\t• ", steps))
+                .positiveText(android.R.string.yes)
                 .onPositive((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<>() {{
+                            new HashMap<String, Object>() {{
                                 put("section", "apply");
                                 put("action", "manual_open_confirm");
                                 put("launcher", launcherName);
@@ -1081,7 +1006,7 @@ public class LauncherHelper {
                 .onPositive((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "manual_open_confirm");
                                 put("launcher", launcherName);
@@ -1122,7 +1047,7 @@ public class LauncherHelper {
                 .onNegative(((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "manual_open_cancel");
                                 put("launcher", launcherName);
@@ -1151,7 +1076,7 @@ public class LauncherHelper {
                 .onPositive((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "incompatible_third_party_open");
                                 put("launcher", launcherName);
@@ -1169,7 +1094,7 @@ public class LauncherHelper {
                 .onNegative(((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "incompatible_third_party_cancel");
                                 put("launcher", launcherName);
@@ -1197,7 +1122,7 @@ public class LauncherHelper {
                 .onPositive((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "not_installed_google_play_open");
                                 put("launcher", packageName);
@@ -1216,7 +1141,7 @@ public class LauncherHelper {
                 .onNegative(((dialog, which) -> {
                     CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                             "click",
-                            new HashMap<String, Object>() {{
+                            new HashMap<>() {{
                                 put("section", "apply");
                                 put("action", "not_installed_google_play_cancel");
                                 put("launcher", packageName);

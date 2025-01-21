@@ -141,7 +141,7 @@ public class FAQsAdapter extends RecyclerView.Adapter<FAQsAdapter.ViewHolder> {
         if (getFaqsCount() == 0) {
             CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                     "type",
-                    new HashMap<String, Object>() {{
+                    new HashMap<>() {{
                         put("section", "faq");
                         put("action", "search");
                         put("found", "no");
@@ -151,7 +151,7 @@ public class FAQsAdapter extends RecyclerView.Adapter<FAQsAdapter.ViewHolder> {
         } else {
             CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                     "type",
-                    new HashMap<String, Object>() {{
+                    new HashMap<>() {{
                         put("section", "faq");
                         put("action", "search");
                         put("found", "yes");
