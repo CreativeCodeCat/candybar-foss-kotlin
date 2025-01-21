@@ -262,7 +262,7 @@ public class SettingsFragment extends Fragment {
                     Thread.sleep(1);
                     File directory = requireActivity().getCacheDir();
                     requests = Database.get(requireActivity()).getPremiumRequest(null);
-                    if (requests.size() == 0) return true;
+                    if (requests.isEmpty()) return true;
 
                     List<String> files = new ArrayList<>();
 
@@ -334,7 +334,7 @@ public class SettingsFragment extends Fragment {
             dialog = null;
 
             if (ok) {
-                if (requests.size() == 0) {
+                if (requests.isEmpty()) {
                     Toast.makeText(getActivity(), R.string.premium_request_rebuilding_empty,
                             Toast.LENGTH_LONG).show();
                     return;

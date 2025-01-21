@@ -119,7 +119,7 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
             mode.setTitle(mContext.getResources().getString(R.string.items_selected, mSelectedIcons.size()));
             menu.findItem(R.id.menu_select_all).setIcon(mSelectedIcons.size() == mIcons.size()
                     ? R.drawable.ic_toolbar_select_all_selected : R.drawable.ic_toolbar_select_all);
-            menu.findItem(R.id.menu_delete).setVisible(mSelectedIcons.size() > 0);
+            menu.findItem(R.id.menu_delete).setVisible(!mSelectedIcons.isEmpty());
             return true;
         }
 
@@ -383,7 +383,7 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
 
         String query = string.toLowerCase(Locale.ENGLISH).trim();
         mIcons = new ArrayList<>();
-        if (query.length() == 0) mIcons.addAll(mIconsAll);
+        if (query.isEmpty()) mIcons.addAll(mIconsAll);
         else {
             Locale defaultLocale = Locale.getDefault();
             for (int i = 0; i < mIconsAll.size(); i++) {
@@ -396,7 +396,7 @@ public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> 
             }
         }
 
-        if (mIcons.size() == 0) {
+        if (mIcons.isEmpty()) {
             CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                     "click",
                     new HashMap<String, Object>() {{
