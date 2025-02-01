@@ -98,7 +98,7 @@ public class IconsHelper {
                 if (parser.getName().equals("category")) {
                     String title = parser.getAttributeValue(null, "title");
                     if (!sectionTitle.equals(title)) {
-                        if (!sectionTitle.isEmpty() && !icons.isEmpty()) {
+                        if (sectionTitle.length() > 0 && icons.size() > 0) {
                             count += icons.size();
                             sections.add(new Icon(sectionTitle, icons));
                         }
@@ -123,7 +123,7 @@ public class IconsHelper {
                 CandyBarApplication.getConfiguration().getCustomIconsCount() == 0) {
             CandyBarApplication.getConfiguration().setCustomIconsCount(count);
         }
-        if (!icons.isEmpty()) {
+        if (icons.size() > 0) {
             sections.add(new Icon(sectionTitle, icons));
         }
         parser.close();
@@ -149,7 +149,6 @@ public class IconsHelper {
             }
         }
         List<Icon> icons = new ArrayList<>(iconSet);
-
         Collections.sort(icons, Icon.TitleComparator);
         return icons;
     }
@@ -161,7 +160,7 @@ public class IconsHelper {
                 // Title is already computed, so continue
                 continue;
             }
-            if (icon.getCustomName() != null && !icon.getCustomName().isEmpty()) {
+            if (icon.getCustomName() != null && !icon.getCustomName().equals("")) {
                 icon.setTitle(icon.getCustomName());
             } else {
                 icon.setTitle(replaceName(context, iconReplacer, icon.getDrawableName()));
@@ -197,7 +196,7 @@ public class IconsHelper {
     public static void selectIcon(@NonNull Context context, int action, Icon icon) {
         CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
                 "click",
-                new HashMap<>() {{
+                new HashMap<String, Object>() {{
                     put("section", "icons");
                     put("action", "pick_icon");
                     put("item", icon.getDrawableName());
@@ -213,6 +212,10 @@ public class IconsHelper {
                         public void handleResult(Bitmap resource) {
                             Intent intent = new Intent();
                             intent.putExtra("icon", resource);
+
+                            // Also add the direct icon resource ID to the intent for launchers that support it
+                            Intent.ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(context, icon.getRes());
+                            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
                             ((AppCompatActivity) context).setResult(resource != null ?
                                     Activity.RESULT_OK : Activity.RESULT_CANCELED, intent);
                             ((AppCompatActivity) context).finish();
@@ -238,7 +241,7 @@ public class IconsHelper {
                     .load("drawable://" + icon.getRes())
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .listener(new RequestListener<>() {
+                    .listener(new RequestListener<Bitmap>() {
                         private void handleResult(Bitmap bitmap) {
                             Intent intent = new Intent();
                             if (bitmap != null) {
