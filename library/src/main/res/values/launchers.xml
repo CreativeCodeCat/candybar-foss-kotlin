@@ -25,7 +25,7 @@
         <item>lucid</item>
         <item>microsoft</item>
         <item>mlauncher</item>
-        <item>moto</item><!-- Will only be displayed if actually detected on device -->
+        <item>moto</item>
         <item>niagara</item>
         <item>nothing</item>
         <item>nougat</item>

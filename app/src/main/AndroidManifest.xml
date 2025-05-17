@@ -195,7 +195,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-<<<<<<< HEAD
             <!-- mLauncher -->
             <intent-filter>
                 <action android:name="app.mlauncher.APPLY_ICONS" />
@@ -203,8 +202,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <!-- Ion launcher -->
-=======
->>>>>>> fda4f008 (Add support Ion Launcher)
             <intent-filter>
                 <action android:name="one.zagura.IonLauncher.ICON_PACK" />
                 <category android:name="android.intent.category.DEFAULT" />
