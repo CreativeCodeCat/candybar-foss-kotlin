@@ -50,7 +50,7 @@
     <!-- Changelog -->
     <string name="changelog_version">Versi</string>
     <!-- InAppBilling -->
-    <string name="billing_load_product_failed">Tidak dapat memuat produk Pembelian Dalam Aplikasi</string>
+    <string name="billing_load_product_failed">Tidak dapat memuat produk InApp Purchase</string>
     <!-- License -->
     <string name="license_checking">Memeriksa lisensi…</string>
     <string name="license_check">Pemeriksaan Lisensi</string>
@@ -60,7 +60,7 @@ Anda tidak akan dapat menggunakan aplikasi ini.</string>
     <string name="license_check_retry">Tidak dapat memeriksa lisensi, cobalah beberapa saat lagi.</string>
     <!-- Play Store Installation Check -->
     <string name="playstore_check">Pemeriksaan Play Store</string>
-    <string name="playstore_check_success">Terimakasih telah menginstal aplikasi dari Google Play Store. Enjoy.</string>
+    <string name="playstore_check_success">Terimakasih telah menginstal aplikasi dari Google Play Store. Enjoy!</string>
     <string name="playstore_check_failed">Sepertinya anda menginstal paket ikon ini di luar Google Play Store.
 Anda tidak dapat menggunakan aplikasi ini.</string>
     <!-- Share -->
@@ -83,14 +83,14 @@ Anda tidak dapat menggunakan aplikasi ini.</string>
     <string name="tap_intro_request_premium_desc">Sentuh disini untuk membeli paket pemesanan ikon premium,
 dengan memesan ikon premium anda bisa mendapatkan pesanan aplikasi lebih cepat.</string>
     <string name="tap_intro_wallpapers_option">Opsi wallpaper</string>
-    <string name="tap_intro_wallpapers_option_desc">Sentuh dan tahan disini untuk menampilkan opsi, %s terapkan wallpaper.</string>
+    <string name="tap_intro_wallpapers_option_desc">Sentuh dan tahan di sini untuk menampilkan pilihan wallpaper, %s menerapkan wallpaper.</string>
     <string name="tap_intro_wallpapers_option_desc_download">unduh atau</string>
     <string name="tap_intro_wallpapers_preview">Pratinjau wallpaper</string>
     <string name="tap_intro_wallpapers_preview_desc">Sentuh di sini untuk melihat pratinjau ukuran asli wallpaper</string>
     <string name="tap_intro_wallpaper_preview_save">Simpan wallpaper</string>
     <string name="tap_intro_wallpaper_preview_save_desc">Sentuh di sini untuk mengunduh dan menyimpan wallpaper ke penyimpanan perangkat agar anda bisa menggunakannya nanti</string>
     <string name="tap_intro_wallpaper_preview_apply">Terapkan wallpaper</string>
-    <string name="tap_intro_wallpaper_preview_apply_desc">Sentuh di sini untuk menetapkan wallpaper sebagai latar belakang layar beranda</string>
+    <string name="tap_intro_wallpaper_preview_apply_desc">Sentuh di sini untuk menetapkan wallpaper sebagai latar belakang tampilan depan</string>
     <!-- Home -->
     <string name="home_more_apps_header">Aplikasi lainnya</string>
     <string name="home_more_apps">Lihat aplikasi lainnya yang diterbitkan di Play Store</string>
@@ -107,6 +107,7 @@ dengan memesan ikon premium anda bisa mendapatkan pesanan aplikasi lebih cepat.<
     <string name="home_icon_request_missed_apps">Aplikasi\n%d terlewat</string>
     <!-- Apply -->
     <string name="apply_installed">Peluncur terpasang</string>
+    <string name="apply_installed_launchers">Peluncur terpasang</string>
     <string name="apply_supported">Peluncur yang didukung</string>
     <string name="apply_manual">%1$s Peluncur tidak mendukung terapkan langsung tetapi anda bisa menerapkan %2$s manual dari menu pengaturan peluncur.</string>
     <string name="apply_manual_kvaesitso">Kvaesitso tidak mendukung penerapan secara langsung, anda dapat mengikuti langkah berikut:</string>
@@ -184,6 +185,10 @@ dengan memesan ikon premium anda bisa mendapatkan pesanan aplikasi lebih cepat.<
     <string name="request_fetching_data">Mengambil data terbaru…</string>
     <string name="request_build_failed">Tidak dapat membuat pesanan ikon</string>
     <string name="request_appfilter_failed">Tidak dapat membaca appfilter.xml</string>
+    <string name="request_requested">Anda sudah meminta ikon ini dan tidak dapat memintanya lagi.</string>
+    <string name="request_requested_possible">Anda sudah meminta ikon ini. Apakah Anda yakin ingin menghabiskan permintaan lain untuk itu?</string>
+    <string name="request_requested_button_cancel">Kembali</string>
+    <string name="request_requested_button_confirm">Pilih tetap</string>
     <string name="request_email_client">Pilih aplikasi yang ingin anda gunakan untuk kirim pesanan ikon</string>
     <string name="request_app_disabled">Anda sedang menggunakan aplikasi paket ikon versi lawas. Ikon pesanan mungkin disertakan dalam versi terbaru. Silakan perbarui aplikasi anda ke versi terbaru untuk memesan ikon.</string>
     <string name="connection_error_long">Tidak dapat memuat data dari server. Mohon periksa koneksi jaringan anda.</string>
@@ -258,6 +263,8 @@ Buka Pengaturan, pilih \"Pulihkan Pembelian\" untuk memulihkan.</string>
     <string name="pref_theme_header">Tema</string>
     <string name="pref_theme_dark">Tema Gelap</string>
     <string name="pref_theme_dark_desc">Gunakan warna gelap untuk tema aplikasi</string>
+    <string name="pref_notifications_header">Notifikasi</string>
+    <string name="pref_notifications">Terima Notifikasi</string>
     <string name="pref_wallpaper_header">Wallpaper</string>
     <string name="pref_wallpaper_location">Lokasi penyimpanan Wallpaper</string>
     <string name="pref_language_header">Bahasa</string>
@@ -273,6 +280,8 @@ Buka Pengaturan, pilih \"Pulihkan Pembelian\" untuk memulihkan.</string>
     <string name="theme_name_material_you">Material You</string>
     <!-- Permission -->
     <string name="permission_storage_denied">Izin penyimpanan diperlukan untuk menyimpan wallpaper</string>
+    <string name="permission_notification_denied_1">Izin pemberitahuan diperlukan untuk menerima pemberitahuan dari pengembang</string>
+    <string name="permission_notification_denied_2">Aktifkan pemberitahuan dari pengaturan aplikasi</string>
     <!-- Intent -->
     <string name="app_client">Pilih Aplikasi</string>
     <string name="no_email_app">Tidak ada aplikasi untuk kirim email</string>
@@ -297,12 +306,12 @@ Buka Pengaturan, pilih \"Pulihkan Pembelian\" untuk memulihkan.</string>
     <string name="donation_success">Terima kasih atas donasi yang anda berikan. Saya akan menggunakannya untuk kebaikan.</string>
     <!-- Crash Report -->
     <string name="crash_report">Laporkan Kerusakan</string>
-    <string name="crash_report_message">Sayangnya %s terjadi kerusakan, Pilih kirim laporan di bawah untuk membantu pengembang perbaiki persoalan tersebut.</string>
+    <string name="crash_report_message">Sayangnya %s telah berhenti. Pilih kirim laporan di bawah ini untuk membantu pengembang memperbaiki masalahnya.</string>
     <string name="crash_report_send">Kirim Laporan</string>
     <!-- Please don't modify this, Just Translate -->
     <string name="about_dashboard">CandyBar</string>
     <string name="about_dashboard_dev">CandyBar merupakan dashboard paket ikon sumber terbuka di bawah lisensi Apache License 2.0 untuk Android tersedia di GitHub dan bebas untuk digunakan, Dikembangkan oleh Dani Mahardhika.</string>
-    <string name="about_open_source_licenses">Lisensi Sumber Terbuka</string>
+    <string name="about_open_source_licenses">Lisensi Open Source</string>
     <string name="about_dashboard_contributors">Kontributor CandyBar</string>
     <string name="about_dashboard_translator">Penerjemah CandyBar</string>
     <!-- DrawerToggle -->

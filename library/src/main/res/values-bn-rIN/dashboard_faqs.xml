@@ -9,13 +9,13 @@
         <!-- I can\'t see a complete icon name -->
         <!-- How can i replace icons with an alternate icon? -->
         <!-- How do i request an icon? -->
-        <!-- How can i restore remaining Premium Requests after reinstalling the app? -->
+        <!-- How can i restore the remaining Premium Requests after reinstalling the app? -->
         <!-- After restarting my phone, the icon pack is not applied, it restore to defaults? -->
         <!-- Why do the icons looks jaggy or pixelated on my phone? -->
         <!-- I can see the icon included in all icons,
-            but why isn\'t the actual icon on app drawer changed? -->
+            but why isn\'t the actual icon on the app drawer changed? -->
         <!-- What is the \"report bugs\" option? -->
-        <!-- My launcher is listed in the google play description, but why isn\'t it included in apply section? -->
+        <!-- My launcher is listed in the Google Play description, but why isn\'t it included in apply section? -->
         <!-- Wallpaper can\'t be applied, just showing black screen? -->
         <!-- Muzei: How to load downloaded wallpapers only? -->
         <!-- Muzei: I don\'t want to keep downloading wallpapers each time the wallpaper changes? -->
@@ -23,7 +23,7 @@
         <!-- Why are Read &amp; Write External Storage permission needed? -->
         <!-- Why is Internet permission needed? -->
         <!-- Why is Access Network State permission needed? -->
-        <!-- Why is Access Wifi State permission needed? -->
+        <!-- Why is Access Wi-Fi State permission needed? -->
         <!-- Why is Set Wallpaper permission needed? -->
         <!-- Why is Wake Lock Permission needed? -->
         <!-- Why is Set Alarm permission needed? -->
@@ -53,7 +53,7 @@
         <item>কেন ওয়াই ফাই ব্যবহার করার অনুমতি প্রয়োজন হয়?</item>
         <item>কেন ওয়ালপেপার সেট করার অনুমতি প্রয়োজন হয়?</item>
         <item>কেন ওয়েক লকের অনুমতি প্রয়োজন হয়?</item>
-        <item>Why is Set Alarm permission needed?</item>
+        <item>সেট অ্যালার্ম অনুমতি কেন প্রয়োজন?</item>
     </string-array>
     <string-array name="answers">
         <item>লঞ্চার হচ্ছে অ্যান্ড্রয়েড ব্যবহারকারীর ইন্টারফেস এর অংশ যা ব্যবহারকারীকে নীড় পর্দা কাস্টমাইজ করতে, অ্যাপ লঞ্চ করতে, কল করতে এবং অন্যান্য কাজ সারতে দেয়।</item>
@@ -66,7 +66,7 @@
         <item>আপনি নেভিগেশন ড্রয়ার থেকে \"আইকন রিকোয়েস্ট\" খুলতে পারেন।</item>
         <item>আপনি নেভিগেশন ড্রয়ার থেকে সেটিংস সেকশনে ক্রয় পুনর্বহাল বেচে নিন। আপনার যদি কোন প্রিমিয়াম অনুরোধ বাকী থাকে তাহলে এটি পুনর্বহাল করা হবে।</item>
         <item>এটি ঘটেছে কারণ আইকন প্যাক টি এসডি কার্ডে স্থানান্তর করা হয়েছে, আপনার এটি অভ্যন্তরীণ স্মৃতিতে ইনস্টল করা. উচিৎ ছিল।</item>
-        <item>আপনি যখন বড় রেজোলিউশন এর আইকন ব্যবহার করার সময় সমস্যা হতে পারে। আপনি এটি ঠিক করতে পারেন আইকনের আকার বৃদ্ধি করে। অথবা লঞ্চার বদলে দেখতে পারেন।</item>
+        <item>বড় আইকন রেজোলিউশন পরিচালনা করার সময় আপনি যে লঞ্চারটি ব্যবহার করেছিলেন তা থেকে সমস্যাটি আসতে পারে। আপনি আইকনের আকার 115-120% বাড়িয়ে এটি ঠিক করতে পারেন। বিকল্পভাবে, আপনি আপনার লঞ্চারটি পরিবর্তন করতে পারেন।</item>
         <item>সেটিংস খুলুন, নিচে স্ক্রল করুন, তারপর \"বাগ রিপোর্ট করুন\" বাছুন।</item>
         <item>\"বাগ রিপোর্ট করুন\" আইকন প্যাকের বাগ সম্পর্কিত, ড্যাশবোর্ড সংক্রান্ত নয়।</item>
         <item>সকল লঞ্চার কিন্তু সরাসরি প্রয়োগ সমর্থন করে না, এবং এদের কয়েকটি ড্যাশবোর্ড থেকে অ্যাক্সেস করা যায় না। আপনি নিজে নিজে লঞ্চারের সেটিংস থেকেও আইকন প্যাক প্রয়োগ করতে পারেন।</item>
@@ -86,6 +86,6 @@
         <item>এটি ড্যাশবোর্ড অ্যাপ্লিকেশন থেকে সরাসরি ওয়ালপেপারগুলি প্রয়োগ করতে ব্যবহৃত হয়।</item>
         <item>মুজ্যেই এর ক্লাউড ওয়ালপেপার লোড করার জন্য, আপনার ফোনে ওয়াইফাইয়ের একটি ইন্টারনেট সংযোগ রয়েছে কিনা তা পরীক্ষা করতে ব্যবহৃত হয়।</item>
         <item>এটি মুজ্যেই লাইভ ওয়ালপেপার দ্বারা ব্যবহৃত হয়</item>
-        <item>It is used to launch the clock app from the analog clock widget.</item>
+        <item>এটি এনালগ ঘড়ি উইজেট থেকে ঘড়ি অ্যাপ্লিকেশন চালু করতে ব্যবহৃত হয়।</item>
     </string-array>
 </resources>

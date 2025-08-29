@@ -104,6 +104,7 @@
     <string name="home_icon_request_missed_apps">छुटेका\n%d एप्सहरु</string>
     <!-- Apply -->
     <string name="apply_installed">स्थापित लन्चर (हरु)</string>
+    <string name="apply_installed_launchers">स्थापित लन्चर (हरु)</string>
     <string name="apply_supported">समर्थन गर्ने लन्चरहरु</string>
     <string name="apply_manual">%1$s लन्चरबाट सिधै लागु गर्न सकिएन, तर लन्चरको सेटिङ बाट %2$s म्यानुअली लागु गर्न सकिनेछ।</string>
     <string name="apply_manual_kvaesitso">Kvaesito  सिधै एप्लाई गर्न मिल्दैन तर तपाईंले यी चरणहरूको पालना गर्न सक्नुहुनेछ:</string>
@@ -138,7 +139,9 @@
     <string name="apply_manual_oxygen_os_step_4">%s ट्याप गर्नुहोस् </string>
     <string name="apply_manual_color_os_step_1">होमस्क्रिनमा केही बेर थिच्नुहोस् </string>
     <string name="apply_manual_color_os_step_2">\"आइकनहरु\" ट्याप गर्नुहोस् </string>
+    <string name="apply_manual_color_os_step_3">\"अनुकूल\" बटनको दायाँ स्क्रोल गर्नुहोस् (यो स्क्रोल योग्य सूची हो!)</string>
     <string name="apply_manual_color_os_step_4">%s ट्याप गर्नुहोस् </string>
+    <string name="apply_manual_before">बिफोर लञ्चरको यो संस्करणले अझै सम्म प्रतिमाहरू सीधै लागू गर्न समर्थन गर्दैन । यसको सट्टा, तलका चरणहरू पछ्याउनुहोस्:</string>
     <string name="apply_manual_before_step_1">होमस्क्रिनको बाँया तर्फ स्वाइप गर्नुहोस् </string>
     <string name="apply_manual_before_step_2">\"सेटिंगहरु\" ट्याप गर्नुहोस् </string>
     <string name="apply_manual_before_step_3">\"स्टाईल र थिमहरु\" ट्याप गर्नुहोस् </string>
@@ -158,6 +161,7 @@
     <string name="apply_lg_home_failed">LG होम सेटिंग्स लन्च गर्न सकिएन, तपाईं सेटिंग्सबाट म्यानुअल रूपमा आईकन प्याक लागू गर्न सक्नुहुनेछ।</string>
     <string name="apply_lg_home_nougat">एंड्रॉइड नोगट मा LG होमले अब आइकन प्याकलाई समर्थन गर्दैन। आइकन प्याक उपयोग गर्न को लागि तपाईंले अब अनुकुल लन्चरको सहायता लिनुहोस्।</string>
     <string name="apply_launcher_incompatible">%s लन्चरले कुनैपनी आइकन प्याकलाई समर्थन गर्दैन, त्यसैले तपाईं यो लन्चरमा यस् आइकन प्याकलाई प्रयोग गर्न सक्नुहुन्न। तपाईंले %2$s लन्चर प्रयोग गरेमा यो आइकन प्याक प्रयोग गर्न सक्नु हुनेछ। के तपाईं यो लन्चर इन्सटल गर्न चाहनुहुन्छ?</string>
+    <string name="apply_launcher_incompatible_depending_on_version">%s लञ्चरले एन्ड्रोइड %d वा त्यसभन्दा कममा आइकन प्याकहरू समर्थन गर्दैन। कृपया आफ्नो एन्ड्रोइड संस्करण अद्यावधिक गर्नुहोस् वा यो आइकन प्याक प्रयोग गर्न तेस्रो-पक्ष लञ्चर स्थापना गर्नुहोस्। तपाईँले व्यक्तिगत प्रतिमाहरू परिवर्तन गर्न सहायक अनुप्रयोग पनि प्रयास गर्न सक्नुहुन्छ। तपाईँ यसलाई स्थापना गर्न चाहनुहुन्छ?</string>
     <!-- Icons -->
     <string name="icons_load_failed">आइकन लोड गर्न असमर्थ</string>
     <string name="icon_shape">आइकनको आकार</string>
@@ -178,6 +182,10 @@
     <string name="request_fetching_data">भर्खरैको डाटा ल्याउँदै...</string>
     <string name="request_build_failed">आइकनको अनुरोध निर्माण गर्न सकिएन</string>
     <string name="request_appfilter_failed">appfilter.xml पढ्न सकिएन</string>
+    <string name="request_requested">तपाईँले पहिल्यै यो प्रतिमा अनुरोध गर्नुभएको छ र यसलाई फेरि अनुरोध गर्न सक्नुहुन्न ।</string>
+    <string name="request_requested_possible">तपाईँले पहिल्यै यो प्रतिमा अनुरोध गर्नुभयो । के तपाईं यसमा अर्को अनुरोध खर्च गर्न निश्चित हुनुहुन्छ?</string>
+    <string name="request_requested_button_cancel">फर्किनुहोस</string>
+    <string name="request_requested_button_confirm">जसरी पनि चयन गर्नुहोस्</string>
     <string name="request_email_client">तपाईंले चाहेको एपको आइकन परिवर्तन गर्न र् अनुरोध पठाउनको लागि छनोट गर्नुहोस्</string>
     <string name="request_app_disabled">तपाईं यो आइकन प्याकको पुरानो संस्करण प्रयोग गर्दै हुनुहुन्छ। अनुरोध गरिएको आइकनहरू नयाँ संस्करणमा समावेश हुन सक्छ। आइकन अनुरोध गर्न कृपया नौलो संस्करणमा अपडेट गर्नुहोस्।</string>
     <string name="connection_error_long">सर्भरबाट डाटा लोड गर्न सकिएन। कृपया तपाईंको नेटवर्क एक पटक जाँच्नुहोस्।</string>
@@ -248,6 +256,8 @@
     <string name="pref_theme_header">थीम</string>
     <string name="pref_theme_dark">डार्क थीम</string>
     <string name="pref_theme_dark_desc">एप्लीकेसन थिमका लागि गाढा रङ प्रयोग गर्नुहोस्</string>
+    <string name="pref_notifications_header">सूचनाहरू</string>
+    <string name="pref_notifications">सूचना प्राप्त गर्नुहोस्</string>
     <string name="pref_wallpaper_header">वालपेपर</string>
     <string name="pref_wallpaper_location">वालपेपर राख्न वा शेभ गर्ने स्थान</string>
     <string name="pref_language_header">भाषा</string>
@@ -263,10 +273,12 @@
     <string name="theme_name_material_you">Material You</string>
     <!-- Permission -->
     <string name="permission_storage_denied">वालपेपर राख्नको लागि स्टोरेजको अनुमती चाहिन्छ</string>
+    <string name="permission_notification_denied_1">विकासकर्ताबाट सूचनाहरू प्राप्त गर्न सूचना अनुमति आवश्यक पर्दछ</string>
+    <string name="permission_notification_denied_2">अनुप्रयोग सेटिङहरूबाट सूचनाहरू सक्षम पार्नुहोस्</string>
     <!-- Intent -->
     <string name="app_client">एप छनोट गर्नुहोस्</string>
     <string name="no_email_app">ईमेल पठाउनको लागि कुनै एप छैन</string>
-    <string name="no_browser">url खोल्न कुनै एप छैन</string>
+    <string name="no_browser">यूआरएल खोल्नका लागि कुनै अनुप्रयोग छैन</string>
     <string name="intent_email_failed">ईमेल एप्लीकेसन देखाउन सकिएन</string>
     <string name="intent_email_supported">समर्थित छ</string>
     <string name="intent_email_recommended">सिफारिस गरिएको</string>
