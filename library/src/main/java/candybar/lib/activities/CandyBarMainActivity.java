@@ -8,9 +8,10 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -41,8 +43,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.afollestad.materialdialogs.BuildConfig;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.Purchase;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.danimahardhika.android.helpers.core.ColorHelper;
@@ -50,15 +56,22 @@ import com.danimahardhika.android.helpers.core.DrawableHelper;
 import com.danimahardhika.android.helpers.core.FileHelper;
 import com.danimahardhika.android.helpers.core.SoftKeyboardHelper;
 import com.danimahardhika.android.helpers.core.utils.LogUtil;
+import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.danimahardhika.android.helpers.permission.PermissionCode;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.color.DynamicColors;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import candybar.lib.R;
 import candybar.lib.applications.CandyBarApplication;
@@ -73,17 +86,21 @@ import candybar.lib.fragments.RequestFragment;
 import candybar.lib.fragments.SettingsFragment;
 import candybar.lib.fragments.WallpapersFragment;
 import candybar.lib.fragments.dialog.ChangelogFragment;
+import candybar.lib.fragments.dialog.InAppBillingFragment;
 import candybar.lib.fragments.dialog.IntentChooserFragment;
 import candybar.lib.helpers.ConfigurationHelper;
 import candybar.lib.helpers.IntentHelper;
 import candybar.lib.helpers.JsonHelper;
+import candybar.lib.helpers.LicenseCallbackHelper;
 import candybar.lib.helpers.LocaleHelper;
 import candybar.lib.helpers.NavigationViewHelper;
+import candybar.lib.helpers.RequestHelper;
 import candybar.lib.helpers.ThemeHelper;
 import candybar.lib.helpers.TypefaceHelper;
 import candybar.lib.helpers.WallpaperHelper;
 import candybar.lib.items.Home;
 import candybar.lib.items.Icon;
+import candybar.lib.items.InAppBilling;
 import candybar.lib.items.Request;
 import candybar.lib.items.Wallpaper;
 import candybar.lib.preferences.Preferences;
@@ -93,6 +110,8 @@ import candybar.lib.tasks.IconsLoaderTask;
 import candybar.lib.tasks.WallpaperThumbPreloaderTask;
 import candybar.lib.utils.CandyBarGlideModule;
 import candybar.lib.utils.Extras;
+import candybar.lib.utils.InAppBillingClient;
+import candybar.lib.utils.listeners.InAppBillingListener;
 import candybar.lib.utils.listeners.RequestListener;
 import candybar.lib.utils.listeners.SearchListener;
 import candybar.lib.utils.listeners.WallpapersListener;
@@ -117,7 +136,7 @@ import candybar.lib.utils.views.HeaderView;
  */
 
 public abstract class CandyBarMainActivity extends AppCompatActivity implements
-        ActivityCompat.OnRequestPermissionsResultCallback, RequestListener,
+        ActivityCompat.OnRequestPermissionsResultCallback, RequestListener, InAppBillingListener,
         SearchListener, WallpapersListener {
 
     private TextView mToolbarTitle;
@@ -128,6 +147,7 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
     private int mPosition, mLastPosition;
     private ActionBarDrawerToggle mDrawerToggle;
     private FragmentManager mFragManager;
+    private LicenseHelper mLicenseHelper;
 
     private boolean mIsMenuVisible = true;
     private boolean prevIsDarkTheme;
@@ -140,27 +160,42 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
 
     private ActivityConfiguration mConfig;
 
+    private Handler mTimesVisitedHandler;
+    private Runnable mTimesVisitedRunnable;
+
     private static final int NOTIFICATION_PERMISSION_CODE = 10;
 
     @NonNull
     public abstract ActivityConfiguration onInit();
 
+    private final OnBackPressedCallback backPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (mFragManager.getBackStackEntryCount() > 0) {
+                clearBackStack();
+                return;
+            }
+
+            if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawers();
+                return;
+            }
+
+            if (mFragmentTag != Extras.Tag.HOME) {
+                mPosition = mLastPosition = 0;
+                setFragment(getFragment(mPosition));
+            }
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         final boolean isMaterialYou = Preferences.get(this).isMaterialYou();
-        final int nightMode;
-        int androidVersion = Build.VERSION.SDK_INT;
-        switch (Preferences.get(this).getTheme()) {
-            case LIGHT:
-                nightMode = AppCompatDelegate.MODE_NIGHT_NO;
-                break;
-            case DARK:
-                nightMode = AppCompatDelegate.MODE_NIGHT_YES;
-                break;
-            default:
-                nightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                break;
-        }
+        final int nightMode = switch (Preferences.get(this).getTheme()) {
+            case LIGHT -> AppCompatDelegate.MODE_NIGHT_NO;
+            case DARK -> AppCompatDelegate.MODE_NIGHT_YES;
+            default -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        };
         AppCompatDelegate.setDefaultNightMode(nightMode);
 
         LocaleHelper.setLocale(this);
@@ -181,7 +216,7 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
 
         initNavigationView(toolbar);
         initNavigationViewHeader();
-
+        registerBackPressHandler();
 
         ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
@@ -296,7 +331,6 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
             FileHelper.clearDirectory(cache);
         };
 
-
         if (Preferences.get(this).isFirstRun()) {
             final Runnable onAllChecksCompleted = () -> {
                 Preferences.get(this).setFirstRun(false);
@@ -347,24 +381,8 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mFragManager.getBackStackEntryCount() > 0) {
-            clearBackStack();
-            return;
-        }
-
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawers();
-            return;
-        }
-
-        if (mFragmentTag != Extras.Tag.HOME) {
-            mPosition = mLastPosition = 0;
-            setFragment(getFragment(mPosition));
-            return;
-        }
-        super.onBackPressed();
+    private void registerBackPressHandler() {
+        getOnBackPressedDispatcher().addCallback(backPressedCallback);
     }
 
     @Override
@@ -459,7 +477,8 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
             toolbar.setNavigationIcon(DrawableHelper.getTintedDrawable(
                     this, R.drawable.ic_toolbar_back, color));
             // It does not work and causes issue with back press on icon search fragment
-            // toolbar.setNavigationOnClickListener(view -> onBackPressed());        } else {
+            // toolbar.setNavigationOnClickListener(view -> onBackPressed());
+        } else {
             SoftKeyboardHelper.closeKeyboard(this);
             ColorHelper.setStatusBarColor(this, Color.TRANSPARENT, true);
             if (CandyBarApplication.getConfiguration().getNavigationIcon() == CandyBarApplication.NavigationIcon.DEFAULT) {
@@ -619,6 +638,7 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
                                 }
                             }
                         }
+
                         this.runOnUiThread(() -> onWallpapersChecked(wallpapers.size()));
                     }
                 } catch (IOException e) {
@@ -680,10 +700,11 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
         Menu menu = mNavigationView.getMenu();
         menu.getItem(mPosition).setChecked(true);
         mToolbarTitle.setText(menu.getItem(mPosition).getTitle());
+
+        backPressedCallback.setEnabled(mFragmentTag != Extras.Tag.HOME);
     }
 
     private Fragment getFragment(int position) {
-        mFragmentTag = Extras.Tag.HOME;
         if (position == Extras.Tag.HOME.idx) {
             mFragmentTag = Extras.Tag.HOME;
             return new HomeFragment();
@@ -712,6 +733,8 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
             mFragmentTag = Extras.Tag.ABOUT;
             return new AboutFragment();
         }
+
+        mFragmentTag = Extras.Tag.HOME;
         return new HomeFragment();
     }
 
@@ -773,5 +796,4 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
             return mPremiumRequestProductsCount;
         }
     }
-
 }
