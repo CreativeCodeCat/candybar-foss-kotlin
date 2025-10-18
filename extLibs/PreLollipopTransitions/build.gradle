@@ -35,7 +35,7 @@ publishing {
 }
 
 android {
-    compileSdk rootProject.ext.CompileSdk
+    compileSdk = rootProject.ext.CompileSdk
 
     namespace 'com.kogitune.activity_transition'
 
@@ -54,6 +54,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
         }
     }
 

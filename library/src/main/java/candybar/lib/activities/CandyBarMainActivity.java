@@ -43,12 +43,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.billingclient.api.AcknowledgePurchaseParams;
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.ConsumeParams;
-import com.android.billingclient.api.Purchase;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.danimahardhika.android.helpers.core.ColorHelper;
@@ -56,22 +51,14 @@ import com.danimahardhika.android.helpers.core.DrawableHelper;
 import com.danimahardhika.android.helpers.core.FileHelper;
 import com.danimahardhika.android.helpers.core.SoftKeyboardHelper;
 import com.danimahardhika.android.helpers.core.utils.LogUtil;
-import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.danimahardhika.android.helpers.permission.PermissionCode;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.play.core.review.ReviewInfo;
-import com.google.android.play.core.review.ReviewManager;
-import com.google.android.play.core.review.ReviewManagerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import candybar.lib.R;
 import candybar.lib.applications.CandyBarApplication;
@@ -86,21 +73,16 @@ import candybar.lib.fragments.RequestFragment;
 import candybar.lib.fragments.SettingsFragment;
 import candybar.lib.fragments.WallpapersFragment;
 import candybar.lib.fragments.dialog.ChangelogFragment;
-import candybar.lib.fragments.dialog.InAppBillingFragment;
 import candybar.lib.fragments.dialog.IntentChooserFragment;
 import candybar.lib.helpers.ConfigurationHelper;
 import candybar.lib.helpers.IntentHelper;
 import candybar.lib.helpers.JsonHelper;
-import candybar.lib.helpers.LicenseCallbackHelper;
 import candybar.lib.helpers.LocaleHelper;
 import candybar.lib.helpers.NavigationViewHelper;
-import candybar.lib.helpers.RequestHelper;
 import candybar.lib.helpers.ThemeHelper;
-import candybar.lib.helpers.TypefaceHelper;
 import candybar.lib.helpers.WallpaperHelper;
 import candybar.lib.items.Home;
 import candybar.lib.items.Icon;
-import candybar.lib.items.InAppBilling;
 import candybar.lib.items.Request;
 import candybar.lib.items.Wallpaper;
 import candybar.lib.preferences.Preferences;
@@ -110,8 +92,6 @@ import candybar.lib.tasks.IconsLoaderTask;
 import candybar.lib.tasks.WallpaperThumbPreloaderTask;
 import candybar.lib.utils.CandyBarGlideModule;
 import candybar.lib.utils.Extras;
-import candybar.lib.utils.InAppBillingClient;
-import candybar.lib.utils.listeners.InAppBillingListener;
 import candybar.lib.utils.listeners.RequestListener;
 import candybar.lib.utils.listeners.SearchListener;
 import candybar.lib.utils.listeners.WallpapersListener;
@@ -136,7 +116,7 @@ import candybar.lib.utils.views.HeaderView;
  */
 
 public abstract class CandyBarMainActivity extends AppCompatActivity implements
-        ActivityCompat.OnRequestPermissionsResultCallback, RequestListener, InAppBillingListener,
+        ActivityCompat.OnRequestPermissionsResultCallback, RequestListener,
         SearchListener, WallpapersListener {
 
     private TextView mToolbarTitle;
@@ -147,7 +127,6 @@ public abstract class CandyBarMainActivity extends AppCompatActivity implements
     private int mPosition, mLastPosition;
     private ActionBarDrawerToggle mDrawerToggle;
     private FragmentManager mFragManager;
-    private LicenseHelper mLicenseHelper;
 
     private boolean mIsMenuVisible = true;
     private boolean prevIsDarkTheme;

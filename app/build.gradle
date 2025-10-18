@@ -13,7 +13,7 @@ android {
         }
     }
 
-    compileSdk rootProject.ext.CompileSdk
+    compileSdk = rootProject.ext.CompileSdk
 
     namespace 'com.candybar.dev'
 
@@ -56,7 +56,7 @@ android {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
