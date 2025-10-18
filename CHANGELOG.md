@@ -2,6 +2,9 @@
 
 [Donnnno]: https://github.com/Donnnno
 
+# v3.22.2
+- Upstream changes from 3.22.2 
+
 # v3.21.3
 - Add support for IonLauncher
 - Add support for mLauncher 
