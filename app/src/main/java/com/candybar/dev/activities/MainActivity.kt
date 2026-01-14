@@ -1,14 +1,10 @@
-package com.candybar.dev.activities;
+package com.candybar.dev.activities
 
-import androidx.annotation.NonNull;
+import candybar.lib.activities.CandyBarMainActivity
 
-import candybar.lib.activities.CandyBarMainActivity;
+class MainActivity : CandyBarMainActivity() {
 
-public class MainActivity extends CandyBarMainActivity {
-
-    @NonNull
-    @Override
-    public ActivityConfiguration onInit() {
-        return new ActivityConfiguration();
+    override fun onInit(): ActivityConfiguration {
+        return ActivityConfiguration()
     }
 }

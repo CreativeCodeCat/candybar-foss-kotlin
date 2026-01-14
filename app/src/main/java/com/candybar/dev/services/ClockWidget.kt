@@ -1,6 +1,5 @@
-package com.candybar.dev.services;
+package com.candybar.dev.services
 
-import candybar.lib.services.CandyBarWidgetService;
+import candybar.lib.services.CandyBarWidgetService
 
-public class ClockWidget extends CandyBarWidgetService {
-}
+class ClockWidget : CandyBarWidgetService()

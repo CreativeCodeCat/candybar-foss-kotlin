@@ -1,6 +1,5 @@
-package com.candybar.dev.services;
+package com.candybar.dev.services
 
-import candybar.lib.services.CandyBarMuzeiService;
+import candybar.lib.services.CandyBarMuzeiService
 
-public class MuzeiService extends CandyBarMuzeiService {
-}
+class MuzeiService : CandyBarMuzeiService()
