@@ -1,12 +1,8 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import android.content.Context;
-import android.view.MenuItem;
-
-import com.google.android.material.navigation.NavigationView;
-
-import candybar.lib.R;
-import candybar.lib.preferences.Preferences;
+import candybar.lib.R
+import candybar.lib.preferences.Preferences
+import com.google.android.material.navigation.NavigationView
 
 /*
  * CandyBar - Material Dashboard
@@ -26,45 +22,38 @@ import candybar.lib.preferences.Preferences;
  * limitations under the License.
  */
 
-public class NavigationViewHelper {
+object NavigationViewHelper {
 
-    public static void initApply(NavigationView navigationView) {
-        Context context = ContextHelper.getBaseContext(navigationView);
-
-        MenuItem menuItem = navigationView.getMenu().findItem(R.id.navigation_view_apply);
-        if (menuItem == null) return;
-
-        menuItem.setVisible(context.getResources().getBoolean(R.bool.enable_apply));
+    @JvmStatic
+    fun initApply(navigationView: NavigationView) {
+        val context = ContextHelper.getBaseContext(navigationView)
+        val menuItem = navigationView.menu.findItem(R.id.navigation_view_apply) ?: return
+        menuItem.isVisible = context.resources.getBoolean(R.bool.enable_apply)
     }
 
-    public static void initIconRequest(NavigationView navigationView) {
-        Context context = ContextHelper.getBaseContext(navigationView);
-
-        MenuItem menuItem = navigationView.getMenu().findItem(R.id.navigation_view_request);
-        if (menuItem == null) return;
-
-        menuItem.setVisible(context.getResources().getBoolean(R.bool.enable_icon_request) ||
-                Preferences.get(context).isPremiumRequestEnabled());
+    @JvmStatic
+    fun initIconRequest(navigationView: NavigationView) {
+        val context = ContextHelper.getBaseContext(navigationView)
+        val menuItem = navigationView.menu.findItem(R.id.navigation_view_request) ?: return
+        menuItem.isVisible = context.resources.getBoolean(R.bool.enable_icon_request) ||
+                Preferences.get(context).isPremiumRequestEnabled
     }
 
-    public static void initWallpapers(NavigationView navigationView) {
-        Context context = ContextHelper.getBaseContext(navigationView);
-
-        MenuItem menuItem = navigationView.getMenu().findItem(R.id.navigation_view_wallpapers);
-        if (menuItem == null) return;
-
-        if (WallpaperHelper.getWallpaperType(context) == WallpaperHelper.UNKNOWN)
-            menuItem.setVisible(false);
+    @JvmStatic
+    fun initWallpapers(navigationView: NavigationView) {
+        val context = ContextHelper.getBaseContext(navigationView)
+        val menuItem = navigationView.menu.findItem(R.id.navigation_view_wallpapers) ?: return
+        if (WallpaperHelper.getWallpaperType(context) == WallpaperHelper.UNKNOWN) {
+            menuItem.isVisible = false
+        }
     }
 
-    public static void initPresets(NavigationView navigationView) {
-        Context context = ContextHelper.getBaseContext(navigationView);
-
-        MenuItem menuItem = navigationView.getMenu().findItem(R.id.navigation_view_presets);
-        if (menuItem == null) return;
-
+    @JvmStatic
+    fun initPresets(navigationView: NavigationView) {
+        val context = ContextHelper.getBaseContext(navigationView)
+        val menuItem = navigationView.menu.findItem(R.id.navigation_view_presets) ?: return
         if (PresetsHelper.getPresetsCount(context) == 0) {
-            menuItem.setVisible(false);
+            menuItem.isVisible = false
         }
     }
 }

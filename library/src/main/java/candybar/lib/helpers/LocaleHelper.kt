@@ -1,27 +1,17 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.os.Build;
-import android.os.LocaleList;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.danimahardhika.android.helpers.core.utils.LogUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import candybar.lib.R;
-import candybar.lib.items.Language;
-import candybar.lib.preferences.Preferences;
+import android.content.ComponentName
+import android.content.Context
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.os.Build
+import android.os.LocaleList
+import android.util.Log
+import candybar.lib.R
+import candybar.lib.items.Language
+import candybar.lib.preferences.Preferences
+import com.danimahardhika.android.helpers.core.utils.LogUtil
+import java.util.Locale
 
 /*
  * CandyBar - Material Dashboard
@@ -41,80 +31,87 @@ import candybar.lib.preferences.Preferences;
  * limitations under the License.
  */
 
-public class LocaleHelper {
+object LocaleHelper {
 
-    public static void setLocale(@NonNull Context context) {
-        Locale locale = Preferences.get(context).getCurrentLocale();
-        Locale.setDefault(locale);
-        Configuration configuration = context.getResources().getConfiguration();
+    @JvmStatic
+    fun setLocale(context: Context) {
+        val locale = Preferences.get(context).currentLocale
+        Locale.setDefault(locale)
+        val configuration = context.resources.configuration
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            LocaleList.setDefault(new LocaleList(locale));
-            configuration.setLocales(new LocaleList(locale));
+            LocaleList.setDefault(LocaleList(locale))
+            configuration.setLocales(LocaleList(locale))
         } else {
-            configuration.setLocale(locale);
+            configuration.setLocale(locale)
         }
 
-        //Todo:
+        // Todo:
         // Find out a solution to use context.createConfigurationContext(configuration);
         // It breaks onConfigurationChanged()
         // Still can't find a way to fix that
         // No other options, better use deprecated code for now
-        context.getResources().updateConfiguration(configuration, context.getResources().getDisplayMetrics());
+        @Suppress("DEPRECATION")
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
     }
 
-    public static List<Language> getAvailableLanguages(@NonNull Context context) {
-        List<Language> languages = new ArrayList<>();
-        String[] names = context.getResources().getStringArray(R.array.languages_name);
-        String[] codes = context.getResources().getStringArray(R.array.languages_code);
+    @JvmStatic
+    fun getAvailableLanguages(context: Context): MutableList<Language> {
+        val languages = mutableListOf<Language>()
+        val names = context.resources.getStringArray(R.array.languages_name)
+        val codes = context.resources.getStringArray(R.array.languages_code)
 
-        for (int i = 0; i < names.length; i++) {
-            Language language = new Language(names[i], getLocale(codes[i]));
-            languages.add(language);
+        for (i in names.indices) {
+            val language = Language(names[i], getLocale(codes[i]))
+            languages.add(language)
         }
-        return languages;
+        return languages
     }
 
-    public static Language getCurrentLanguage(@NonNull Context context) {
-        List<Language> languages = getAvailableLanguages(context);
-        Locale locale = Preferences.get(context).getCurrentLocale();
+    @JvmStatic
+    fun getCurrentLanguage(context: Context): Language {
+        val languages = getAvailableLanguages(context)
+        val locale = Preferences.get(context).currentLocale
 
-        for (Language language : languages) {
-            Locale l = language.getLocale();
-            if (locale.toString().equals(l.toString())) {
-                return language;
+        for (language in languages) {
+            val l = language.locale
+            if (locale.toString() == l.toString()) {
+                return language
             }
         }
-        return new Language("English", new Locale("en", "US"));
+        return Language("English", Locale("en", "US"))
     }
 
-    public static Locale getLocale(String language) {
-        String[] codes = language.split("_");
-        if (codes.length == 2) {
-            return new Locale(codes[0], codes[1]);
+    @JvmStatic
+    fun getLocale(language: String): Locale {
+        val codes = language.split("_").toTypedArray()
+        if (codes.size == 2) {
+            return Locale(codes[0], codes[1])
         }
-        return Locale.getDefault();
+        return Locale.getDefault()
     }
 
-    @Nullable
-    public static String getOtherAppLocaleName(@NonNull Context context, @NonNull Locale locale, @NonNull String componentNameStr) {
+    @JvmStatic
+    fun getOtherAppLocaleName(context: Context, locale: Locale, componentNameStr: String): String? {
         try {
-            int slashIndex = componentNameStr.indexOf("/");
-            String packageName = componentNameStr.substring(0, slashIndex);
-            String activityName = componentNameStr.substring(slashIndex + 1);
-            ComponentName componentName = new ComponentName(packageName, activityName);
+            val slashIndex = componentNameStr.indexOf("/")
+            val packageName = componentNameStr.substring(0, slashIndex)
+            val activityName = componentNameStr.substring(slashIndex + 1)
+            val componentName = ComponentName(packageName, activityName)
 
-            PackageManager packageManager = context.getPackageManager();
-            ActivityInfo info = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA);
+            val packageManager = context.packageManager
+            val info = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA)
 
-            Resources res = packageManager.getResourcesForActivity(componentName);
-            Configuration configuration = new Configuration();
+            val res = packageManager.getResourcesForActivity(componentName)
+            val configuration = Configuration()
 
-            configuration.locale = locale;
-            res.updateConfiguration(configuration, context.getResources().getDisplayMetrics());
-            return info.loadLabel(packageManager).toString();
-        } catch (Exception e) {
-            LogUtil.e(Log.getStackTraceString(e));
+            @Suppress("DEPRECATION")
+            configuration.locale = locale
+            @Suppress("DEPRECATION")
+            res.updateConfiguration(configuration, context.resources.displayMetrics)
+            return info.loadLabel(packageManager).toString()
+        } catch (e: Exception) {
+            LogUtil.e(Log.getStackTraceString(e))
         }
-        return null;
+        return null
     }
 }
