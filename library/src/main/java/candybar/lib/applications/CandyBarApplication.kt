@@ -1,29 +1,20 @@
-package candybar.lib.applications;
+package candybar.lib.applications
 
-import android.app.Application;
-import android.content.Intent;
-import android.content.Context;
-import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.danimahardhika.android.helpers.core.utils.LogUtil;
-
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import candybar.lib.R;
-import candybar.lib.activities.CandyBarCrashReport;
-import candybar.lib.databases.Database;
-import candybar.lib.helpers.LocaleHelper;
-import candybar.lib.items.Request;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.utils.JsonStructure;
+import android.app.Application
+import android.content.Context
+import android.content.Intent
+import androidx.annotation.IntRange
+import candybar.lib.R
+import candybar.lib.activities.CandyBarCrashReport
+import candybar.lib.databases.Database
+import candybar.lib.helpers.LocaleHelper
+import candybar.lib.items.Request
+import candybar.lib.preferences.Preferences
+import candybar.lib.utils.JsonStructure
+import com.danimahardhika.android.helpers.core.utils.LogUtil
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /*
  * CandyBar - Material Dashboard
@@ -43,514 +34,429 @@ import candybar.lib.utils.JsonStructure;
  * limitations under the License.
  */
 
-public abstract class CandyBarApplication extends Application {
+abstract class CandyBarApplication : Application() {
 
-    private static Configuration mConfiguration;
-    private Thread.UncaughtExceptionHandler mHandler;
+    private var mHandler: Thread.UncaughtExceptionHandler? = null
 
-    public static Class<?> mDrawableClass;
-    public static Request.Property sRequestProperty;
-    public static String sZipPath = null;
+    abstract fun onInit(): Configuration
 
-    @NonNull
-    public abstract Configuration onInit();
+    abstract fun getDrawableClass(): Class<*>
 
-    @NonNull
-    public abstract Class<?> getDrawableClass();
-
-    public static Configuration getConfiguration() {
-        if (mConfiguration == null) {
-            mConfiguration = new Configuration();
-        }
-        return mConfiguration;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Database.get(this).openDatabase();
+    override fun onCreate() {
+        super.onCreate()
+        Database.get(this).openDatabase()
 
         // Enable or disable logging
-        LogUtil.setLoggingTag(getString(R.string.app_name));
-        LogUtil.setLoggingEnabled(true);
+        LogUtil.setLoggingTag(getString(R.string.app_name))
+        LogUtil.setLoggingEnabled(true)
 
-        mConfiguration = onInit();
-        mDrawableClass = getDrawableClass();
+        configuration = onInit()
+        mDrawableClass = getDrawableClass()
 
-        if (mConfiguration.mIsCrashReportEnabled) {
-            mHandler = Thread.getDefaultUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(this::handleUncaughtException);
+        if (configuration.isCrashReportEnabled) {
+            mHandler = Thread.getDefaultUncaughtExceptionHandler()
+            Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+                handleUncaughtException(thread, throwable)
+            }
         }
 
-        if (Preferences.get(this).isTimeToSetLanguagePreference()) {
-            Preferences.get(this).setLanguagePreference();
-            return;
+        if (Preferences.get(this).isTimeToSetLanguagePreference) {
+            Preferences.get(this).setLanguagePreference()
+            return
         }
 
-        LocaleHelper.setLocale(this);
+        LocaleHelper.setLocale(this)
     }
 
-    private void handleUncaughtException(Thread thread, Throwable throwable) {
+    private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         try {
-            StringBuilder sb = new StringBuilder();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-            String dateTime = dateFormat.format(new Date());
-            sb.append("Crash Time : ").append(dateTime).append("\r\n");
-            sb.append("Class Name : ").append(throwable.getClass().getName()).append("\r\n");
-            sb.append("Caused By : ").append(throwable).append("\r\n");
+            val sb = StringBuilder()
+            val dateFormat = SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault()
+            )
+            val dateTime = dateFormat.format(Date())
+            sb.append("Crash Time : ").append(dateTime).append("\r\n")
+            sb.append("Class Name : ").append(throwable.javaClass.name).append("\r\n")
+            sb.append("Caused By : ").append(throwable).append("\r\n")
 
-            for (StackTraceElement element : throwable.getStackTrace()) {
-                sb.append("\r\n");
-                sb.append(element.toString());
+            for (element in throwable.stackTrace) {
+                sb.append("\r\n")
+                sb.append(element.toString())
             }
 
-            Preferences.get(this).setLatestCrashLog(sb.toString());
+            Preferences.get(this).latestCrashLog = sb.toString()
 
-            Intent intent = new Intent(this, CandyBarCrashReport.class);
-            intent.putExtra(CandyBarCrashReport.EXTRA_STACKTRACE, sb.toString());
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            startActivity(intent);
-        } catch (Exception e) {
+            val intent = Intent(this, CandyBarCrashReport::class.java)
+            intent.putExtra(CandyBarCrashReport.EXTRA_STACKTRACE, sb.toString())
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+            startActivity(intent)
+        } catch (e: Exception) {
             if (mHandler != null) {
-                mHandler.uncaughtException(thread, throwable);
-                return;
+                mHandler!!.uncaughtException(thread, throwable)
+                return
             }
         }
-        System.exit(1);
+        System.exit(1)
     }
 
-    public static class Configuration {
-
-        public interface EmailBodyGenerator {
-            String generate(List<Request> requests);
+    class Configuration {
+        interface EmailBodyGenerator {
+            fun generate(requests: List<Request>): String
         }
 
-        public interface IconRequestHandler {
-            String submit(List<Request> requests, boolean isPremium);
+        interface IconRequestHandler {
+            fun submit(requests: List<Request>, isPremium: Boolean): String
         }
 
-        public interface ConfigHandler {
-            String wallpaperJson(Context context);
-
-            String configJson(Context context);
+        interface ConfigHandler {
+            fun wallpaperJson(context: Context): String
+            fun configJson(context: Context): String
         }
 
-        public interface AnalyticsHandler {
-            void logEvent(String eventName, HashMap<String, Object> params);
-
-            void logException(Exception exception);
+        interface AnalyticsHandler {
+            fun logEvent(eventName: String, params: HashMap<String, Any>?)
+            fun logException(exception: Exception)
         }
 
-        public interface FilterRequestHandler {
-            boolean filterRequest(Request request);
+        interface FilterRequestHandler {
+            fun filterRequest(request: Request): Boolean
         }
 
-        public interface NotificationHandler {
-            void setMode(boolean isEnable);
+        interface NotificationHandler {
+            fun setMode(isEnable: Boolean)
         }
 
-        private EmailBodyGenerator mEmailBodyGenerator;
+        var emailBodyGenerator: EmailBodyGenerator? = null
+            private set
 
-        private IconRequestHandler iconRequestHandler;
+        var iconRequestHandler: IconRequestHandler? = null
+            private set
 
-        private AnalyticsHandler analyticsHandler;
-
-        private FilterRequestHandler mFilterRequestHandler;
-
-        private ConfigHandler configHandler;
-
-        private boolean mIsNotificationEnabled = false;
-        private NotificationHandler mNotificationHandler;
-
-        private NavigationIcon mNavigationIcon = NavigationIcon.STYLE_1;
-        private NavigationViewHeader mNavigationViewHeader = NavigationViewHeader.NORMAL;
-
-        private GridStyle mHomeGrid = GridStyle.CARD;
-        private GridStyle mApplyGrid = GridStyle.CARD;
-        private Style mRequestStyle = Style.PORTRAIT_FLAT_LANDSCAPE_CARD;
-        private GridStyle mWallpapersGrid = GridStyle.CARD;
-        private Style mAboutStyle = Style.PORTRAIT_FLAT_LANDSCAPE_CARD;
-        private IconColor mIconColor = IconColor.PRIMARY_TEXT;
-        private List<OtherApp> mOtherApps = null;
-        private List<DonationLink> mDonationLinks = null;
-
-        private boolean mIsHighQualityPreviewEnabled = false;
-        private boolean mIsColoredApplyCard = true;
-        private boolean mIsAutomaticIconsCountEnabled = true;
-        private int mCustomIconsCount = 0;
-        private boolean mIsShowTabIconsCount = false;
-        private boolean mIsShowTabAllIcons = false;
-        private String mTabAllIconsTitle = "All Icons";
-        private String[] mCategoryForTabAllIcons = null;
-
-        private String[] mExcludedCategoryForSearch = null;
-
-        private ShadowOptions mShadowOptions = new ShadowOptions();
-        private boolean mIsDashboardThemingEnabled = true;
-        private int mWallpaperGridPreviewQuality = 4;
-
-        private boolean mIsGenerateAppFilter = true;
-        private boolean mIsGenerateAppMap = false;
-        private boolean mIsGenerateThemeResources = false;
-        private boolean mIsIncludeIconRequestToEmailBody = true;
-
-        private boolean mIsCrashReportEnabled = true;
-        private JsonStructure mWallpaperJsonStructure = new JsonStructure.Builder(null).build();
-
-        public Configuration setEmailBodyGenerator(EmailBodyGenerator emailBodyGenerator) {
-            mEmailBodyGenerator = emailBodyGenerator;
-            return this;
-        }
-
-        public Configuration setIconRequestHandler(@NonNull IconRequestHandler iconRequestHandler) {
-            this.iconRequestHandler = iconRequestHandler;
-            return this;
-        }
-
-        public Configuration setConfigHandler(@NonNull ConfigHandler configHandler) {
-            this.configHandler = configHandler;
-            return this;
-        }
-
-        public Configuration setAnalyticsHandler(@NonNull AnalyticsHandler analyticsHandler) {
-            this.analyticsHandler = analyticsHandler;
-            return this;
-        }
-
-        public Configuration setFilterRequestHandler(@NonNull FilterRequestHandler filterRequestHandler) {
-            this.mFilterRequestHandler = filterRequestHandler;
-            return this;
-        }
-
-        public Configuration setNotificationEnabled(boolean isEnabled, NotificationHandler handler) {
-            this.mIsNotificationEnabled = isEnabled;
-            this.mNotificationHandler = handler;
-            return this;
-        }
-
-        public Configuration setDonationLinks(@NonNull DonationLink[] donationLinks) {
-            mDonationLinks = Arrays.asList(donationLinks);
-            return this;
-        }
-
-        public Configuration setNavigationIcon(@NonNull NavigationIcon navigationIcon) {
-            mNavigationIcon = navigationIcon;
-            return this;
-        }
-
-        public Configuration setNavigationViewHeaderStyle(@NonNull NavigationViewHeader navigationViewHeader) {
-            mNavigationViewHeader = navigationViewHeader;
-            return this;
-        }
-
-        public Configuration setAutomaticIconsCountEnabled(boolean automaticIconsCountEnabled) {
-            mIsAutomaticIconsCountEnabled = automaticIconsCountEnabled;
-            return this;
-        }
-
-        public Configuration setHomeGridStyle(@NonNull GridStyle gridStyle) {
-            mHomeGrid = gridStyle;
-            return this;
-        }
-
-        public Configuration setApplyGridStyle(@NonNull GridStyle gridStyle) {
-            mApplyGrid = gridStyle;
-            return this;
-        }
-
-        public Configuration setRequestStyle(@NonNull Style style) {
-            mRequestStyle = style;
-            return this;
-        }
-
-        public Configuration setWallpapersGridStyle(@NonNull GridStyle gridStyle) {
-            mWallpapersGrid = gridStyle;
-            return this;
-        }
-
-        public Configuration setAboutStyle(@NonNull Style style) {
-            mAboutStyle = style;
-            return this;
-        }
-
-        public Configuration setSocialIconColor(@NonNull IconColor iconColor) {
-            mIconColor = iconColor;
-            return this;
-        }
-
-        public Configuration setColoredApplyCard(boolean coloredApplyCard) {
-            mIsColoredApplyCard = coloredApplyCard;
-            return this;
-        }
-
-        public Configuration setCustomIconsCount(int customIconsCount) {
-            mCustomIconsCount = customIconsCount;
-            return this;
-        }
-
-        public Configuration setShowTabIconsCount(boolean showTabIconsCount) {
-            mIsShowTabIconsCount = showTabIconsCount;
-            return this;
-        }
-
-        public Configuration setShowTabAllIcons(boolean showTabAllIcons) {
-            mIsShowTabAllIcons = showTabAllIcons;
-            return this;
-        }
-
-        public Configuration setTabAllIconsTitle(@NonNull String title) {
-            mTabAllIconsTitle = title;
-            if (mTabAllIconsTitle.isEmpty()) mTabAllIconsTitle = "All Icons";
-            return this;
-        }
-
-        public Configuration setCategoryForTabAllIcons(@NonNull String[] categories) {
-            mCategoryForTabAllIcons = categories;
-            return this;
-        }
-
-        public Configuration setExcludedCategoryForSearch(@NonNull String[] categories) {
-            mExcludedCategoryForSearch = categories;
-            return this;
-        }
-
-        public Configuration setShadowEnabled(boolean shadowEnabled) {
-            mShadowOptions = new ShadowOptions(shadowEnabled);
-            return this;
-        }
-
-        public Configuration setShadowEnabled(@NonNull ShadowOptions shadowOptions) {
-            mShadowOptions = shadowOptions;
-            return this;
-        }
-
-        public Configuration setDashboardThemingEnabled(boolean dashboardThemingEnabled) {
-            mIsDashboardThemingEnabled = dashboardThemingEnabled;
-            return this;
-        }
-
-        public Configuration setWallpaperGridPreviewQuality(@IntRange(from = 1, to = 10) int quality) {
-            mWallpaperGridPreviewQuality = quality;
-            return this;
-        }
-
-        public Configuration setGenerateAppFilter(boolean generateAppFilter) {
-            mIsGenerateAppFilter = generateAppFilter;
-            return this;
-        }
-
-        public Configuration setGenerateAppMap(boolean generateAppMap) {
-            mIsGenerateAppMap = generateAppMap;
-            return this;
-        }
-
-        public Configuration setGenerateThemeResources(boolean generateThemeResources) {
-            mIsGenerateThemeResources = generateThemeResources;
-            return this;
-        }
-
-        public Configuration setIncludeIconRequestToEmailBody(boolean includeIconRequestToEmailBody) {
-            mIsIncludeIconRequestToEmailBody = includeIconRequestToEmailBody;
-            return this;
-        }
-
-        public Configuration setCrashReportEnabled(boolean crashReportEnabled) {
-            mIsCrashReportEnabled = crashReportEnabled;
-            return this;
-        }
-
-        public Configuration setWallpaperJsonStructure(@NonNull JsonStructure jsonStructure) {
-            mWallpaperJsonStructure = jsonStructure;
-            return this;
-        }
-
-        public Configuration setOtherApps(@NonNull OtherApp[] otherApps) {
-            mOtherApps = Arrays.asList(otherApps);
-            return this;
-        }
-
-        public Configuration setHighQualityPreviewEnabled(boolean highQualityPreviewEnabled) {
-            mIsHighQualityPreviewEnabled = highQualityPreviewEnabled;
-            return this;
-        }
-
-        public EmailBodyGenerator getEmailBodyGenerator() {
-            return mEmailBodyGenerator;
-        }
-
-        public IconRequestHandler getIconRequestHandler() { return iconRequestHandler; }
-
-        public AnalyticsHandler getAnalyticsHandler() {
-            if (analyticsHandler == null) {
-                analyticsHandler = new AnalyticsHandler() {
-                    @Override
-                    public void logEvent(String eventName, HashMap<String, Object> params) {
-                        StringBuilder sb = new StringBuilder();
-                        for (Map.Entry<String, Object> entry : params.entrySet()) {
-                            sb.append(" ");
-                            sb.append(entry.getKey());
-                            sb.append("=");
-                            sb.append(entry.getValue());
+        var analyticsHandler: AnalyticsHandler? = null
+            get() {
+                if (field == null) {
+                    field = object : AnalyticsHandler {
+                        override fun logEvent(eventName: String, params: HashMap<String, Any>?) {
+                            val sb = StringBuilder()
+                            params?.forEach { (key, value) ->
+                                sb.append(" ")
+                                sb.append(key)
+                                sb.append("=")
+                                sb.append(value)
+                            }
+                            LogUtil.d("ANALYTICS EVENT: $eventName$sb")
                         }
-                        LogUtil.d("ANALYTICS EVENT: ".concat(eventName).concat(sb.toString()));
-                    }
 
-                    @Override
-                    public void logException(Exception exception) {
-                        LogUtil.e(exception.getStackTrace().toString());
+                        override fun logException(exception: Exception) {
+                            LogUtil.e(exception.stackTrace.toString())
+                        }
                     }
-                };
+                }
+                return field
             }
-            return analyticsHandler;
-        }
+            private set
 
-        public ConfigHandler getConfigHandler() {
-            if (configHandler == null) {
-                configHandler = new ConfigHandler() {
-                    @Override
-                    public String wallpaperJson(Context context) {
-                        return context.getString(R.string.wallpaper_json);
+        var filterRequestHandler: FilterRequestHandler? = null
+            get() {
+                if (field == null) {
+                    // By default allow all requests
+                    field = object : FilterRequestHandler {
+                        override fun filterRequest(request: Request): Boolean {
+                            return true
+                        }
                     }
+                }
+                return field
+            }
+            private set
 
-                    @Override
-                    public String configJson(Context context) {
-                        return context.getString(R.string.config_json);
+        var configHandler: ConfigHandler? = null
+            get() {
+                if (field == null) {
+                    field = object : ConfigHandler {
+                        override fun wallpaperJson(context: Context): String {
+                            return context.getString(R.string.wallpaper_json)
+                        }
+
+                        override fun configJson(context: Context): String {
+                            return context.getString(R.string.config_json)
+                        }
                     }
-                };
+                }
+                return field
             }
-            return configHandler;
+            private set
+
+        var isNotificationEnabled = false
+            private set
+
+        var notificationHandler: NotificationHandler? = null
+            private set
+
+        var navigationIcon = NavigationIcon.STYLE_1
+            private set
+
+        var navigationViewHeader = NavigationViewHeader.NORMAL
+            private set
+
+        var homeGrid = GridStyle.CARD
+            private set
+
+        var applyGrid = GridStyle.CARD
+            private set
+
+        var requestStyle = Style.PORTRAIT_FLAT_LANDSCAPE_CARD
+            private set
+
+        var wallpapersGrid = GridStyle.CARD
+            private set
+
+        var aboutStyle = Style.PORTRAIT_FLAT_LANDSCAPE_CARD
+            private set
+
+        var socialIconColor = IconColor.PRIMARY_TEXT
+            private set
+
+        var otherApps: List<OtherApp>? = null
+            private set
+
+        var donationLinks: List<DonationLink>? = null
+            private set
+
+        var isHighQualityPreviewEnabled = false
+            private set
+
+        var isColoredApplyCard = true
+            private set
+
+        var isAutomaticIconsCountEnabled = true
+            private set
+
+        var customIconsCount = 0
+            private set
+
+        var isShowTabIconsCount = false
+            private set
+
+        var isShowTabAllIcons = false
+            private set
+
+        var tabAllIconsTitle = "All Icons"
+            private set
+
+        var categoryForTabAllIcons: Array<String>? = null
+            private set
+
+        var excludedCategoryForSearch: Array<String>? = null
+            private set
+
+        var shadowOptions = ShadowOptions()
+            private set
+
+        var isDashboardThemingEnabled = true
+            private set
+
+        var wallpaperGridPreviewQuality = 4
+            private set
+
+        var isGenerateAppFilter = true
+            private set
+
+        var isGenerateAppMap = false
+            private set
+
+        var isGenerateThemeResources = false
+            private set
+
+        var isIncludeIconRequestToEmailBody = true
+            private set
+
+        var isCrashReportEnabled = true
+            private set
+
+        var wallpaperJsonStructure = JsonStructure.Builder(null).build()
+            private set
+
+        fun setEmailBodyGenerator(emailBodyGenerator: EmailBodyGenerator): Configuration {
+            this.emailBodyGenerator = emailBodyGenerator
+            return this
         }
 
-        public FilterRequestHandler getFilterRequestHandler() {
-            if (mFilterRequestHandler == null) {
-                // By default allow all requests
-                mFilterRequestHandler = (request) -> true;
-            }
-            return mFilterRequestHandler;
+        fun setIconRequestHandler(iconRequestHandler: IconRequestHandler): Configuration {
+            this.iconRequestHandler = iconRequestHandler
+            return this
         }
 
-        public boolean isNotificationEnabled() {
-            return mIsNotificationEnabled;
+        fun setConfigHandler(configHandler: ConfigHandler): Configuration {
+            this.configHandler = configHandler
+            return this
         }
 
-        public NotificationHandler getNotificationHandler() {
-            return mNotificationHandler;
+        fun setAnalyticsHandler(analyticsHandler: AnalyticsHandler): Configuration {
+            this.analyticsHandler = analyticsHandler
+            return this
         }
 
-        public List<DonationLink> getDonationLinks() {
-            return mDonationLinks;
+        fun setFilterRequestHandler(filterRequestHandler: FilterRequestHandler): Configuration {
+            this.filterRequestHandler = filterRequestHandler
+            return this
         }
 
-        public NavigationIcon getNavigationIcon() {
-            return mNavigationIcon;
+        fun setNotificationEnabled(isEnabled: Boolean, handler: NotificationHandler?): Configuration {
+            this.isNotificationEnabled = isEnabled
+            this.notificationHandler = handler
+            return this
         }
 
-        public NavigationViewHeader getNavigationViewHeader() {
-            return mNavigationViewHeader;
+        fun setDonationLinks(donationLinks: Array<DonationLink>): Configuration {
+            this.donationLinks = donationLinks.toList()
+            return this
         }
 
-        public GridStyle getHomeGrid() {
-            return mHomeGrid;
+        fun setNavigationIcon(navigationIcon: NavigationIcon): Configuration {
+            this.navigationIcon = navigationIcon
+            return this
         }
 
-        public GridStyle getApplyGrid() {
-            return mApplyGrid;
+        fun setNavigationViewHeaderStyle(navigationViewHeader: NavigationViewHeader): Configuration {
+            this.navigationViewHeader = navigationViewHeader
+            return this
         }
 
-        public Style getRequestStyle() {
-            return mRequestStyle;
+        fun setAutomaticIconsCountEnabled(automaticIconsCountEnabled: Boolean): Configuration {
+            this.isAutomaticIconsCountEnabled = automaticIconsCountEnabled
+            return this
         }
 
-        public GridStyle getWallpapersGrid() {
-            return mWallpapersGrid;
+        fun setHomeGridStyle(gridStyle: GridStyle): Configuration {
+            this.homeGrid = gridStyle
+            return this
         }
 
-        public Style getAboutStyle() {
-            return mAboutStyle;
+        fun setApplyGridStyle(gridStyle: GridStyle): Configuration {
+            this.applyGrid = gridStyle
+            return this
         }
 
-        public IconColor getSocialIconColor() {
-            return mIconColor;
+        fun setRequestStyle(style: Style): Configuration {
+            this.requestStyle = style
+            return this
         }
 
-        public boolean isColoredApplyCard() {
-            return mIsColoredApplyCard;
+        fun setWallpapersGridStyle(gridStyle: GridStyle): Configuration {
+            this.wallpapersGrid = gridStyle
+            return this
         }
 
-        public boolean isAutomaticIconsCountEnabled() {
-            return mIsAutomaticIconsCountEnabled;
+        fun setAboutStyle(style: Style): Configuration {
+            this.aboutStyle = style
+            return this
         }
 
-        public int getCustomIconsCount() {
-            return mCustomIconsCount;
+        fun setSocialIconColor(iconColor: IconColor): Configuration {
+            this.socialIconColor = iconColor
+            return this
         }
 
-        public boolean isShowTabIconsCount() {
-            return mIsShowTabIconsCount;
+        fun setColoredApplyCard(coloredApplyCard: Boolean): Configuration {
+            this.isColoredApplyCard = coloredApplyCard
+            return this
         }
 
-        public boolean isShowTabAllIcons() {
-            return mIsShowTabAllIcons;
+        fun setCustomIconsCount(customIconsCount: Int): Configuration {
+            this.customIconsCount = customIconsCount
+            return this
         }
 
-        public String getTabAllIconsTitle() {
-            return mTabAllIconsTitle;
+        fun setShowTabIconsCount(showTabIconsCount: Boolean): Configuration {
+            this.isShowTabIconsCount = showTabIconsCount
+            return this
         }
 
-        public String[] getCategoryForTabAllIcons() {
-            return mCategoryForTabAllIcons;
+        fun setShowTabAllIcons(showTabAllIcons: Boolean): Configuration {
+            this.isShowTabAllIcons = showTabAllIcons
+            return this
         }
 
-        public String[] getExcludedCategoryForSearch() {
-            return mExcludedCategoryForSearch;
+        fun setTabAllIconsTitle(title: String): Configuration {
+            this.tabAllIconsTitle = title
+            if (this.tabAllIconsTitle.isEmpty()) this.tabAllIconsTitle = "All Icons"
+            return this
         }
 
-        @NonNull
-        public ShadowOptions getShadowOptions() {
-            return mShadowOptions;
+        fun setCategoryForTabAllIcons(categories: Array<String>): Configuration {
+            this.categoryForTabAllIcons = categories
+            return this
         }
 
-        public boolean isDashboardThemingEnabled() {
-            return mIsDashboardThemingEnabled;
+        fun setExcludedCategoryForSearch(categories: Array<String>): Configuration {
+            this.excludedCategoryForSearch = categories
+            return this
         }
 
-        public int getWallpaperGridPreviewQuality() {
-            return mWallpaperGridPreviewQuality;
+        fun setShadowEnabled(shadowEnabled: Boolean): Configuration {
+            this.shadowOptions = ShadowOptions(shadowEnabled)
+            return this
         }
 
-        public boolean isGenerateAppFilter() {
-            return mIsGenerateAppFilter;
+        fun setShadowEnabled(shadowOptions: ShadowOptions): Configuration {
+            this.shadowOptions = shadowOptions
+            return this
         }
 
-        public boolean isGenerateAppMap() {
-            return mIsGenerateAppMap;
+        fun setDashboardThemingEnabled(dashboardThemingEnabled: Boolean): Configuration {
+            this.isDashboardThemingEnabled = dashboardThemingEnabled
+            return this
         }
 
-        public boolean isGenerateThemeResources() {
-            return mIsGenerateThemeResources;
+        fun setWallpaperGridPreviewQuality(@IntRange(from = 1, to = 10) quality: Int): Configuration {
+            this.wallpaperGridPreviewQuality = quality
+            return this
         }
 
-        public boolean isIncludeIconRequestToEmailBody() {
-            return mIsIncludeIconRequestToEmailBody;
+        fun setGenerateAppFilter(generateAppFilter: Boolean): Configuration {
+            this.isGenerateAppFilter = generateAppFilter
+            return this
         }
 
-        public boolean isHighQualityPreviewEnabled() {
-            return mIsHighQualityPreviewEnabled;
+        fun setGenerateAppMap(generateAppMap: Boolean): Configuration {
+            this.isGenerateAppMap = generateAppMap
+            return this
         }
 
-        public JsonStructure getWallpaperJsonStructure() {
-            return mWallpaperJsonStructure;
+        fun setGenerateThemeResources(generateThemeResources: Boolean): Configuration {
+            this.isGenerateThemeResources = generateThemeResources
+            return this
         }
 
-        @Nullable
-        public List<OtherApp> getOtherApps() {
-            return mOtherApps;
+        fun setIncludeIconRequestToEmailBody(includeIconRequestToEmailBody: Boolean): Configuration {
+            this.isIncludeIconRequestToEmailBody = includeIconRequestToEmailBody
+            return this
+        }
+
+        fun setCrashReportEnabled(crashReportEnabled: Boolean): Configuration {
+            this.isCrashReportEnabled = crashReportEnabled
+            return this
+        }
+
+        fun setWallpaperJsonStructure(jsonStructure: JsonStructure): Configuration {
+            this.wallpaperJsonStructure = jsonStructure
+            return this
+        }
+
+        fun setOtherApps(otherApps: Array<OtherApp>): Configuration {
+            this.otherApps = otherApps.toList()
+            return this
+        }
+
+        fun setHighQualityPreviewEnabled(highQualityPreviewEnabled: Boolean): Configuration {
+            this.isHighQualityPreviewEnabled = highQualityPreviewEnabled
+            return this
         }
     }
 
-    public enum NavigationIcon {
+    enum class NavigationIcon {
         DEFAULT,
         STYLE_1,
         STYLE_2,
@@ -558,114 +464,101 @@ public abstract class CandyBarApplication extends Application {
         STYLE_4
     }
 
-    public enum NavigationViewHeader {
+    enum class NavigationViewHeader {
         NORMAL,
         MINI,
         NONE
     }
 
-    public enum GridStyle {
+    enum class GridStyle {
         CARD,
         FLAT
     }
 
-    public enum Style {
+    enum class Style {
         PORTRAIT_FLAT_LANDSCAPE_CARD,
         PORTRAIT_FLAT_LANDSCAPE_FLAT
     }
 
-    public enum IconColor {
+    enum class IconColor {
         PRIMARY_TEXT,
         ACCENT
     }
 
-    public static class ShadowOptions {
+    class ShadowOptions {
+        var isToolbarEnabled: Boolean
+            private set
+        var isCardEnabled: Boolean
+            private set
+        var isFabEnabled: Boolean
+            private set
+        var isTapIntroEnabled: Boolean
+            private set
 
-        private boolean mIsToolbarEnabled;
-        private boolean mIsCardEnabled;
-        private boolean mIsFabEnabled;
-        private boolean mIsTapIntroEnabled;
-
-        public ShadowOptions() {
-            mIsToolbarEnabled = mIsCardEnabled = mIsFabEnabled = mIsTapIntroEnabled = true;
+        constructor() {
+            isTapIntroEnabled = true
+            isFabEnabled = isTapIntroEnabled
+            isCardEnabled = isFabEnabled
+            isToolbarEnabled = isCardEnabled
         }
 
-        public ShadowOptions(boolean shadowEnabled) {
-            mIsToolbarEnabled = mIsCardEnabled = mIsFabEnabled = mIsTapIntroEnabled = shadowEnabled;
+        constructor(shadowEnabled: Boolean) {
+            isTapIntroEnabled = shadowEnabled
+            isFabEnabled = isTapIntroEnabled
+            isCardEnabled = isFabEnabled
+            isToolbarEnabled = isCardEnabled
         }
 
-        public ShadowOptions setToolbarEnabled(boolean toolbarEnabled) {
-            mIsToolbarEnabled = toolbarEnabled;
-            return this;
+        fun setToolbarEnabled(toolbarEnabled: Boolean): ShadowOptions {
+            isToolbarEnabled = toolbarEnabled
+            return this
         }
 
-        public ShadowOptions setCardEnabled(boolean cardEnabled) {
-            mIsCardEnabled = cardEnabled;
-            return this;
+        fun setCardEnabled(cardEnabled: Boolean): ShadowOptions {
+            isCardEnabled = cardEnabled
+            return this
         }
 
-        public ShadowOptions setFabEnabled(boolean fabEnabled) {
-            mIsFabEnabled = fabEnabled;
-            return this;
+        fun setFabEnabled(fabEnabled: Boolean): ShadowOptions {
+            isFabEnabled = fabEnabled
+            return this
         }
 
-        public ShadowOptions setTapIntroEnabled(boolean tapIntroEnabled) {
-            mIsTapIntroEnabled = tapIntroEnabled;
-            return this;
-        }
-
-        public boolean isToolbarEnabled() {
-            return mIsToolbarEnabled;
-        }
-
-        public boolean isCardEnabled() {
-            return mIsCardEnabled;
-        }
-
-        public boolean isFabEnabled() {
-            return mIsFabEnabled;
-        }
-
-        public boolean isTapIntroEnabled() {
-            return mIsTapIntroEnabled;
+        fun setTapIntroEnabled(tapIntroEnabled: Boolean): ShadowOptions {
+            isTapIntroEnabled = tapIntroEnabled
+            return this
         }
     }
 
-    public static class OtherApp {
+    open class OtherApp(
+        val icon: String,
+        val title: String,
+        val description: String,
+        val url: String
+    )
 
-        private final String mIcon;
-        private final String mTitle;
-        private final String mDescription;
-        private final String mUrl;
+    class DonationLink(icon: String, title: String, description: String, url: String) :
+        OtherApp(icon, title, description, url)
 
-        public OtherApp(String icon, String title, String description, String url) {
-            mIcon = icon;
-            mTitle = title;
-            mDescription = description;
-            mUrl = url;
-        }
+    companion object {
+        @JvmField
+        var sRequestProperty: Request.Property? = null
 
-        public String getIcon() {
-            return mIcon;
-        }
+        @JvmField
+        var sZipPath: String? = null
 
-        public String getTitle() {
-            return mTitle;
-        }
+        @JvmField
+        var mDrawableClass: Class<*>? = null
 
-        public String getDescription() {
-            return mDescription;
-        }
+        // This replaces the static mConfiguration field
+        // We use slightly different logic to ensure it's initialized
+        // but Kotlin doesn't allow 'lateinit' on primitive/nullable types easily in all contexts
+        // so we keep it simple.
+        private var configuration: Configuration = Configuration()
 
-        public String getUrl() {
-            return mUrl;
-        }
-    }
-
-    public static class DonationLink extends OtherApp {
-        public DonationLink(String icon, String title, String description, String url) {
-            super(icon, title, description, url);
+        @JvmStatic
+        fun getConfiguration(): Configuration {
+            return configuration
         }
     }
-
 }

@@ -1,12 +1,96 @@
 [versions]
 agp = "8.13.2"
-kotlin = "1.9.22"
+kotlin = "2.0.21"
 compileSdk = "36"
 targetSdk = "36"
 minSdk = "21"
 
+# AndroidX versions
+annotation = "1.9.1"
+appcompat = "1.7.0"
+multidex = "2.0.1"
+work = "2.10.5"
+recyclerview = "1.4.0"
+swiperefreshlayout = "1.1.0"
+palette = "1.0.0"
+viewpager2 = "1.1.0"
+core-splashscreen = "1.0.1"
+
+# Material Design
+material = "1.13.0"
+
+# Third-party libraries
+muzei-api = "3.4.2"
+kustom-api = "6369c37"
+logansquare = "1.3.7"
+glide = "5.0.5"
+okhttp = "4.12.0"
+material-dialogs = "0.9.6.0"
+circularimageview = "4.3.1"
+photoview = "2.3.0"
+autofittextview = "0.2.1"
+taptargetview = "1.13.2"
+adaptive-icon-bitmap = "1.0.2"
+recycler-fast-scroll = "6add4dff39"
+fastscroll = "1.3.0"
+cafebar = "1.3.2"
+android-helpers-core = "-SNAPSHOT"
+android-helpers-animation = "0.1.0"
+android-helpers-permission = "0.1.0"
+drawme = "4a672e78fc"
+
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+
+# AndroidX libraries
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-palette = { group = "androidx.palette", name = "palette", version.ref = "palette" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
+
+# Material Design
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Muzei and Kustom
+muzei-api = { group = "com.google.android.apps.muzei", name = "muzei-api", version.ref = "muzei-api" }
+kustom-api = { group = "dev.jahir.KustomAPI", name = "api", version.ref = "kustom-api" }
+kustom-preset = { group = "dev.jahir.KustomAPI", name = "preset", version.ref = "kustom-api" }
+
+# LoganSquare
+logansquare = { group = "com.bluelinelabs", name = "logansquare", version.ref = "logansquare" }
+logansquare-compiler = { group = "com.bluelinelabs", name = "logansquare-compiler", version.ref = "logansquare" }
+
+# Glide
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+
+# Networking
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+# Material Dialogs
+material-dialogs-core = { group = "com.afollestad.material-dialogs", name = "core", version.ref = "material-dialogs" }
+material-dialogs-commons = { group = "com.afollestad.material-dialogs", name = "commons", version.ref = "material-dialogs" }
+
+# UI Components
+circularimageview = { group = "com.mikhaellopez", name = "circularimageview", version.ref = "circularimageview" }
+photoview = { group = "com.github.Baseflow", name = "PhotoView", version.ref = "photoview" }
+autofittextview = { group = "me.grantland", name = "autofittextview", version.ref = "autofittextview" }
+taptargetview = { group = "com.github.KeepSafe", name = "TapTargetView", version.ref = "taptargetview" }
+adaptive-icon-bitmap = { group = "com.github.sarsamurmu", name = "AdaptiveIconBitmap", version.ref = "adaptive-icon-bitmap" }
+recycler-fast-scroll = { group = "com.github.zixpo", name = "recycler-fast-scroll", version.ref = "recycler-fast-scroll" }
+fastscroll = { group = "me.zhanghai.android.fastscroll", name = "library", version.ref = "fastscroll" }
+
+# Helpers
+cafebar = { group = "com.github.danimahardhika", name = "cafebar", version.ref = "cafebar" }
+android-helpers-core = { group = "com.github.danimahardhika.android-helpers", name = "core", version.ref = "android-helpers-core" }
+android-helpers-animation = { group = "com.github.danimahardhika.android-helpers", name = "animation", version.ref = "android-helpers-animation" }
+android-helpers-permission = { group = "com.github.danimahardhika.android-helpers", name = "permission", version.ref = "android-helpers-permission" }
+drawme = { group = "com.github.danimahardhika", name = "DrawMe", version.ref = "drawme" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

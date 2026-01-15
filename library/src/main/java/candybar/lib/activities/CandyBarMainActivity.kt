@@ -1,101 +1,84 @@
-package candybar.lib.activities;
+package candybar.lib.activities
 
-import static candybar.lib.helpers.DrawableHelper.getDrawableId;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.webkit.URLUtil;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.danimahardhika.android.helpers.core.ColorHelper;
-import com.danimahardhika.android.helpers.core.DrawableHelper;
-import com.danimahardhika.android.helpers.core.FileHelper;
-import com.danimahardhika.android.helpers.core.SoftKeyboardHelper;
-import com.danimahardhika.android.helpers.core.utils.LogUtil;
-import com.danimahardhika.android.helpers.permission.PermissionCode;
-import com.google.android.material.navigation.NavigationView;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import candybar.lib.R;
-import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.databases.Database;
-import candybar.lib.fragments.AboutFragment;
-import candybar.lib.fragments.ApplyFragment;
-import candybar.lib.fragments.FAQsFragment;
-import candybar.lib.fragments.HomeFragment;
-import candybar.lib.fragments.IconsBaseFragment;
-import candybar.lib.fragments.PresetsFragment;
-import candybar.lib.fragments.RequestFragment;
-import candybar.lib.fragments.SettingsFragment;
-import candybar.lib.fragments.WallpapersFragment;
-import candybar.lib.fragments.dialog.ChangelogFragment;
-import candybar.lib.fragments.dialog.IntentChooserFragment;
-import candybar.lib.helpers.ConfigurationHelper;
-import candybar.lib.helpers.IntentHelper;
-import candybar.lib.helpers.JsonHelper;
-import candybar.lib.helpers.LocaleHelper;
-import candybar.lib.helpers.NavigationViewHelper;
-import candybar.lib.helpers.ThemeHelper;
-import candybar.lib.helpers.WallpaperHelper;
-import candybar.lib.items.Home;
-import candybar.lib.items.Icon;
-import candybar.lib.items.Request;
-import candybar.lib.items.Wallpaper;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.services.CandyBarService;
-import candybar.lib.tasks.IconRequestTask;
-import candybar.lib.tasks.IconsLoaderTask;
-import candybar.lib.tasks.WallpaperThumbPreloaderTask;
-import candybar.lib.utils.CandyBarGlideModule;
-import candybar.lib.utils.Extras;
-import candybar.lib.utils.listeners.RequestListener;
-import candybar.lib.utils.listeners.SearchListener;
-import candybar.lib.utils.listeners.WallpapersListener;
-import candybar.lib.utils.views.HeaderView;
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.webkit.URLUtil
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import candybar.lib.R
+import candybar.lib.applications.CandyBarApplication
+import candybar.lib.databases.Database
+import candybar.lib.fragments.AboutFragment
+import candybar.lib.fragments.ApplyFragment
+import candybar.lib.fragments.FAQsFragment
+import candybar.lib.fragments.HomeFragment
+import candybar.lib.fragments.IconsBaseFragment
+import candybar.lib.fragments.PresetsFragment
+import candybar.lib.fragments.RequestFragment
+import candybar.lib.fragments.SettingsFragment
+import candybar.lib.fragments.WallpapersFragment
+import candybar.lib.fragments.dialog.ChangelogFragment
+import candybar.lib.fragments.dialog.IntentChooserFragment
+import candybar.lib.helpers.ConfigurationHelper
+import candybar.lib.helpers.IntentHelper
+import candybar.lib.helpers.JsonHelper
+import candybar.lib.helpers.LocaleHelper
+import candybar.lib.helpers.NavigationViewHelper
+import candybar.lib.helpers.ThemeHelper
+import candybar.lib.helpers.WallpaperHelper
+import candybar.lib.items.Home
+import candybar.lib.items.Icon
+import candybar.lib.items.Request
+import candybar.lib.items.Theme
+import candybar.lib.items.Wallpaper
+import candybar.lib.preferences.Preferences
+import candybar.lib.services.CandyBarService
+import candybar.lib.tasks.IconRequestTask
+import candybar.lib.tasks.IconsLoaderTask
+import candybar.lib.tasks.WallpaperThumbPreloaderTask
+import candybar.lib.utils.CandyBarGlideModule
+import candybar.lib.utils.Extras
+import candybar.lib.utils.listeners.RequestListener
+import candybar.lib.utils.listeners.SearchListener
+import candybar.lib.utils.listeners.WallpapersListener
+import candybar.lib.utils.views.HeaderView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.danimahardhika.android.helpers.core.ColorHelper
+import com.danimahardhika.android.helpers.core.DrawableHelper
+import com.danimahardhika.android.helpers.core.FileHelper
+import com.danimahardhika.android.helpers.core.SoftKeyboardHelper
+import com.danimahardhika.android.helpers.core.utils.LogUtil
+import com.danimahardhika.android.helpers.permission.PermissionCode
+import com.google.android.material.navigation.NavigationView
+import java.io.IOException
+import candybar.lib.helpers.DrawableHelper as CandyBarDrawableHelper
 
 /*
  * CandyBar - Material Dashboard
@@ -115,664 +98,669 @@ import candybar.lib.utils.views.HeaderView;
  * limitations under the License.
  */
 
-public abstract class CandyBarMainActivity extends AppCompatActivity implements
-        ActivityCompat.OnRequestPermissionsResultCallback, RequestListener,
-        SearchListener, WallpapersListener {
+abstract class CandyBarMainActivity : AppCompatActivity(),
+    ActivityCompat.OnRequestPermissionsResultCallback, RequestListener,
+    SearchListener, WallpapersListener {
 
-    private TextView mToolbarTitle;
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
+    private lateinit var mToolbarTitle: TextView
+    private lateinit var mDrawerLayout: DrawerLayout
+    private lateinit var mNavigationView: NavigationView
 
-    private Extras.Tag mFragmentTag;
-    private int mPosition, mLastPosition;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private FragmentManager mFragManager;
+    private var mFragmentTag: Extras.Tag = Extras.Tag.HOME
+    private var mPosition = 0
+    private var mLastPosition = 0
+    private lateinit var mDrawerToggle: ActionBarDrawerToggle
+    private lateinit var mFragManager: FragmentManager
 
-    private boolean mIsMenuVisible = true;
-    private boolean prevIsDarkTheme;
+    private var mIsMenuVisible = true
+    private var prevIsDarkTheme = false
 
-    public static List<Request> sMissedApps;
-    public static List<Icon> sSections;
-    public static Home sHomeIcon;
-    public static int sInstalledAppsCount;
-    public static int sIconsCount;
+    private lateinit var mConfig: ActivityConfiguration
 
-    private ActivityConfiguration mConfig;
-
-    private Handler mTimesVisitedHandler;
-    private Runnable mTimesVisitedRunnable;
-
-    private static final int NOTIFICATION_PERMISSION_CODE = 10;
-
-    @NonNull
-    public abstract ActivityConfiguration onInit();
-
-    private final OnBackPressedCallback backPressedCallback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            if (mFragManager.getBackStackEntryCount() > 0) {
-                clearBackStack();
-                return;
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (mFragManager.backStackEntryCount > 0) {
+                clearBackStack()
+                return
             }
 
             if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                mDrawerLayout.closeDrawers();
-                return;
+                mDrawerLayout.closeDrawers()
+                return
             }
 
             if (mFragmentTag != Extras.Tag.HOME) {
-                mPosition = mLastPosition = 0;
-                setFragment(getFragment(mPosition));
+                mPosition = 0
+                mLastPosition = 0
+                setFragment(getFragment(mPosition))
             }
         }
-    };
+    }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        final boolean isMaterialYou = Preferences.get(this).isMaterialYou();
-        final int nightMode = switch (Preferences.get(this).getTheme()) {
-            case LIGHT -> AppCompatDelegate.MODE_NIGHT_NO;
-            case DARK -> AppCompatDelegate.MODE_NIGHT_YES;
-            default -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-        };
-        AppCompatDelegate.setDefaultNightMode(nightMode);
+    abstract fun onInit(): ActivityConfiguration
 
-        LocaleHelper.setLocale(this);
-        super.onCreate(savedInstanceState);
-        super.setTheme(isMaterialYou ? R.style.CandyBar_Theme_App_MaterialYou : R.style.CandyBar_Theme_App_DayNight);
-        setContentView(R.layout.activity_main);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        val isMaterialYou = Preferences.get(this).isMaterialYou
+        val nightMode = when (Preferences.get(this).theme) {
+            Theme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+            Theme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(nightMode)
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        mNavigationView = findViewById(R.id.navigation_view);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        mToolbarTitle = findViewById(R.id.toolbar_title);
+        LocaleHelper.setLocale(this)
+        super.onCreate(savedInstanceState)
+        setTheme(if (isMaterialYou) R.style.CandyBar_Theme_App_MaterialYou else R.style.CandyBar_Theme_App_DayNight)
+        setContentView(R.layout.activity_main)
 
-        toolbar.setPopupTheme(isMaterialYou ? R.style.CandyBar_Theme_App_MaterialYou : R.style.CandyBar_Theme_App_DayNight);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+        mDrawerLayout = findViewById(R.id.drawer_layout)
+        mNavigationView = findViewById(R.id.navigation_view)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        mToolbarTitle = findViewById(R.id.toolbar_title)
 
-        mFragManager = getSupportFragmentManager();
+        toolbar.popupTheme = if (isMaterialYou) R.style.CandyBar_Theme_App_MaterialYou else R.style.CandyBar_Theme_App_DayNight
+        toolbar.title = ""
+        setSupportActionBar(toolbar)
 
-        initNavigationView(toolbar);
-        initNavigationViewHeader();
-        registerBackPressHandler();
+        mFragManager = supportFragmentManager
 
-        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            params.topMargin = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
-            findViewById(R.id.inset_padding).getLayoutParams().height = params.topMargin;
-            return WindowInsetsCompat.CONSUMED;
-        });
+        initNavigationView(toolbar)
+        initNavigationViewHeader()
+        registerBackPressHandler()
 
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().clearFlags(
-                WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        //getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.navigationBar));
-        //getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        //mDrawerLayout.setStatusBarBackground(R.color.colorPrimaryDark);
-        int visibilityFlags = 0;
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
+            val params = v.layoutParams as ViewGroup.MarginLayoutParams
+            params.topMargin = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            findViewById<View>(R.id.inset_padding).layoutParams.height = params.topMargin
+            WindowInsetsCompat.CONSUMED
+        }
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.clearFlags(
+            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+        )
+
+        var visibilityFlags = 0
         if (ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_colorPrimaryDark)) &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            visibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        ) {
+            visibilityFlags = visibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
         if (ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_navigationBar)) &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            visibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        getWindow().getDecorView().setSystemUiVisibility(visibilityFlags);
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        ) {
+            visibilityFlags = visibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
+        window.decorView.systemUiVisibility = visibilityFlags
 
         try {
-            startService(new Intent(this, CandyBarService.class));
-        } catch (IllegalStateException e) {
-            LogUtil.e("Unable to start CandyBarService. App is probably running in background.");
+            startService(Intent(this, CandyBarService::class.java))
+        } catch (e: IllegalStateException) {
+            LogUtil.e("Unable to start CandyBarService. App is probably running in background.")
         }
 
         //Todo: wait until google fix the issue, then enable wallpaper crop again on API 26+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Preferences.get(this).setCropWallpaper(false);
+            Preferences.get(this).isCropWallpaper = false
         }
 
-        mConfig = onInit();
+        mConfig = onInit()
 
-        mPosition = mLastPosition = 0;
+        mPosition = 0
+        mLastPosition = 0
         if (savedInstanceState != null) {
-            mPosition = mLastPosition = savedInstanceState.getInt(Extras.EXTRA_POSITION, 0);
-            onSearchExpanded(false);
+            mPosition = savedInstanceState.getInt(Extras.EXTRA_POSITION, 0)
+            mLastPosition = mPosition
+            onSearchExpanded(false)
         }
 
-        Bundle bundle = getIntent().getExtras();
+        val bundle = intent.extras
         if (bundle != null) {
-            int position = bundle.getInt(Extras.EXTRA_POSITION, -1);
-            if (position >= 0 && position < 6) {
-                mPosition = mLastPosition = position;
+            val position = bundle.getInt(Extras.EXTRA_POSITION, -1)
+            if (position in 0..5) {
+                mPosition = position
+                mLastPosition = position
             }
         }
 
-        IntentHelper.sAction = IntentHelper.getAction(getIntent());
+        IntentHelper.sAction = IntentHelper.getAction(intent)
         if (IntentHelper.sAction == IntentHelper.ACTION_DEFAULT) {
-            setFragment(getFragment(mPosition));
+            setFragment(getFragment(mPosition))
         } else {
-            setFragment(getActionFragment(IntentHelper.sAction));
+            setFragment(getActionFragment(IntentHelper.sAction))
         }
 
-        checkWallpapers();
-        new WallpaperThumbPreloaderTask(this).execute();
-        new IconRequestTask(this).executeOnThreadPool();
-        new IconsLoaderTask(this).execute();
+        checkWallpapers()
+        WallpaperThumbPreloaderTask(this).execute()
+        IconRequestTask(this).executeOnThreadPool()
+        IconsLoaderTask(this).execute()
 
-        /*
-        The below code does this
-        #1. If new version - set `firstRun` to `true`
-        #2. If `firstRun` equals `true`, run the following steps
-            #X. Play store check
-                - Enabled: Run check, when completed run #Y
-                - Disabled: Run #Y
-            #Y. License check
-                - Enabled: Run check, when completed run #Z
-                - Disabled: Run #Z
-            #Z. Reset icon request limit, clear cache and show changelog
-        */
-
-        if (Preferences.get(this).isNewVersion()) {
-            // Check licenses on new version
-            Preferences.get(this).setFirstRun(true);
+        if (Preferences.get(this).isNewVersion) {
+            Preferences.get(this).isFirstRun = true
         }
 
-        final Runnable askNotificationPermission = () -> {
-            final Runnable showToast = () -> {
-                Toast.makeText(this, getResources().getString(R.string.permission_notification_denied_1), Toast.LENGTH_LONG).show();
-                Toast.makeText(this, getResources().getString(R.string.permission_notification_denied_2), Toast.LENGTH_LONG).show();
-            };
+        val askNotificationPermission = Runnable {
+            val showToast = Runnable {
+                Toast.makeText(this, resources.getString(R.string.permission_notification_denied_1), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, resources.getString(R.string.permission_notification_denied_2), Toast.LENGTH_LONG).show()
+            }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CandyBarApplication.getConfiguration().isNotificationEnabled()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CandyBarApplication.getConfiguration().isNotificationEnabled) {
                 if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                    CandyBarApplication.getConfiguration().getNotificationHandler().setMode(Preferences.get(this).isNotificationsEnabled());
+                    CandyBarApplication.getConfiguration().notificationHandler?.setMode(Preferences.get(this).isNotificationsEnabled)
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        int permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS);
+                        val permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
                         if (permissionState != PackageManager.PERMISSION_GRANTED) {
                             if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
-                                showToast.run();
+                                showToast.run()
                             } else {
-                                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
+                                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), NOTIFICATION_PERMISSION_CODE)
                             }
                         }
                     } else {
-                        showToast.run();
+                        showToast.run()
                     }
                 }
             }
-        };
-
-        final Runnable onNewVersion = () -> {
-            ChangelogFragment.showChangelog(mFragManager, askNotificationPermission);
-            File cache = getCacheDir();
-            FileHelper.clearDirectory(cache);
-        };
-
-        if (Preferences.get(this).isFirstRun()) {
-            final Runnable onAllChecksCompleted = () -> {
-                Preferences.get(this).setFirstRun(false);
-                onNewVersion.run();
-            };
-
-            onAllChecksCompleted.run();
         }
 
-        askNotificationPermission.run();
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (prevIsDarkTheme != ThemeHelper.isDarkTheme(this)) {
-            recreate();
-            return;
+        val onNewVersion = Runnable {
+            ChangelogFragment.showChangelog(mFragManager, askNotificationPermission)
+            val cache = cacheDir
+            FileHelper.clearDirectory(cache)
         }
-        LocaleHelper.setLocale(this);
-        if (mIsMenuVisible) mDrawerToggle.onConfigurationChanged(newConfig);
-    }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        LocaleHelper.setLocale(newBase);
-        super.attachBaseContext(newBase);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        int action = IntentHelper.getAction(intent);
-        if (action != IntentHelper.ACTION_DEFAULT)
-            setFragment(getActionFragment(action));
-        super.onNewIntent(intent);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(Extras.EXTRA_POSITION, mPosition);
-        Database.get(this.getApplicationContext()).closeDatabase();
-        super.onSaveInstanceState(outState);
-    }
-
-    private void registerBackPressHandler() {
-        getOnBackPressedDispatcher().addCallback(backPressedCallback);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PermissionCode.STORAGE) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                recreate();
-                return;
+        if (Preferences.get(this).isFirstRun) {
+            val onAllChecksCompleted = Runnable {
+                Preferences.get(this).isFirstRun = false
+                onNewVersion.run()
             }
-            Toast.makeText(this, R.string.permission_storage_denied, Toast.LENGTH_LONG).show();
+
+            onAllChecksCompleted.run()
+        }
+
+        askNotificationPermission.run()
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        mDrawerToggle.syncState()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (prevIsDarkTheme != ThemeHelper.isDarkTheme(this)) {
+            recreate()
+            return
+        }
+        LocaleHelper.setLocale(this)
+        if (mIsMenuVisible) mDrawerToggle.onConfigurationChanged(newConfig)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        LocaleHelper.setLocale(newBase)
+        super.attachBaseContext(newBase)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        val action = IntentHelper.getAction(intent)
+        if (action != IntentHelper.ACTION_DEFAULT)
+            setFragment(getActionFragment(action))
+        super.onNewIntent(intent)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(Extras.EXTRA_POSITION, mPosition)
+        Database.get(this.applicationContext).closeDatabase()
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun registerBackPressHandler() {
+        onBackPressedDispatcher.addCallback(backPressedCallback)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PermissionCode.STORAGE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                recreate()
+                return
+            }
+            Toast.makeText(this, R.string.permission_storage_denied, Toast.LENGTH_LONG).show()
         }
         if (requestCode == NOTIFICATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                CandyBarApplication.getConfiguration().getNotificationHandler().setMode(Preferences.get(this).isNotificationsEnabled());
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                CandyBarApplication.getConfiguration().notificationHandler?.setMode(Preferences.get(this).isNotificationsEnabled)
             } else {
-                Toast.makeText(this, getResources().getString(R.string.permission_notification_denied_1), Toast.LENGTH_LONG).show();
-                Toast.makeText(this, getResources().getString(R.string.permission_notification_denied_2), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, resources.getString(R.string.permission_notification_denied_1), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, resources.getString(R.string.permission_notification_denied_2), Toast.LENGTH_LONG).show()
             }
         }
     }
 
-
-    @Override
-    public void onRequestSelected(int count) {
+    override fun onRequestSelected(count: Int) {
         if (mFragmentTag == Extras.Tag.REQUEST) {
-            String title = getResources().getString(R.string.navigation_view_request);
-            if (count > 0) title += " (" + count + ")";
-            mToolbarTitle.setText(title);
+            var title = resources.getString(R.string.navigation_view_request)
+            if (count > 0) title += " ($count)"
+            mToolbarTitle.text = title
         }
     }
 
-
-    @Override
-    public void onRequestBuilt(Intent intent, int type) {
+    override fun onRequestBuilt(intent: Intent?, type: Int) {
         if (type == IntentChooserFragment.ICON_REQUEST) {
             if (RequestFragment.sSelectedRequests == null)
-                return;
+                return
 
-            if (Preferences.get(this).isPremiumRequest()) {
-                int count = Preferences.get(this).getPremiumRequestCount() - RequestFragment.sSelectedRequests.size();
-                Preferences.get(this).setPremiumRequestCount(count);
+            if (Preferences.get(this).isPremiumRequest) {
+                val count = Preferences.get(this).premiumRequestCount - RequestFragment.sSelectedRequests!!.size
+                Preferences.get(this).premiumRequestCount = count
                 if (count == 0) {
+                    // Refresh?
                 }
             } else {
-                if (getResources().getBoolean(R.bool.enable_icon_request_limit)) {
-                    int used = Preferences.get(this).getRegularRequestUsed();
-                    Preferences.get(this).setRegularRequestUsed((used + RequestFragment.sSelectedRequests.size()));
+                if (resources.getBoolean(R.bool.enable_icon_request_limit)) {
+                    val used = Preferences.get(this).regularRequestUsed
+                    Preferences.get(this).regularRequestUsed = used + RequestFragment.sSelectedRequests!!.size
                 }
             }
 
             if (mFragmentTag == Extras.Tag.REQUEST) {
-                RequestFragment fragment = (RequestFragment) mFragManager.findFragmentByTag(Extras.Tag.REQUEST.value);
-                if (fragment != null) fragment.refreshIconRequest();
+                val fragment = mFragManager.findFragmentByTag(Extras.Tag.REQUEST.value) as RequestFragment?
+                fragment?.refreshIconRequest()
             }
         }
 
         if (intent != null) {
             try {
-                startActivity(intent);
-            } catch (IllegalArgumentException e) {
-                startActivity(Intent.createChooser(intent,
-                        getResources().getString(R.string.app_client)));
+                startActivity(intent)
+            } catch (e: IllegalArgumentException) {
+                startActivity(
+                    Intent.createChooser(
+                        intent,
+                        resources.getString(R.string.app_client)
+                    )
+                )
             }
         }
 
-        CandyBarApplication.sRequestProperty = null;
-        CandyBarApplication.sZipPath = null;
+        CandyBarApplication.sRequestProperty = null
+        CandyBarApplication.sZipPath = null
     }
 
-
-    @Override
-    public void onWallpapersChecked(int wallpaperCount) {
-        Preferences.get(this).setAvailableWallpapersCount(wallpaperCount);
+    override fun onWallpapersChecked(wallpaperCount: Int) {
+        Preferences.get(this).availableWallpapersCount = wallpaperCount
 
         if (mFragmentTag == Extras.Tag.HOME) {
-            HomeFragment fragment = (HomeFragment) mFragManager.findFragmentByTag(Extras.Tag.HOME.value);
-            if (fragment != null) fragment.resetWallpapersCount();
+            val fragment = mFragManager.findFragmentByTag(Extras.Tag.HOME.value) as HomeFragment?
+            fragment?.resetWallpapersCount()
         }
     }
 
-    @Override
-    public void onSearchExpanded(boolean expand) {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        mIsMenuVisible = !expand;
+    override fun onSearchExpanded(expand: Boolean) {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        mIsMenuVisible = !expand
 
         if (expand) {
-            int color = ColorHelper.getAttributeColor(this, R.attr.cb_toolbarIcon);
-            toolbar.setNavigationIcon(DrawableHelper.getTintedDrawable(
-                    this, R.drawable.ic_toolbar_back, color));
-            // It does not work and causes issue with back press on icon search fragment
-            // toolbar.setNavigationOnClickListener(view -> onBackPressed());
+            val color = ColorHelper.getAttributeColor(this, R.attr.cb_toolbarIcon)
+            toolbar.navigationIcon = DrawableHelper.getTintedDrawable(
+                this, R.drawable.ic_toolbar_back, color
+            )
         } else {
-            SoftKeyboardHelper.closeKeyboard(this);
-            ColorHelper.setStatusBarColor(this, Color.TRANSPARENT, true);
-            if (CandyBarApplication.getConfiguration().getNavigationIcon() == CandyBarApplication.NavigationIcon.DEFAULT) {
-                mDrawerToggle.setDrawerArrowDrawable(new DrawerArrowDrawable(this));
+            SoftKeyboardHelper.closeKeyboard(this)
+            ColorHelper.setStatusBarColor(this, Color.TRANSPARENT, true)
+            if (CandyBarApplication.getConfiguration().navigationIcon == CandyBarApplication.NavigationIcon.DEFAULT) {
+                mDrawerToggle.drawerArrowDrawable = DrawerArrowDrawable(this)
             } else {
-                toolbar.setNavigationIcon(ConfigurationHelper.getNavigationIcon(this,
-                        CandyBarApplication.getConfiguration().getNavigationIcon()));
+                toolbar.navigationIcon = ConfigurationHelper.getNavigationIcon(
+                    this,
+                    CandyBarApplication.getConfiguration().navigationIcon
+                )
             }
 
-            toolbar.setNavigationOnClickListener(view ->
-                    mDrawerLayout.openDrawer(GravityCompat.START));
+            toolbar.setNavigationOnClickListener { mDrawerLayout.openDrawer(GravityCompat.START) }
         }
 
-        mDrawerLayout.setDrawerLockMode(expand ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
-                DrawerLayout.LOCK_MODE_UNLOCKED);
-        supportInvalidateOptionsMenu();
+        mDrawerLayout.setDrawerLockMode(
+            if (expand) DrawerLayout.LOCK_MODE_LOCKED_CLOSED else DrawerLayout.LOCK_MODE_UNLOCKED
+        )
+        supportInvalidateOptionsMenu()
     }
 
-    private void initNavigationView(Toolbar toolbar) {
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.txt_open, R.string.txt_close) {
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                SoftKeyboardHelper.closeKeyboard(CandyBarMainActivity.this);
+    private fun initNavigationView(toolbar: Toolbar) {
+        mDrawerToggle = object : ActionBarDrawerToggle(
+            this, mDrawerLayout, toolbar, R.string.txt_open, R.string.txt_close
+        ) {
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                SoftKeyboardHelper.closeKeyboard(this@CandyBarMainActivity)
             }
 
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                selectPosition(mPosition);
+            override fun onDrawerClosed(drawerView: View) {
+                super.onDrawerClosed(drawerView)
+                selectPosition(mPosition)
             }
-        };
-        mDrawerToggle.setDrawerIndicatorEnabled(false);
-        toolbar.setNavigationIcon(ConfigurationHelper.getNavigationIcon(this,
-                CandyBarApplication.getConfiguration().getNavigationIcon()));
-        toolbar.setNavigationOnClickListener(view ->
-                mDrawerLayout.openDrawer(GravityCompat.START));
+        }
+        mDrawerToggle.isDrawerIndicatorEnabled = false
+        toolbar.navigationIcon = ConfigurationHelper.getNavigationIcon(
+            this,
+            CandyBarApplication.getConfiguration().navigationIcon
+        )
+        toolbar.setNavigationOnClickListener { mDrawerLayout.openDrawer(GravityCompat.START) }
 
-        if (CandyBarApplication.getConfiguration().getNavigationIcon() == CandyBarApplication.NavigationIcon.DEFAULT) {
-            DrawerArrowDrawable drawerArrowDrawable = new DrawerArrowDrawable(this);
-            drawerArrowDrawable.setColor(ColorHelper.getAttributeColor(this, R.attr.cb_toolbarIcon));
-            drawerArrowDrawable.setSpinEnabled(true);
-            mDrawerToggle.setDrawerArrowDrawable(drawerArrowDrawable);
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
+        if (CandyBarApplication.getConfiguration().navigationIcon == CandyBarApplication.NavigationIcon.DEFAULT) {
+            val drawerArrowDrawable = DrawerArrowDrawable(this)
+            drawerArrowDrawable.color = ColorHelper.getAttributeColor(this, R.attr.cb_toolbarIcon)
+            drawerArrowDrawable.isSpinEnabled = true
+            mDrawerToggle.drawerArrowDrawable = drawerArrowDrawable
+            mDrawerToggle.isDrawerIndicatorEnabled = true
         }
 
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START)
+        mDrawerLayout.addDrawerListener(mDrawerToggle)
 
-        NavigationViewHelper.initApply(mNavigationView);
-        NavigationViewHelper.initIconRequest(mNavigationView);
-        NavigationViewHelper.initWallpapers(mNavigationView);
-        NavigationViewHelper.initPresets(mNavigationView);
+        NavigationViewHelper.initApply(mNavigationView)
+        NavigationViewHelper.initIconRequest(mNavigationView)
+        NavigationViewHelper.initWallpapers(mNavigationView)
+        NavigationViewHelper.initPresets(mNavigationView)
 
-        ColorStateList itemStateList = ContextCompat.getColorStateList(this,
-                R.color.navigation_view_item_highlight);
-        mNavigationView.setItemTextColor(itemStateList);
-        mNavigationView.setItemIconTintList(itemStateList);
-//        Drawable background = ContextCompat.getDrawable(this,
-//                ThemeHelper.isDarkTheme(this) ?
-//                        R.drawable.navigation_view_item_background_dark :
-//                        R.drawable.navigation_view_item_background);
-//        mNavigationView.setItemBackground(background);
-        mNavigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.navigation_view_home) mPosition = Extras.Tag.HOME.idx;
-            else if (id == R.id.navigation_view_apply) mPosition = Extras.Tag.APPLY.idx;
-            else if (id == R.id.navigation_view_icons) mPosition = Extras.Tag.ICONS.idx;
-            else if (id == R.id.navigation_view_request) mPosition = Extras.Tag.REQUEST.idx;
-            else if (id == R.id.navigation_view_wallpapers) mPosition = Extras.Tag.WALLPAPERS.idx;
-            else if (id == R.id.navigation_view_presets) mPosition = Extras.Tag.PRESETS.idx;
-            else if (id == R.id.navigation_view_settings) mPosition = Extras.Tag.SETTINGS.idx;
-            else if (id == R.id.navigation_view_faqs) mPosition = Extras.Tag.FAQS.idx;
-            else if (id == R.id.navigation_view_about) mPosition = Extras.Tag.ABOUT.idx;
+        val itemStateList = ContextCompat.getColorStateList(
+            this,
+            R.color.navigation_view_item_highlight
+        )
+        mNavigationView.itemTextColor = itemStateList
+        mNavigationView.itemIconTintList = itemStateList
 
-            item.setChecked(true);
-            mDrawerLayout.closeDrawers();
-            return true;
-        });
+        mNavigationView.setNavigationItemSelectedListener { item ->
+            val id = item.itemId
+            mPosition = when (id) {
+                R.id.navigation_view_home -> Extras.Tag.HOME.idx
+                R.id.navigation_view_apply -> Extras.Tag.APPLY.idx
+                R.id.navigation_view_icons -> Extras.Tag.ICONS.idx
+                R.id.navigation_view_request -> Extras.Tag.REQUEST.idx
+                R.id.navigation_view_wallpapers -> Extras.Tag.WALLPAPERS.idx
+                R.id.navigation_view_presets -> Extras.Tag.PRESETS.idx
+                R.id.navigation_view_settings -> Extras.Tag.SETTINGS.idx
+                R.id.navigation_view_faqs -> Extras.Tag.FAQS.idx
+                R.id.navigation_view_about -> Extras.Tag.ABOUT.idx
+                else -> mPosition
+            }
+
+            item.isChecked = true
+            mDrawerLayout.closeDrawers()
+            true
+        }
     }
 
-    private void initNavigationViewHeader() {
-        if (CandyBarApplication.getConfiguration().getNavigationViewHeader() == CandyBarApplication.NavigationViewHeader.NONE) {
-            mNavigationView.removeHeaderView(mNavigationView.getHeaderView(0));
-            return;
+    private fun initNavigationViewHeader() {
+        if (CandyBarApplication.getConfiguration().navigationViewHeader == CandyBarApplication.NavigationViewHeader.NONE) {
+            mNavigationView.removeHeaderView(mNavigationView.getHeaderView(0))
+            return
         }
 
-        String imageUrl = getResources().getString(R.string.navigation_view_header);
-        String titleText = getResources().getString(R.string.navigation_view_header_title);
-        View header = mNavigationView.getHeaderView(0);
-        HeaderView image = header.findViewById(R.id.header_image);
-        LinearLayout container = header.findViewById(R.id.header_title_container);
-        TextView title = header.findViewById(R.id.header_title);
-        TextView version = header.findViewById(R.id.header_version);
+        var imageUrl = resources.getString(R.string.navigation_view_header)
+        val titleText = resources.getString(R.string.navigation_view_header_title)
+        val header = mNavigationView.getHeaderView(0)
+        val image = header.findViewById<HeaderView>(R.id.header_image)
+        val container = header.findViewById<LinearLayout>(R.id.header_title_container)
+        val title = header.findViewById<TextView>(R.id.header_title)
+        val version = header.findViewById<TextView>(R.id.header_version)
 
-        if (CandyBarApplication.getConfiguration().getNavigationViewHeader() == CandyBarApplication.NavigationViewHeader.MINI) {
-            image.setRatio(16, 9);
+        if (CandyBarApplication.getConfiguration().navigationViewHeader == CandyBarApplication.NavigationViewHeader.MINI) {
+            image.setRatio(16, 9)
         }
 
         if (titleText.isEmpty()) {
-            container.setVisibility(View.GONE);
+            container.visibility = View.GONE
         } else {
-            title.setText(titleText);
+            title.text = titleText
             try {
-                String versionText = "v" + getPackageManager()
-                        .getPackageInfo(getPackageName(), 0).versionName;
-                version.setText(versionText);
-            } catch (Exception ignored) {
+                val versionText = "v" + packageManager.getPackageInfo(packageName, 0).versionName
+                version.text = versionText
+            } catch (ignored: Exception) {
             }
         }
 
         if (ColorHelper.isValidColor(imageUrl)) {
-            image.setBackgroundColor(Color.parseColor(imageUrl));
-            return;
+            image.setBackgroundColor(Color.parseColor(imageUrl))
+            return
         }
 
         if (!URLUtil.isValidUrl(imageUrl)) {
-            imageUrl = "drawable://" + getDrawableId(imageUrl);
+            imageUrl = "drawable://" + CandyBarDrawableHelper.getDrawableId(imageUrl)
         }
 
-        final Context context = this;
-        if (CandyBarGlideModule.isValidContextForGlide(context)) {
-            Glide.with(context)
-                    .load(imageUrl)
-                    .override(720)
-                    .optionalCenterInside()
-                    .diskCacheStrategy(imageUrl.contains("drawable://")
-                            ? DiskCacheStrategy.NONE
-                            : DiskCacheStrategy.RESOURCE)
-                    .into(image);
+        if (CandyBarGlideModule.isValidContextForGlide(this)) {
+            Glide.with(this)
+                .load(imageUrl)
+                .override(720)
+                .optionalCenterInside()
+                .diskCacheStrategy(
+                    if (imageUrl.contains("drawable://")) DiskCacheStrategy.NONE else DiskCacheStrategy.RESOURCE
+                )
+                .into(image)
         }
     }
 
-    private void checkWallpapers() {
-        if (Preferences.get(this).isConnectedToNetwork()) {
-            new Thread(() -> {
+    private fun checkWallpapers() {
+        if (Preferences.get(this).isConnectedToNetwork) {
+            Thread {
                 try {
                     if (WallpaperHelper.getWallpaperType(this) != WallpaperHelper.CLOUD_WALLPAPERS)
-                        return;
+                        return@Thread
 
-                    InputStream stream = WallpaperHelper.getJSONStream(this);
+                    val stream = WallpaperHelper.getJSONStream(this)
 
                     if (stream != null) {
-                        List<?> list = JsonHelper.parseList(stream);
-                        if (list == null) return;
+                        val list = JsonHelper.parseList(stream) ?: return@Thread
 
-                        List<Wallpaper> wallpapers = new ArrayList<>();
-                        for (int i = 0; i < list.size(); i++) {
-                            Wallpaper wallpaper = JsonHelper.getWallpaper(list.get(i));
+                        val wallpapers: MutableList<Wallpaper> = ArrayList()
+                        for (i in list.indices) {
+                            val wallpaper = JsonHelper.getWallpaper(list[i]!!)
                             if (wallpaper != null) {
                                 if (!wallpapers.contains(wallpaper)) {
-                                    wallpapers.add(wallpaper);
+                                    wallpapers.add(wallpaper)
                                 } else {
-                                    LogUtil.e("Duplicate wallpaper found: " + wallpaper.getURL());
+                                    LogUtil.e("Duplicate wallpaper found: " + wallpaper.url)
                                 }
                             }
                         }
 
-                        this.runOnUiThread(() -> onWallpapersChecked(wallpapers.size()));
+                        this.runOnUiThread { onWallpapersChecked(wallpapers.size) }
                     }
-                } catch (IOException e) {
-                    LogUtil.e(Log.getStackTraceString(e));
+                } catch (e: IOException) {
+                    LogUtil.e(Log.getStackTraceString(e))
                 }
-            }).start();
+            }.start()
         }
 
-        int size = Preferences.get(this).getAvailableWallpapersCount();
+        val size = Preferences.get(this).availableWallpapersCount
         if (size > 0) {
-            onWallpapersChecked(size);
+            onWallpapersChecked(size)
         }
     }
 
-    private void clearBackStack() {
-        if (mFragManager.getBackStackEntryCount() > 0) {
-            mFragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            onSearchExpanded(false);
+    private fun clearBackStack() {
+        if (mFragManager.backStackEntryCount > 0) {
+            mFragManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            onSearchExpanded(false)
         }
     }
 
-    public void selectPosition(int position) {
+    fun selectPosition(position: Int) {
         if (position == 3) {
-            if (!getResources().getBoolean(R.bool.enable_icon_request) &&
-                    getResources().getBoolean(R.bool.enable_premium_request)) {
-                if (!Preferences.get(this).isPremiumRequestEnabled())
-                    return;
-
+            if (!resources.getBoolean(R.bool.enable_icon_request) &&
+                resources.getBoolean(R.bool.enable_premium_request)
+            ) {
+                if (!Preferences.get(this).isPremiumRequestEnabled)
+                    return
             }
         }
 
         if (position == 4) {
-            if (WallpaperHelper.getWallpaperType(this)
-                    == WallpaperHelper.EXTERNAL_APP) {
-                mPosition = mLastPosition;
-                mNavigationView.getMenu().getItem(mPosition).setChecked(true);
-                WallpaperHelper.launchExternalApp(CandyBarMainActivity.this);
-                return;
+            if (WallpaperHelper.getWallpaperType(this) == WallpaperHelper.EXTERNAL_APP) {
+                mPosition = mLastPosition
+                mNavigationView.menu.getItem(mPosition).isChecked = true
+                WallpaperHelper.launchExternalApp(this@CandyBarMainActivity)
+                return
             }
         }
 
         if (position != mLastPosition) {
-            mLastPosition = mPosition = position;
-            setFragment(getFragment(position));
+            mPosition = position
+            mLastPosition = position
+            setFragment(getFragment(position))
         }
     }
 
-    private void setFragment(Fragment fragment) {
-        clearBackStack();
+    private fun setFragment(fragment: Fragment) {
+        clearBackStack()
 
-        FragmentTransaction ft = mFragManager.beginTransaction()
-                .replace(R.id.container, fragment, mFragmentTag.value);
+        val ft = mFragManager.beginTransaction()
+            .replace(R.id.container, fragment, mFragmentTag.value)
         try {
-            ft.commit();
-        } catch (Exception e) {
-            ft.commitAllowingStateLoss();
+            ft.commit()
+        } catch (e: Exception) {
+            ft.commitAllowingStateLoss()
         }
 
-        Menu menu = mNavigationView.getMenu();
-        menu.getItem(mPosition).setChecked(true);
-        mToolbarTitle.setText(menu.getItem(mPosition).getTitle());
+        val menu = mNavigationView.menu
+        menu.getItem(mPosition).isChecked = true
+        mToolbarTitle.text = menu.getItem(mPosition).title
 
-        backPressedCallback.setEnabled(mFragmentTag != Extras.Tag.HOME);
+        backPressedCallback.isEnabled = mFragmentTag != Extras.Tag.HOME
     }
 
-    private Fragment getFragment(int position) {
-        if (position == Extras.Tag.HOME.idx) {
-            mFragmentTag = Extras.Tag.HOME;
-            return new HomeFragment();
-        } else if (position == Extras.Tag.APPLY.idx) {
-            mFragmentTag = Extras.Tag.APPLY;
-            return new ApplyFragment();
-        } else if (position == Extras.Tag.ICONS.idx) {
-            mFragmentTag = Extras.Tag.ICONS;
-            return new IconsBaseFragment();
-        } else if (position == Extras.Tag.REQUEST.idx) {
-            mFragmentTag = Extras.Tag.REQUEST;
-            return new RequestFragment();
-        } else if (position == Extras.Tag.WALLPAPERS.idx) {
-            mFragmentTag = Extras.Tag.WALLPAPERS;
-            return new WallpapersFragment();
-        } else if (position == Extras.Tag.PRESETS.idx) {
-            mFragmentTag = Extras.Tag.PRESETS;
-            return new PresetsFragment();
-        } else if (position == Extras.Tag.SETTINGS.idx) {
-            mFragmentTag = Extras.Tag.SETTINGS;
-            return new SettingsFragment();
-        } else if (position == Extras.Tag.FAQS.idx) {
-            mFragmentTag = Extras.Tag.FAQS;
-            return new FAQsFragment();
-        } else if (position == Extras.Tag.ABOUT.idx) {
-            mFragmentTag = Extras.Tag.ABOUT;
-            return new AboutFragment();
+    private fun getFragment(position: Int): Fragment {
+        return when (position) {
+            Extras.Tag.HOME.idx -> {
+                mFragmentTag = Extras.Tag.HOME
+                HomeFragment()
+            }
+
+            Extras.Tag.APPLY.idx -> {
+                mFragmentTag = Extras.Tag.APPLY
+                ApplyFragment()
+            }
+
+            Extras.Tag.ICONS.idx -> {
+                mFragmentTag = Extras.Tag.ICONS
+                IconsBaseFragment()
+            }
+
+            Extras.Tag.REQUEST.idx -> {
+                mFragmentTag = Extras.Tag.REQUEST
+                RequestFragment()
+            }
+
+            Extras.Tag.WALLPAPERS.idx -> {
+                mFragmentTag = Extras.Tag.WALLPAPERS
+                WallpapersFragment()
+            }
+
+            Extras.Tag.PRESETS.idx -> {
+                mFragmentTag = Extras.Tag.PRESETS
+                PresetsFragment()
+            }
+
+            Extras.Tag.SETTINGS.idx -> {
+                mFragmentTag = Extras.Tag.SETTINGS
+                SettingsFragment()
+            }
+
+            Extras.Tag.FAQS.idx -> {
+                mFragmentTag = Extras.Tag.FAQS
+                FAQsFragment()
+            }
+
+            Extras.Tag.ABOUT.idx -> {
+                mFragmentTag = Extras.Tag.ABOUT
+                AboutFragment()
+            }
+
+            else -> {
+                mFragmentTag = Extras.Tag.HOME
+                HomeFragment()
+            }
         }
-
-        mFragmentTag = Extras.Tag.HOME;
-        return new HomeFragment();
     }
 
-    private Fragment getActionFragment(int action) {
-        switch (action) {
-            case IntentHelper.ICON_PICKER:
-            case IntentHelper.IMAGE_PICKER:
-                mPosition = mLastPosition = (mFragmentTag = Extras.Tag.ICONS).idx;
-                return new IconsBaseFragment();
-            case IntentHelper.WALLPAPER_PICKER:
+    private fun getActionFragment(action: Int): Fragment {
+        return when (action) {
+            IntentHelper.ICON_PICKER, IntentHelper.IMAGE_PICKER -> {
+                mFragmentTag = Extras.Tag.ICONS
+                mPosition = mFragmentTag.idx
+                mLastPosition = mPosition
+                IconsBaseFragment()
+            }
+
+            IntentHelper.WALLPAPER_PICKER -> {
                 if (WallpaperHelper.getWallpaperType(this) == WallpaperHelper.CLOUD_WALLPAPERS) {
-                    mPosition = mLastPosition = (mFragmentTag = Extras.Tag.WALLPAPERS).idx;
-                    return new WallpapersFragment();
+                    mFragmentTag = Extras.Tag.WALLPAPERS
+                    mPosition = mFragmentTag.idx
+                    mLastPosition = mPosition
+                    WallpapersFragment()
+                } else {
+                    mFragmentTag = Extras.Tag.HOME
+                    mPosition = mFragmentTag.idx
+                    mLastPosition = mPosition
+                    HomeFragment()
                 }
-            default:
-                mPosition = mLastPosition = (mFragmentTag = Extras.Tag.HOME).idx;
-                return new HomeFragment();
+            }
+
+            else -> {
+                mFragmentTag = Extras.Tag.HOME
+                mPosition = mFragmentTag.idx
+                mLastPosition = mPosition
+                HomeFragment()
+            }
         }
     }
 
-    public static class ActivityConfiguration {
+    class ActivityConfiguration {
+        var randomString: ByteArray? = null
+            private set
+        var donationProductsId: Array<String>? = null
+            private set
+        var premiumRequestProductsId: Array<String>? = null
+            private set
+        var premiumRequestProductsCount: IntArray? = null
+            private set
 
-        private byte[] mRandomString;
-        private String[] mDonationProductsId;
-        private String[] mPremiumRequestProductsId;
-        private int[] mPremiumRequestProductsCount;
-
-
-        public ActivityConfiguration setRandomString(@NonNull byte[] randomString) {
-            mRandomString = randomString;
-            return this;
+        fun setRandomString(randomString: ByteArray): ActivityConfiguration {
+            this.randomString = randomString
+            return this
         }
 
-        public ActivityConfiguration setDonationProductsId(@NonNull String[] productsId) {
-            mDonationProductsId = productsId;
-            return this;
+        fun setDonationProductsId(productsId: Array<String>): ActivityConfiguration {
+            this.donationProductsId = productsId
+            return this
         }
 
-        public ActivityConfiguration setPremiumRequestProducts(@NonNull String[] ids, @NonNull int[] counts) {
-            mPremiumRequestProductsId = ids;
-            mPremiumRequestProductsCount = counts;
-            return this;
+        fun setPremiumRequestProducts(ids: Array<String>, counts: IntArray): ActivityConfiguration {
+            this.premiumRequestProductsId = ids
+            this.premiumRequestProductsCount = counts
+            return this
         }
+    }
 
-        public byte[] getRandomString() {
-            return mRandomString;
-        }
+    companion object {
+        @JvmField
+        var sMissedApps: MutableList<Request>? = null
 
+        @JvmField
+        var sSections: MutableList<Icon>? = null
 
-        public String[] getDonationProductsId() {
-            return mDonationProductsId;
-        }
+        @JvmField
+        var sHomeIcon: Home? = null
 
-        public String[] getPremiumRequestProductsId() {
-            return mPremiumRequestProductsId;
-        }
+        @JvmField
+        var sInstalledAppsCount = 0
 
-        public int[] getPremiumRequestProductsCount() {
-            return mPremiumRequestProductsCount;
-        }
+        @JvmField
+        var sIconsCount = 0
+
+        private const val NOTIFICATION_PERMISSION_CODE = 10
     }
 }

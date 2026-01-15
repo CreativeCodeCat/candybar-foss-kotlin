@@ -1,71 +1,64 @@
-package candybar.lib.activities;
+package candybar.lib.activities
 
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.transition.Transition;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowInsets;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.palette.graphics.Palette;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
-import com.danimahardhika.android.helpers.animation.AnimationHelper;
-import com.danimahardhika.android.helpers.core.ColorHelper;
-import com.danimahardhika.android.helpers.core.DrawableHelper;
-import com.danimahardhika.android.helpers.permission.PermissionCode;
-import com.kogitune.activitytransition.ActivityTransition;
-import com.kogitune.activitytransition.ExitActivityTransition;
-
-import java.util.HashMap;
-
-import candybar.lib.R;
-import candybar.lib.adapters.WallpapersAdapter;
-import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.databases.Database;
-import candybar.lib.helpers.LocaleHelper;
-import candybar.lib.helpers.TapIntroHelper;
-import candybar.lib.helpers.ThemeHelper;
-import candybar.lib.items.PopupItem;
-import candybar.lib.items.Wallpaper;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.tasks.WallpaperApplyTask;
-import candybar.lib.tasks.WallpaperPropertiesLoaderTask;
-import candybar.lib.utils.CandyBarGlideModule;
-import candybar.lib.utils.Extras;
-import candybar.lib.utils.Popup;
-import candybar.lib.utils.WallpaperDownloader;
-import com.github.chrisbanes.photoview.PhotoView;
+import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.transition.Transition
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowInsets
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.palette.graphics.Palette
+import candybar.lib.R
+import candybar.lib.adapters.WallpapersAdapter
+import candybar.lib.applications.CandyBarApplication
+import candybar.lib.databases.Database
+import candybar.lib.helpers.LocaleHelper
+import candybar.lib.helpers.TapIntroHelper
+import candybar.lib.helpers.ThemeHelper
+import candybar.lib.items.PopupItem
+import candybar.lib.items.Wallpaper
+import candybar.lib.preferences.Preferences
+import candybar.lib.tasks.WallpaperApplyTask
+import candybar.lib.tasks.WallpaperPropertiesLoaderTask
+import candybar.lib.utils.CandyBarGlideModule
+import candybar.lib.utils.Extras
+import candybar.lib.utils.Popup
+import candybar.lib.utils.WallpaperDownloader
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
+import com.danimahardhika.android.helpers.animation.AnimationHelper
+import com.danimahardhika.android.helpers.core.ColorHelper
+import com.danimahardhika.android.helpers.core.DrawableHelper
+import com.danimahardhika.android.helpers.permission.PermissionCode
+import com.github.chrisbanes.photoview.PhotoView
+import com.kogitune.activitytransition.ActivityTransition
+import com.kogitune.activitytransition.ExitActivityTransition
 
 /*
  * CandyBar - Material Dashboard
@@ -85,462 +78,460 @@ import com.github.chrisbanes.photoview.PhotoView;
  * limitations under the License.
  */
 
-public class CandyBarWallpaperActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener,
-        ActivityCompat.OnRequestPermissionsResultCallback, WallpaperPropertiesLoaderTask.Callback {
+class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClickListener,
+    ActivityCompat.OnRequestPermissionsResultCallback, WallpaperPropertiesLoaderTask.Callback {
 
-    private PhotoView mImageView;
-    private ProgressBar mProgress;
-    private LinearLayout mBottomBar;
-    private TextView mName;
-    private TextView mAuthor;
-    private ImageView mBack;
-    private ImageView mMenuApply;
-    private ImageView mMenuSave;
+    private lateinit var mImageView: PhotoView
+    private lateinit var mProgress: ProgressBar
+    private lateinit var mBottomBar: LinearLayout
+    private lateinit var mName: TextView
+    private lateinit var mAuthor: TextView
+    private lateinit var mBack: ImageView
+    private lateinit var mMenuApply: ImageView
+    private lateinit var mMenuSave: ImageView
 
-    private boolean mIsEnter;
-    private boolean mIsResumed = false;
+    private var mIsEnter = false
+    private var mIsResumed = false
 
-    private Wallpaper mWallpaper;
-    private String mWallpaperName;
-    private Runnable mRunnable;
-    private Handler mHandler;
-    private PhotoView mAttacher;
-    private ExitActivityTransition mExitTransition;
+    private var mWallpaper: Wallpaper? = null
+    private var mWallpaperName: String? = null
+    private var mRunnable: Runnable? = null
+    private var mHandler: Handler? = null
+    private var mAttacher: PhotoView? = null
+    private var mExitTransition: ExitActivityTransition? = null
 
-    private boolean prevIsDarkTheme;
+    private var prevIsDarkTheme = false
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        prevIsDarkTheme = ThemeHelper.isDarkTheme(this);
-        super.setTheme(R.style.CandyBar_Theme_Wallpaper);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wallpaper);
-        mIsEnter = true;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        prevIsDarkTheme = ThemeHelper.isDarkTheme(this)
+        super.setTheme(R.style.CandyBar_Theme_Wallpaper)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_wallpaper)
+        mIsEnter = true
 
-        mImageView = findViewById(R.id.wallpaper);
-        mProgress = findViewById(R.id.progress);
-        mBottomBar = findViewById(R.id.bottom_bar);
-        mName = findViewById(R.id.name);
-        mAuthor = findViewById(R.id.author);
-        mBack = findViewById(R.id.back);
-        mMenuApply = findViewById(R.id.menu_apply);
-        mMenuSave = findViewById(R.id.menu_save);
+        mImageView = findViewById(R.id.wallpaper)
+        mProgress = findViewById(R.id.progress)
+        mBottomBar = findViewById(R.id.bottom_bar)
+        mName = findViewById(R.id.name)
+        mAuthor = findViewById(R.id.author)
+        mBack = findViewById(R.id.back)
+        mMenuApply = findViewById(R.id.menu_apply)
+        mMenuSave = findViewById(R.id.menu_save)
 
-        mProgress.getIndeterminateDrawable().setColorFilter(
-                Color.parseColor("#CCFFFFFF"), PorterDuff.Mode.SRC_IN);
-        mBack.setImageDrawable(DrawableHelper.getTintedDrawable(
-                this, R.drawable.ic_toolbar_back, Color.WHITE));
-        mBack.setOnClickListener(this);
-        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                closePreview();
+        mProgress.indeterminateDrawable.setColorFilter(
+            Color.parseColor("#CCFFFFFF"), PorterDuff.Mode.SRC_IN
+        )
+        mBack.setImageDrawable(
+            DrawableHelper.getTintedDrawable(
+                this, R.drawable.ic_toolbar_back, Color.WHITE
+            )
+        )
+        mBack.setOnClickListener(this)
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                closePreview()
             }
-        });
+        })
 
-        String url = "";
+        var url = ""
         if (savedInstanceState != null) {
-            url = savedInstanceState.getString(Extras.EXTRA_URL);
+            url = savedInstanceState.getString(Extras.EXTRA_URL, "")
         }
 
-        Bundle bundle = getIntent().getExtras();
+        val bundle = intent.extras
         if (bundle != null) {
-            url = bundle.getString(Extras.EXTRA_URL);
+            url = bundle.getString(Extras.EXTRA_URL, "")
         }
 
-        mWallpaper = Database.get(this.getApplicationContext()).getWallpaper(url);
+        mWallpaper = Database.get(this.applicationContext).getWallpaper(url)
         if (mWallpaper == null) {
-            finish();
-            return;
+            finish()
+            return
         }
 
-        mWallpaperName = mWallpaper.getURL().split("/")[mWallpaper.getURL().split("/").length-1];
+        mWallpaperName = mWallpaper!!.url.split("/").last()
 
-        CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                "wallpaper",
-                new HashMap<>() {{
-                    put("url", mWallpaperName);
-                    put("action", "preview");
-                }}
-        );
+        CandyBarApplication.getConfiguration().analyticsHandler?.logEvent(
+            "wallpaper",
+            hashMapOf<String, Any>(
+                "url" to mWallpaperName!!,
+                "action" to "preview"
+            )
+        )
 
-        initBottomBar();
+        initBottomBar()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootview), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootview)) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            if (mBack.getLayoutParams() instanceof CoordinatorLayout.LayoutParams params) {
-                params.topMargin = systemBars.top;
+            if (mBack.layoutParams is CoordinatorLayout.LayoutParams) {
+                (mBack.layoutParams as CoordinatorLayout.LayoutParams).topMargin = systemBars.top
             }
 
-            LinearLayout container = findViewById(R.id.bottom_bar_container);
-            container.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+            val container = findViewById<LinearLayout>(R.id.bottom_bar_container)
+            container.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
 
-            if (container.getLayoutParams() instanceof LinearLayout.LayoutParams params) {
-                int height = getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
-                params.height = height + systemBars.bottom;
+            if (container.layoutParams is LinearLayout.LayoutParams) {
+                val height = resources.getDimensionPixelSize(R.dimen.bottom_bar_height)
+                (container.layoutParams as LinearLayout.LayoutParams).height = height + systemBars.bottom
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                return WindowInsetsCompat.toWindowInsetsCompat(WindowInsets.CONSUMED);
+                WindowInsetsCompat.toWindowInsetsCompat(WindowInsets.CONSUMED)
             } else {
-                return insets.consumeSystemWindowInsets();
+                insets.consumeSystemWindowInsets()
             }
-        });
+        }
 
         if (!mIsResumed) {
             mExitTransition = ActivityTransition
-                    .with(getIntent())
-                    .to(this, mImageView, Extras.EXTRA_IMAGE)
-                    .duration(300)
-                    .start(savedInstanceState);
+                .with(intent)
+                .to(this, mImageView, Extras.EXTRA_IMAGE)
+                .duration(300)
+                .start(savedInstanceState)
         }
 
-        if (mImageView.getDrawable() == null) {
-            int color = mWallpaper.getColor();
+        if (mImageView.drawable == null) {
+            var color = mWallpaper!!.color
             if (color == 0) {
-                color = ColorHelper.getAttributeColor(this, R.attr.cb_cardBackground);
+                color = ColorHelper.getAttributeColor(this, R.attr.cb_cardBackground)
             }
 
-            AnimationHelper.setBackgroundColor(findViewById(R.id.rootview), Color.TRANSPARENT, color).start();
-            mProgress.getIndeterminateDrawable().setColorFilter(
-                    ColorHelper.setColorAlpha(ColorHelper.getTitleTextColor(color), 0.7f),
-                    PorterDuff.Mode.SRC_IN);
+            AnimationHelper.setBackgroundColor(findViewById(R.id.rootview), Color.TRANSPARENT, color).start()
+            mProgress.indeterminateDrawable.setColorFilter(
+                ColorHelper.setColorAlpha(ColorHelper.getTitleTextColor(color), 0.7f),
+                PorterDuff.Mode.SRC_IN
+            )
         }
 
         if (savedInstanceState == null) {
-            Transition transition = getWindow().getSharedElementEnterTransition();
+            val transition = window.sharedElementEnterTransition
 
             if (transition != null) {
-                transition.addListener(new Transition.TransitionListener() {
-                    @Override
-                    public void onTransitionStart(Transition transition) {
-                    }
+                transition.addListener(object : Transition.TransitionListener {
+                    override fun onTransitionStart(transition: Transition) {}
 
-                    @Override
-                    public void onTransitionEnd(Transition transition) {
+                    override fun onTransitionEnd(transition: Transition) {
                         if (mIsEnter) {
-                            mIsEnter = false;
+                            mIsEnter = false
 
-                            AnimationHelper.fade(mBottomBar).duration(400).start();
-                            loadWallpaper();
+                            AnimationHelper.fade(mBottomBar).duration(400).start()
+                            loadWallpaper()
                         }
                     }
 
-                    @Override
-                    public void onTransitionCancel(Transition transition) {
-                    }
+                    override fun onTransitionCancel(transition: Transition) {}
 
-                    @Override
-                    public void onTransitionPause(Transition transition) {
-                    }
+                    override fun onTransitionPause(transition: Transition) {}
 
-                    @Override
-                    public void onTransitionResume(Transition transition) {
-                    }
-                });
+                    override fun onTransitionResume(transition: Transition) {}
+                })
 
-                return;
+                return
             }
         }
 
-        mRunnable = () -> {
-            AnimationHelper.fade(mBottomBar).duration(400).start();
-            loadWallpaper();
+        mRunnable = Runnable {
+            AnimationHelper.fade(mBottomBar).duration(400).start()
+            loadWallpaper()
 
-            mRunnable = null;
-            mHandler = null;
-        };
-        mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, 700);
+            mRunnable = null
+            mHandler = null
+        }
+        mHandler = Handler(Looper.getMainLooper())
+        mHandler!!.postDelayed(mRunnable!!, 700)
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
         if (prevIsDarkTheme != ThemeHelper.isDarkTheme(this)) {
-            recreate();
-            return;
+            recreate()
+            return
         }
-        LocaleHelper.setLocale(this);
-        // resetBottomBarPadding();
+        LocaleHelper.setLocale(this)
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        LocaleHelper.setLocale(newBase);
-        super.attachBaseContext(newBase);
+    override fun attachBaseContext(newBase: Context) {
+        LocaleHelper.setLocale(newBase)
+        super.attachBaseContext(newBase)
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
+    override fun onSaveInstanceState(outState: Bundle) {
         if (mWallpaper != null) {
-            outState.putString(Extras.EXTRA_URL, mWallpaper.getURL());
+            outState.putString(Extras.EXTRA_URL, mWallpaper!!.url)
         }
 
-        outState.putBoolean(Extras.EXTRA_RESUMED, true);
-        super.onSaveInstanceState(outState);
+        outState.putBoolean(Extras.EXTRA_RESUMED, true)
+        super.onSaveInstanceState(outState)
     }
 
-    @Override
-    protected void onDestroy() {
-        if (Preferences.get(this).isCropWallpaper()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+    override fun onDestroy() {
+        if (Preferences.get(this).isCropWallpaper) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
         }
-        Glide.get(this).clearMemory();
-        if (mAttacher != null) {
-            mAttacher = null;
-        }
-        super.onDestroy();
+        Glide.get(this).clearMemory()
+        mAttacher = null
+        super.onDestroy()
     }
 
-    private void closePreview() {
-        WallpapersAdapter.sIsClickable = true;
+    private fun closePreview() {
+        WallpapersAdapter.sIsClickable = true
         if (mHandler != null && mRunnable != null)
-            mHandler.removeCallbacks(mRunnable);
+            mHandler!!.removeCallbacks(mRunnable!!)
 
-        if (mExitTransition != null) {
-            mExitTransition.exit(this);
-        }
+        mExitTransition?.exit(this)
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
         if (id == android.R.id.home) {
-            closePreview();
-            return true;
+            closePreview()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
+    override fun onClick(view: View) {
+        val id = view.id
         if (id == R.id.back) {
-            closePreview();
+            closePreview()
         } else if (id == R.id.menu_apply) {
-            Popup popup = Popup.Builder(this)
-                    .to(mMenuApply)
-                    .list(PopupItem.getApplyItems(this))
-                    .callback((p, position) -> {
-                        PopupItem item = p.getItems().get(position);
-                        if (item.getType() == PopupItem.Type.WALLPAPER_CROP) {
-                            Preferences.get(this).setCropWallpaper(!item.getCheckboxValue());
-                            item.setCheckboxValue(Preferences.get(this).isCropWallpaper());
+            val popup = Popup.Builder(this)
+                .to(mMenuApply)
+                .list(PopupItem.getApplyItems(this))
+                .callback { p, position ->
+                    val item = p.items[position]
+                    if (item.type == PopupItem.Type.WALLPAPER_CROP) {
+                        Preferences.get(this).isCropWallpaper = !item.checkboxValue
+                        item.checkboxValue = Preferences.get(this).isCropWallpaper
 
-                            p.updateItem(position, item);
-                            if (Preferences.get(this).isCropWallpaper()) {
-                                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                                }
-                                return;
+                        p.updateItem(position, item)
+                        if (Preferences.get(this).isCropWallpaper) {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                             }
-
-                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                            return;
-                        } else {
-                            RectF rectF = null;
-                            if (Preferences.get(this).isCropWallpaper()) {
-                                if (mAttacher != null)
-                                    rectF = mAttacher.getDisplayRect();
-                            }
-
-                            WallpaperApplyTask task = new WallpaperApplyTask(this, mWallpaper)
-                                    .crop(rectF);
-
-                            if (item.getType() == PopupItem.Type.LOCKSCREEN) {
-                                CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                                        "wallpaper",
-                                        new HashMap<>() {{
-                                            put("url", mWallpaperName);
-                                            put("section", "lockscreen");
-                                            put("action", "apply");
-                                        }}
-                                );
-                                task.to(WallpaperApplyTask.Apply.LOCKSCREEN);
-                            } else if (item.getType() == PopupItem.Type.HOMESCREEN) {
-                                CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                                        "wallpaper",
-                                        new HashMap<>() {{
-                                            put("url", mWallpaperName);
-                                            put("section", "homescreen");
-                                            put("action", "apply");
-                                        }}
-                                );
-                                task.to(WallpaperApplyTask.Apply.HOMESCREEN);
-                            } else if (item.getType() == PopupItem.Type.HOMESCREEN_LOCKSCREEN) {
-                                CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                                        "wallpaper",
-                                        new HashMap<>() {{
-                                            put("url", mWallpaperName);
-                                            put("section", "homescreen_and_lockscreen");
-                                            put("action", "apply");
-                                        }}
-                                );
-                                task.to(WallpaperApplyTask.Apply.HOMESCREEN_LOCKSCREEN);
-                            }
-
-                            task.executeOnThreadPool();
+                            return@callback
                         }
 
-                        p.dismiss();
-                    })
-                    .build();
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                        return@callback
+                    } else {
+                        var rectF: RectF? = null
+                        if (Preferences.get(this).isCropWallpaper) {
+                            if (mAttacher != null)
+                                rectF = mAttacher!!.displayRect
+                        }
 
-            if (getResources().getBoolean(R.bool.enable_wallpaper_download)) {
-                popup.removeItem(popup.getItems().size() - 1);
+
+                        val task = WallpaperApplyTask(this, mWallpaper!!)
+                            .crop(rectF)
+
+
+                        if (item.type == PopupItem.Type.LOCKSCREEN) {
+                            CandyBarApplication.getConfiguration().analyticsHandler?.logEvent(
+                                "wallpaper",
+                                hashMapOf<String, Any>(
+                                    "url" to mWallpaperName!!,
+                                    "section" to "lockscreen",
+                                    "action" to "apply"
+                                )
+                            )
+                            task.to(WallpaperApplyTask.Apply.LOCKSCREEN)
+                        } else if (item.type == PopupItem.Type.HOMESCREEN) {
+                            CandyBarApplication.getConfiguration().analyticsHandler?.logEvent(
+                                "wallpaper",
+                                hashMapOf<String, Any>(
+                                    "url" to mWallpaperName!!,
+                                    "section" to "homescreen",
+                                    "action" to "apply"
+                                )
+                            )
+                            task.to(WallpaperApplyTask.Apply.HOMESCREEN)
+                        } else if (item.type == PopupItem.Type.HOMESCREEN_LOCKSCREEN) {
+                            CandyBarApplication.getConfiguration().analyticsHandler?.logEvent(
+                                "wallpaper",
+                                hashMapOf<String, Any>(
+                                    "url" to mWallpaperName!!,
+                                    "section" to "homescreen_and_lockscreen",
+                                    "action" to "apply"
+                                )
+                            )
+                            task.to(WallpaperApplyTask.Apply.HOMESCREEN_LOCKSCREEN)
+                        }
+
+                        task.executeOnThreadPool()
+                    }
+
+                    p.dismiss()
+                }
+                .build()
+
+            if (resources.getBoolean(R.bool.enable_wallpaper_download)) {
+                popup.removeItem(popup.items.size - 1)
             }
-            popup.show();
+            popup.show()
         } else if (id == R.id.menu_save) {
             WallpaperDownloader.prepare(this)
-                    .wallpaper(mWallpaper)
-                    .start();
+                .wallpaper(mWallpaper!!)
+                .start()
         }
     }
 
-    @Override
-    public boolean onLongClick(View view) {
-        int id = view.getId();
-        int res = 0;
+    override fun onLongClick(view: View): Boolean {
+        val id = view.id
+        var res = 0
         if (id == R.id.menu_apply) {
-            res = R.string.wallpaper_apply;
+            res = R.string.wallpaper_apply
         } else if (id == R.id.menu_save) {
-            res = R.string.wallpaper_save_to_device;
+            res = R.string.wallpaper_save_to_device
         }
 
-        if (res == 0) return false;
+        if (res == 0) return false
 
-        Toast.makeText(this, res, Toast.LENGTH_SHORT).show();
-        return true;
+        Toast.makeText(this, res, Toast.LENGTH_SHORT).show()
+        return true
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PermissionCode.STORAGE) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                WallpaperDownloader.prepare(this).wallpaper(mWallpaper).start();
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                WallpaperDownloader.prepare(this).wallpaper(mWallpaper!!).start()
             } else {
-                Toast.makeText(this, R.string.permission_storage_denied, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.permission_storage_denied, Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    @Override
-    public void onPropertiesReceived(Wallpaper wallpaper) {
-        if (wallpaper == null) return;
+    override fun onPropertiesReceived(wallpaper: Wallpaper?) {
+        if (wallpaper == null) return
 
-        mWallpaper.setDimensions(wallpaper.getDimensions());
-        mWallpaper.setSize(wallpaper.getSize());
-        mWallpaper.setMimeType(wallpaper.getMimeType());
+        mWallpaper?.setDimensions(wallpaper.dimensions)
+        mWallpaper?.setSize(wallpaper.size)
+        mWallpaper?.setMimeType(wallpaper.mimeType)
     }
 
-    private void initBottomBar() {
-        mName.setText(mWallpaper.getName());
-        mName.setTextColor(Color.WHITE);
-        mAuthor.setText(mWallpaper.getAuthor());
-        mAuthor.setTextColor(ColorHelper.setColorAlpha(Color.WHITE, 0.7f));
-        mMenuSave.setImageDrawable(DrawableHelper.getTintedDrawable(
-                this, R.drawable.ic_toolbar_download, Color.WHITE));
-        mMenuApply.setImageDrawable(DrawableHelper.getTintedDrawable(
-                this, R.drawable.ic_toolbar_apply_options, Color.WHITE));
+    private fun initBottomBar() {
+        mName.text = mWallpaper!!.name
+        mName.setTextColor(Color.WHITE)
+        mAuthor.text = mWallpaper!!.author
+        mAuthor.setTextColor(ColorHelper.setColorAlpha(Color.WHITE, 0.7f))
+        mMenuSave.setImageDrawable(
+            DrawableHelper.getTintedDrawable(
+                this, R.drawable.ic_toolbar_download, Color.WHITE
+            )
+        )
+        mMenuApply.setImageDrawable(
+            DrawableHelper.getTintedDrawable(
+                this, R.drawable.ic_toolbar_apply_options, Color.WHITE
+            )
+        )
 
-        if (getResources().getBoolean(R.bool.enable_wallpaper_download)) {
-            mMenuSave.setVisibility(View.VISIBLE);
+        if (resources.getBoolean(R.bool.enable_wallpaper_download)) {
+            mMenuSave.visibility = View.VISIBLE
         }
 
-        mMenuApply.setOnClickListener(this);
-        mMenuSave.setOnClickListener(this);
+        mMenuApply.setOnClickListener(this)
+        mMenuSave.setOnClickListener(this)
 
-        mMenuApply.setOnLongClickListener(this);
-        mMenuSave.setOnLongClickListener(this);
+        mMenuApply.setOnLongClickListener(this)
+        mMenuSave.setOnLongClickListener(this)
     }
 
-    private void loadWallpaper() {
-        if (mAttacher != null) {
-            mAttacher = null;
-        }
+    private fun loadWallpaper() {
+        mAttacher = null
 
-        new WallpaperPropertiesLoaderTask(this, mWallpaper, this)
-                .executeOnThreadPool();
+        WallpaperPropertiesLoaderTask(this, mWallpaper, this)
+            .executeOnThreadPool()
 
-        final Context context = this;
-        if (CandyBarGlideModule.isValidContextForGlide(context)) {
-            Glide.with(context)
-                    .asBitmap()
-                    .load(mWallpaper.getURL())
-                    .override(2000)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .timeout(10000)
-                    .listener(new RequestListener<>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                            if (mWallpaper.getColor() == 0) {
-                                mWallpaper.setColor(ColorHelper.getAttributeColor(
-                                        CandyBarWallpaperActivity.this, com.google.android.material.R.attr.colorSecondary));
+        if (CandyBarGlideModule.isValidContextForGlide(this)) {
+            Glide.with(this)
+                .asBitmap()
+                .load(mWallpaper!!.url)
+                .override(2000)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .timeout(10000)
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (mWallpaper!!.color == 0) {
+                            mWallpaper!!.color = ColorHelper.getAttributeColor(
+                                this@CandyBarWallpaperActivity,
+                                com.google.android.material.R.attr.colorSecondary
+                            )
+                        }
+
+                        return true
+                    }
+
+                    override fun onResourceReady(
+                        loadedImage: Bitmap?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (loadedImage != null && mWallpaper!!.color == 0) {
+                            Palette.from(loadedImage).generate { palette ->
+                                if (palette != null) {
+                                    val accent = ColorHelper.getAttributeColor(
+                                        this@CandyBarWallpaperActivity,
+                                        com.google.android.material.R.attr.colorSecondary
+                                    )
+                                    var color = palette.getVibrantColor(accent)
+                                    if (color == accent)
+                                        color = palette.getMutedColor(accent)
+
+                                    mWallpaper!!.color = color
+                                    Database.get(this@CandyBarWallpaperActivity).updateWallpaper(mWallpaper)
+                                }
+
+                                onWallpaperLoaded()
                             }
-
-                            return true;
+                        } else {
+                            onWallpaperLoaded()
                         }
 
-                        @Override
-                        public boolean onResourceReady(Bitmap loadedImage, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                            if (loadedImage != null && mWallpaper.getColor() == 0) {
-                                Palette.from(loadedImage).generate(palette -> {
-                                    if (palette != null) {
-                                        int accent = ColorHelper.getAttributeColor(
-                                                CandyBarWallpaperActivity.this, com.google.android.material.R.attr.colorSecondary);
-                                        int color = palette.getVibrantColor(accent);
-                                        if (color == accent)
-                                            color = palette.getMutedColor(accent);
+                        return false
+                    }
+                })
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                    ) {
+                        mImageView.setImageBitmap(resource)
+                    }
 
-                                        mWallpaper.setColor(color);
-                                        Database.get(CandyBarWallpaperActivity.this).updateWallpaper(mWallpaper);
-                                    }
+                    override fun onLoadCleared(placeholder: Drawable?) { /* Do nothing */
+                    }
+                })
 
-                                    onWallpaperLoaded();
-                                });
-                            } else {
-                                onWallpaperLoaded();
-                            }
-
-                            return false;
-                        }
-                    })
-                    .into(new CustomTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
-                            mImageView.setImageBitmap(resource);
-                        }
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) { /* Do nothing */ }
-                    });
-
-            if (Preferences.get(CandyBarWallpaperActivity.this).isCropWallpaper()) {
-                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            if (Preferences.get(this).isCropWallpaper) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                 }
             }
         }
 
-        AnimationHelper.fade(mProgress).start();
+        AnimationHelper.fade(mProgress).start()
     }
 
-    private void onWallpaperLoaded() {
-        mAttacher = new PhotoView(mImageView.getContext());
-        mAttacher.setScaleType(ImageView.ScaleType.CENTER_CROP);
+    private fun onWallpaperLoaded() {
+        mAttacher = PhotoView(mImageView.context)
+        mAttacher!!.scaleType = ImageView.ScaleType.CENTER_CROP
 
-        AnimationHelper.fade(mProgress).start();
-        mRunnable = null;
-        mHandler = null;
-        mIsResumed = false;
+        AnimationHelper.fade(mProgress).start()
+        mRunnable = null
+        mHandler = null
+        mIsResumed = false
 
-        if (this.getResources().getBoolean(R.bool.show_intro)) {
-            TapIntroHelper.showWallpaperPreviewIntro(this, mWallpaper.getColor());
+        if (this.resources.getBoolean(R.bool.show_intro)) {
+            TapIntroHelper.showWallpaperPreviewIntro(this, mWallpaper!!.color)
         }
     }
 }
