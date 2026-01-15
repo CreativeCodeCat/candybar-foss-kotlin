@@ -1,13 +1,11 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import android.content.Context;
-import android.graphics.Typeface;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
-
-import candybar.lib.R;
+import android.content.Context
+import android.graphics.Typeface
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
+import androidx.core.content.res.ResourcesCompat
+import candybar.lib.R
 
 /*
  * CandyBar - Material Dashboard
@@ -27,20 +25,23 @@ import candybar.lib.R;
  * limitations under the License.
  */
 
-public class TypefaceHelper {
+object TypefaceHelper {
 
+    @JvmStatic
     @Nullable
-    public static Typeface getRegular(@NonNull Context context) {
-        return ResourcesCompat.getFont(context, R.font.regular);
+    fun getRegular(@NonNull context: Context): Typeface? {
+        return ResourcesCompat.getFont(context, R.font.regular)
     }
 
+    @JvmStatic
     @Nullable
-    public static Typeface getMedium(@NonNull Context context) {
-        return ResourcesCompat.getFont(context, R.font.medium);
+    fun getMedium(@NonNull context: Context): Typeface? {
+        return ResourcesCompat.getFont(context, R.font.medium)
     }
 
+    @JvmStatic
     @Nullable
-    public static Typeface getBold(@NonNull Context context) {
-        return ResourcesCompat.getFont(context, R.font.bold);
+    fun getBold(@NonNull context: Context): Typeface? {
+        return ResourcesCompat.getFont(context, R.font.bold)
     }
 }

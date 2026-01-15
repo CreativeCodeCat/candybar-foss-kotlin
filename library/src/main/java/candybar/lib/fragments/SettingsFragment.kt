@@ -295,7 +295,7 @@ class SettingsFragment : Fragment() {
         private var isCustom = false
         private var isPremium = false
         private var requests: List<Request>? = null
-        private var errorMessage = ""
+        private var errorMessage: String? = null
 
         override fun preRun() {
             isPacific = RequestHelper.isPremiumPacificEnabled(requireActivity())
@@ -321,11 +321,12 @@ class SettingsFragment : Fragment() {
                     Thread.sleep(1)
                     val directory = requireActivity().cacheDir
                     requests = Database.get(requireActivity()).getPremiumRequest(null)
-                    if (requests!!.isEmpty()) return true
+                    val currentRequests = requests ?: return true
+                    if (currentRequests.isEmpty()) return true
 
                     val files: MutableList<String> = ArrayList()
 
-                    for (request in requests!!) {
+                    for (request in currentRequests) {
                         val drawable = DrawableHelper.getPackageIcon(requireActivity(), request.activity!!)
                         if (drawable != null) {
                             val icon = IconsHelper.saveIcon(
@@ -341,27 +342,27 @@ class SettingsFragment : Fragment() {
                     }
 
                     if (isPacific) {
-                        errorMessage = RequestHelper.sendPacificRequest(requests, files, directory, pacificApiKey).toString()
-                        if (errorMessage == "null") {
-                            for (request in requests!!) {
+                        errorMessage = RequestHelper.sendPacificRequest(currentRequests, files, directory, pacificApiKey ?: "")
+                        if (errorMessage == null) {
+                            for (request in currentRequests) {
                                 Database.get(requireActivity()).addRequest(null, request)
                                 Database.get(requireActivity()).addPremiumRequest(null, request)
                             }
                         }
-                        return errorMessage == "null"
+                        return errorMessage == null
                     } else if (isCustom) {
-                        errorMessage = RequestHelper.sendCustomRequest(requests, isPremium).toString()
-                        if (errorMessage == "null") {
-                            for (request in requests!!) {
+                        errorMessage = RequestHelper.sendCustomRequest(currentRequests, isPremium)
+                        if (errorMessage == null) {
+                            for (request in currentRequests) {
                                 Database.get(requireActivity()).addRequest(null, request)
                                 Database.get(requireActivity()).addPremiumRequest(null, request)
                             }
                         }
-                        return errorMessage == "null"
+                        return errorMessage == null
                     } else {
-                        val appFilter = RequestHelper.buildXml(requireActivity(), requests!!, RequestHelper.XmlType.APPFILTER)
-                        val appMap = RequestHelper.buildXml(requireActivity(), requests!!, RequestHelper.XmlType.APPMAP)
-                        val themeResources = RequestHelper.buildXml(requireActivity(), requests!!, RequestHelper.XmlType.THEME_RESOURCES)
+                        val appFilter = RequestHelper.buildXml(requireActivity(), currentRequests, RequestHelper.XmlType.APPFILTER)
+                        val appMap = RequestHelper.buildXml(requireActivity(), currentRequests, RequestHelper.XmlType.APPMAP)
+                        val themeResources = RequestHelper.buildXml(requireActivity(), currentRequests, RequestHelper.XmlType.THEME_RESOURCES)
 
                         if (appFilter != null) {
                             files.add(appFilter.toString())

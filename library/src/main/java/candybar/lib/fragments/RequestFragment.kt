@@ -324,7 +324,7 @@ class RequestFragment : Fragment(), View.OnClickListener {
                 try {
                     Thread.sleep(1)
                     if (CandyBarMainActivity.sMissedApps == null) {
-                        CandyBarMainActivity.sMissedApps = RequestHelper.getMissingApps(requireActivity())
+                        CandyBarMainActivity.sMissedApps = RequestHelper.getMissingApps(requireActivity()).toMutableList()
                     }
 
                     requests = CandyBarMainActivity.sMissedApps
@@ -429,7 +429,7 @@ class RequestFragment : Fragment(), View.OnClickListener {
                     }
 
                     if (isPacific) {
-                        errorMessage = RequestHelper.sendPacificRequest(requests, files, directory, pacificApiKey)
+                        errorMessage = RequestHelper.sendPacificRequest(requests ?: emptyList(), files, directory, pacificApiKey ?: "")
                         if (errorMessage == null) {
                             if (requests != null) {
                                 for (request in requests) {
@@ -439,7 +439,7 @@ class RequestFragment : Fragment(), View.OnClickListener {
                         }
                         return errorMessage == null
                     } else if (isCustom) {
-                        errorMessage = RequestHelper.sendCustomRequest(requests, isPremium)
+                        errorMessage = RequestHelper.sendCustomRequest(requests ?: emptyList(), isPremium)
                         if (errorMessage == null) {
                             if (requests != null) {
                                 for (request in requests) {
