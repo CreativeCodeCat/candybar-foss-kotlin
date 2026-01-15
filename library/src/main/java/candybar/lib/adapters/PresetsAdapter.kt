@@ -87,7 +87,7 @@ class PresetsAdapter(
         val preset = mPresets[position]
 
         if (holder.itemViewType == TYPE_HEADER) {
-            holder.name.text = preset.headerText
+            holder.name.text = preset.headerText ?: ""
             holder.setType(preset.headerText ?: "")
         } else if (holder.itemViewType == TYPE_CONTENT) {
             PresetInfoLoader.create(AssetPresetFile(preset.path))
@@ -249,7 +249,7 @@ class PresetsAdapter(
             val position = bindingAdapterPosition
             if (id == R.id.card) {
                 val preset = mPresets[position]
-                val type = preset.path.split("/")[0]
+                val type = preset.path?.split("/")?.get(0) ?: ""
 
                 if (type != "komponents") {
                     var pkg = ""

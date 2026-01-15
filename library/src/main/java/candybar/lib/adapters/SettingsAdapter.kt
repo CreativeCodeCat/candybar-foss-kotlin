@@ -73,21 +73,21 @@ class SettingsAdapter(
         if (holder is ContentViewHolder) {
             val setting = mSettings[position]
 
-            if (setting.title.isEmpty()) {
+            if (setting.title.orEmpty().isEmpty()) {
                 holder.title.visibility = View.GONE
                 holder.divider.visibility = View.GONE
                 holder.container.visibility = View.VISIBLE
 
                 holder.subtitle.text = setting.subtitle
 
-                if (setting.content.isEmpty()) {
+                if (setting.content.orEmpty().isEmpty()) {
                     holder.content.visibility = View.GONE
                 } else {
                     holder.content.text = setting.content
                     holder.content.visibility = View.VISIBLE
                 }
 
-                if (setting.footer.isEmpty()) {
+                if (setting.footer.orEmpty().isEmpty()) {
                     holder.footer.visibility = View.GONE
                 } else {
                     holder.footer.text = setting.footer
