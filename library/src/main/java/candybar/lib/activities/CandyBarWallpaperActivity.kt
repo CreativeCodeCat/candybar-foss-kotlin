@@ -16,7 +16,6 @@ import android.os.Looper
 import android.transition.Transition
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowInsets
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -118,7 +117,7 @@ class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, Vie
         mMenuApply = findViewById(R.id.menu_apply)
         mMenuSave = findViewById(R.id.menu_save)
 
-        mProgress.indeterminateDrawable.setColorFilter(
+        mProgress.indeterminateDrawable.colorFilter = android.graphics.PorterDuffColorFilter(
             Color.parseColor("#CCFFFFFF"), PorterDuff.Mode.SRC_IN
         )
         mBack.setImageDrawable(
@@ -177,8 +176,9 @@ class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, Vie
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                WindowInsetsCompat.toWindowInsetsCompat(WindowInsets.CONSUMED)
+                WindowInsetsCompat.CONSUMED
             } else {
+                @Suppress("DEPRECATION")
                 insets.consumeSystemWindowInsets()
             }
         }
@@ -198,7 +198,7 @@ class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, Vie
             }
 
             AnimationHelper.setBackgroundColor(findViewById(R.id.rootview), Color.TRANSPARENT, color).start()
-            mProgress.indeterminateDrawable.setColorFilter(
+            mProgress.indeterminateDrawable.colorFilter = android.graphics.PorterDuffColorFilter(
                 ColorHelper.setColorAlpha(ColorHelper.getTitleTextColor(color), 0.7f),
                 PorterDuff.Mode.SRC_IN
             )

@@ -181,18 +181,12 @@ abstract class CandyBarMainActivity : AppCompatActivity(),
             WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION or WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
         )
 
-        var visibilityFlags = 0
-        if (ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_colorPrimaryDark)) &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        ) {
-            visibilityFlags = visibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-        if (ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_navigationBar)) &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-        ) {
-            visibilityFlags = visibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        }
-        window.decorView.systemUiVisibility = visibilityFlags
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        val isLightStatus = ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_colorPrimaryDark))
+        controller.isAppearanceLightStatusBars = isLightStatus
+
+        val isLightNav = ColorHelper.isLightColor(ColorHelper.getAttributeColor(this, R.attr.cb_navigationBar))
+        controller.isAppearanceLightNavigationBars = isLightNav
 
         try {
             startService(Intent(this, CandyBarService::class.java))
