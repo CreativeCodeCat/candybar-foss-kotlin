@@ -1,6 +1,6 @@
-package candybar.lib.utils;
+package candybar.lib.utils.listeners
 
-import candybar.lib.applications.CandyBarApplication;
+import android.content.Intent
 
 /*
  * CandyBar - Material Dashboard
@@ -20,10 +20,8 @@ import candybar.lib.applications.CandyBarApplication;
  * limitations under the License.
  */
 
-public class ImageConfig {
-    public static int getThumbnailSize() {
-        int quality = CandyBarApplication.getConfiguration().getWallpaperGridPreviewQuality();
-        return 50 * quality;
-    }
-}
+interface RequestListener {
+    fun onRequestSelected(count: Int)
 
+    fun onRequestBuilt(intent: Intent?, type: Int)
+}

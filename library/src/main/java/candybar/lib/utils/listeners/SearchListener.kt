@@ -1,6 +1,4 @@
-package candybar.lib.utils.listeners;
-
-import android.content.Intent;
+package candybar.lib.utils.listeners
 
 /*
  * CandyBar - Material Dashboard
@@ -20,9 +18,6 @@ import android.content.Intent;
  * limitations under the License.
  */
 
-public interface RequestListener {
-
-    void onRequestSelected(int count);
-
-    void onRequestBuilt(Intent intent, int type);
+interface SearchListener {
+    fun onSearchExpanded(expand: Boolean)
 }

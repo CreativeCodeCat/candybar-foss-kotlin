@@ -1,14 +1,6 @@
-package candybar.lib.services;
+package candybar.lib.utils.listeners
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-
-import androidx.annotation.Nullable;
-
-import com.danimahardhika.android.helpers.core.utils.LogUtil;
-
-import candybar.lib.databases.Database;
+import candybar.lib.items.Home
 
 /*
  * CandyBar - Material Dashboard
@@ -28,19 +20,8 @@ import candybar.lib.databases.Database;
  * limitations under the License.
  */
 
-public class CandyBarService extends Service {
+interface HomeListener {
+    fun onHomeDataUpdated(home: Home?)
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        LogUtil.d("App removed from recent task, database connection closed");
-        Database.get(this).closeDatabase();
-
-        stopSelf();
-    }
+    fun onHomeIntroInit()
 }

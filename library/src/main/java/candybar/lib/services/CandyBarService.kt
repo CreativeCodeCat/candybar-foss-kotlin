@@ -1,6 +1,10 @@
-package candybar.lib.services;
+package candybar.lib.services
 
-import com.google.android.apps.muzei.api.provider.MuzeiArtProvider;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import candybar.lib.databases.Database
+import com.danimahardhika.android.helpers.core.utils.LogUtil
 
 /*
  * CandyBar - Material Dashboard
@@ -20,13 +24,14 @@ import com.google.android.apps.muzei.api.provider.MuzeiArtProvider;
  * limitations under the License.
  */
 
-public class CandyBarMuzeiService extends MuzeiArtProvider {
-
-    public CandyBarMuzeiService() {
+class CandyBarService : Service() {
+    override fun onBind(intent: Intent): IBinder? {
+        return null
     }
 
-    @Override
-    public void onLoadRequested(boolean initial) {
-        CandyBarArtWorker.enqueueLoad(getContext());
+    override fun onTaskRemoved(rootIntent: Intent) {
+        LogUtil.d("App removed from recent task, database connection closed")
+        Database.get(this).closeDatabase()
+        stopSelf()
     }
 }

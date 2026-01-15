@@ -42,7 +42,7 @@ class Icon {
     companion object {
         @JvmField
         val TitleComparator = object : AlphanumComparator() {
-            override fun compare(o1: Any, o2: Any): Int {
+            override fun compare(o1: Any?, o2: Any?): Int {
                 val s1 = (o1 as Icon).title
                 val s2 = (o2 as Icon).title
                 return super.compare(s1, s2)

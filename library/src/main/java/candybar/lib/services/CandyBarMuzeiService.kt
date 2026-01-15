@@ -1,4 +1,6 @@
-package candybar.lib.utils.listeners;
+package candybar.lib.services
+
+import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
 
 /*
  * CandyBar - Material Dashboard
@@ -18,8 +20,8 @@ package candybar.lib.utils.listeners;
  * limitations under the License.
  */
 
-public interface SearchListener {
-
-    void onSearchExpanded(boolean expand);
-
+open class CandyBarMuzeiService : MuzeiArtProvider() {
+    override fun onLoadRequested(initial: Boolean) {
+        CandyBarArtWorker.enqueueLoad(context!!)
+    }
 }

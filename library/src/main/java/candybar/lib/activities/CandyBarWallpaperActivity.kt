@@ -403,8 +403,7 @@ class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, Vie
         }
     }
 
-    override fun onPropertiesReceived(wallpaper: Wallpaper?) {
-        if (wallpaper == null) return
+    override fun onPropertiesReceived(wallpaper: Wallpaper) {
 
         mWallpaper?.dimensions = wallpaper.dimensions
         mWallpaper?.size = wallpaper.size

@@ -1,4 +1,4 @@
-package candybar.lib.utils.listeners;
+package candybar.lib.utils.listeners
 
 /*
  * CandyBar - Material Dashboard
@@ -18,8 +18,6 @@ package candybar.lib.utils.listeners;
  * limitations under the License.
  */
 
-public interface WallpapersListener {
-
-    void onWallpapersChecked(int wallpaperCount);
-
+interface WallpapersListener {
+    fun onWallpapersChecked(wallpaperCount: Int)
 }

@@ -1,8 +1,6 @@
-package candybar.lib.utils.listeners;
+package candybar.lib.utils
 
-import androidx.annotation.Nullable;
-
-import candybar.lib.items.Home;
+import candybar.lib.applications.CandyBarApplication
 
 /*
  * CandyBar - Material Dashboard
@@ -22,9 +20,10 @@ import candybar.lib.items.Home;
  * limitations under the License.
  */
 
-public interface HomeListener {
-
-    void onHomeDataUpdated(@Nullable Home home);
-
-    void onHomeIntroInit();
+object ImageConfig {
+    @JvmStatic
+    fun getThumbnailSize(): Int {
+        val quality = CandyBarApplication.getConfiguration().wallpaperGridPreviewQuality
+        return 50 * quality
+    }
 }

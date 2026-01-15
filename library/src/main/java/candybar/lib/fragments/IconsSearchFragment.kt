@@ -242,7 +242,7 @@ class IconsSearchFragment : Fragment() {
 
                     // Sort them in lowercase
                     Collections.sort(iconList, object : AlphanumComparator() {
-                        override fun compare(o1: Any, o2: Any): Int {
+                        override fun compare(o1: Any?, o2: Any?): Int {
                             val s1 = (o1 as Icon).title.lowercase().trim()
                             val s2 = (o2 as Icon).title.lowercase().trim()
                             return super.compare(s1, s2)
