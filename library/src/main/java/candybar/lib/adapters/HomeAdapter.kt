@@ -293,7 +293,7 @@ class HomeAdapter(
                 holder.title.typeface = TypefaceHelper.getMedium(context)
                 holder.title.text = home.title
 
-                if (home.subtitle.isNotEmpty()) {
+                if (home.subtitle.orEmpty().isNotEmpty()) {
                     holder.subtitle.text = home.subtitle
                     holder.subtitle.visibility = View.VISIBLE
                 } else {
@@ -729,7 +729,7 @@ class HomeAdapter(
                         val home = homes[position]
                         IconPreviewFragment.showIconPreview(
                             (context as AppCompatActivity).supportFragmentManager,
-                            home.title, home.icon, null
+                            home.title ?: "", home.icon, null
                         )
                     }
                 }

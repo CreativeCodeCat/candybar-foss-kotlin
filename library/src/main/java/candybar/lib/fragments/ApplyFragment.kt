@@ -169,7 +169,7 @@ class ApplyFragment : Fragment() {
                         if (shouldLauncherBeAdded(value.packages[0])) {
                             if (installedPackage != null) {
                                 installed.add(launcher)
-                                launcher.setPackageName(installedPackage)
+                                launcher.packageName = installedPackage
                             } else supported.add(launcher)
                         }
                     }

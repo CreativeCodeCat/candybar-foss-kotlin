@@ -616,7 +616,7 @@ class Database(private val context: Context) : SQLiteOpenHelper(context, DATABAS
                         val drawableName = cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME))
                         val title = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE))
                         val resId = DrawableHelper.getDrawableId(drawableName)
-                        icons.add(Icon(drawableName, null, resId).setTitle(title))
+                        icons.add(Icon(drawableName, null, resId).apply { this.title = title })
                     } while (cursor.moveToNext())
                 }
             }

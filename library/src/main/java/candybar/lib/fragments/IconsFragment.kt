@@ -71,7 +71,7 @@ class IconsFragment : Fragment() {
         } else if (CandyBarMainActivity.sSections != null) {
             val section = CandyBarMainActivity.sSections?.get(index)
             if (section != null) {
-                mIcons = section.icons
+                mIcons = section.icons.toMutableList()
             }
         }
     }
