@@ -130,6 +130,7 @@ Temporary Items
 
 
 ### Java ###
+.kotlin
 
 # BlueJ files
 *.ctxt
@@ -147,6 +148,7 @@ hs_err_pid*
 
 
 ### Gradle ###
+.agent
 .gradle
 /build/
 
