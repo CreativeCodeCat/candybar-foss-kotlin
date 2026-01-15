@@ -88,7 +88,7 @@ class IconRequestTask(context: Context) : AsyncTaskBase() {
                         val value = appFilter[activity]
 
                         if (value == null) {
-                            var name = LocaleHelper.getOtherAppLocaleName(context, Locale("en"), activity)
+                            var name = LocaleHelper.getOtherAppLocaleName(context, Locale.ENGLISH, activity)
                             if (name == null) {
                                 name = app.activityInfo.loadLabel(packageManager).toString()
                             }

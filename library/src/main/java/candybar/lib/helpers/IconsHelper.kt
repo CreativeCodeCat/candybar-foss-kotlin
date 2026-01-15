@@ -220,7 +220,9 @@ object IconsHelper {
                         intent.putExtra("icon", resource)
 
                         // Also add the direct icon resource ID to the intent for launchers that support it
+                        @Suppress("DEPRECATION")
                         val iconRes = Intent.ShortcutIconResource.fromContext(context, icon.res)
+                        @Suppress("DEPRECATION")
                         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes)
                         (context as AppCompatActivity).setResult(
                             if (resource != null) Activity.RESULT_OK else Activity.RESULT_CANCELED,

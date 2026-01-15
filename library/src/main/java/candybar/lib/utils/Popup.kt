@@ -45,6 +45,7 @@ class Popup private constructor(builder: Builder) {
         val width = getMeasuredWidth(builder.context)
         mPopupWindow.setContentWidth(width)
         val drawable = mPopupWindow.background
+        @Suppress("DEPRECATION")
         drawable?.setColorFilter(
             ColorHelper.getAttributeColor(
                 builder.context, R.attr.cb_cardBackground
@@ -88,8 +89,18 @@ class Popup private constructor(builder: Builder) {
     }
 
     private fun getMeasuredWidth(context: Context): Int {
-        val metrics = DisplayMetrics()
-        (context as Activity).windowManager.defaultDisplay.getMetrics(metrics)
+        val displayMetrics = DisplayMetrics()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val windowMetrics = (context as Activity).windowManager.currentWindowMetrics
+            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.systemBars())
+            val bounds = windowMetrics.bounds
+            val density = context.resources.displayMetrics.density
+            displayMetrics.widthPixels = bounds.width() - insets.left - insets.right
+            // We only need widthPixels for the calculation below
+        } else {
+            @Suppress("DEPRECATION")
+            (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+        }
 
         val maxWidth = context.resources.getDimensionPixelSize(R.dimen.popup_max_width)
         val minWidth = context.resources.getDimensionPixelSize(R.dimen.popup_min_width)
@@ -114,7 +125,7 @@ class Popup private constructor(builder: Builder) {
         textView.text = longestText
 
         val widthMeasureSpec =
-            View.MeasureSpec.makeMeasureSpec(metrics.widthPixels, View.MeasureSpec.AT_MOST)
+            View.MeasureSpec.makeMeasureSpec(displayMetrics.widthPixels, View.MeasureSpec.AT_MOST)
         val heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         textView.measure(widthMeasureSpec, heightMeasureSpec)
 

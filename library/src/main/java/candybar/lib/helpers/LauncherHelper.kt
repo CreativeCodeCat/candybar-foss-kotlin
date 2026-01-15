@@ -494,7 +494,7 @@ object LauncherHelper {
     private fun showManualApplyDialog(context: Context, launcherPackageName: String, callback: LauncherType.ApplyCallback?) {
         val launcher = getLauncher(launcherPackageName)
         val isInstalled = launcher.isInstalled(context)
-        val positiveButton = if (isInstalled) android.R.string.ok else R.string.install
+        val positiveButton = if (isInstalled) R.string.close else R.string.install
         val installPrompt = context.resources.getString(R.string.apply_launcher_not_installed, launcher.type.launcherName)
         val activityLaunchFailed = context.resources.getString(R.string.apply_launch_failed, launcher.type.launcherName)
         val manualApply = launcher.type.getManualApplyFunc()
@@ -548,7 +548,7 @@ object LauncherHelper {
         MaterialDialog.Builder(context)
             .typeface(TypefaceHelper.getMedium(context), TypefaceHelper.getRegular(context))
             .title(launcherName).content(manualApply.getCompatibilityMessage(context, launcherName) + "\n\n" + (if (manualApply.isSupported(launcherPackage)) compatibleText.toString() else incompatibleText))
-            .positiveText(android.R.string.yes).onPositive { _, _ ->
+            .positiveText(R.string.close).onPositive { _, _ ->
                 logLauncherManualApply(launcherPackage, "confirm")
                 if (manualApply.isSupported(launcherPackage)) {
                     val packageName = "com.samsung.android.themedesigner"
@@ -579,7 +579,7 @@ object LauncherHelper {
     @JvmStatic
     private fun launcherIncompatibleCustomMessage(context: Context, launcherName: String, message: String) {
         MaterialDialog.Builder(context).typeface(TypefaceHelper.getMedium(context), TypefaceHelper.getRegular(context)).title(launcherName).content(message)
-            .positiveText(android.R.string.yes).onPositive { _, _ ->
+            .positiveText(R.string.close).onPositive { _, _ ->
                 CandyBarApplication.getConfiguration().analyticsHandler?.logEvent("click", hashMapOf("section" to "apply", "action" to "incompatible_third_party_open", "launcher" to launcherName))
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(thirdPartyHelperURL)))

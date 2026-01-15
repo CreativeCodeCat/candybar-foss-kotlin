@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.os.Build
+import androidx.core.content.edit
 import candybar.lib.R
 import candybar.lib.applications.CandyBarApplication
 import candybar.lib.helpers.LocaleHelper
@@ -39,36 +40,36 @@ class Preferences private constructor(context: Context) {
         get() = mContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
     fun clearPreferences() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit { clear() }
     }
 
     var isFirstRun: Boolean
         get() = sharedPreferences.getBoolean(KEY_FIRST_RUN, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_FIRST_RUN, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_FIRST_RUN, bool) }
 
     var iconShape: Int
         get() = sharedPreferences.getInt(KEY_ICON_SHAPE, -1)
-        set(shape) = sharedPreferences.edit().putInt(KEY_ICON_SHAPE, shape).apply()
+        set(shape) = sharedPreferences.edit { putInt(KEY_ICON_SHAPE, shape) }
 
     var isTimeToShowHomeIntro: Boolean
         get() = sharedPreferences.getBoolean(KEY_HOME_INTRO, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_HOME_INTRO, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_HOME_INTRO, bool) }
 
     var isTimeToShowIconsIntro: Boolean
         get() = sharedPreferences.getBoolean(KEY_ICONS_INTRO, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_ICONS_INTRO, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_ICONS_INTRO, bool) }
 
     var isTimeToShowRequestIntro: Boolean
         get() = sharedPreferences.getBoolean(KEY_REQUEST_INTRO, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_REQUEST_INTRO, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_REQUEST_INTRO, bool) }
 
     var isTimeToShowWallpapersIntro: Boolean
         get() = sharedPreferences.getBoolean(KEY_WALLPAPERS_INTRO, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_WALLPAPERS_INTRO, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_WALLPAPERS_INTRO, bool) }
 
     var isTimeToShowWallpaperPreviewIntro: Boolean
         get() = sharedPreferences.getBoolean(KEY_WALLPAPER_PREVIEW_INTRO, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_WALLPAPER_PREVIEW_INTRO, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_WALLPAPER_PREVIEW_INTRO, bool) }
 
     var theme: Theme
         get() = Theme.values()[sharedPreferences.getInt(
@@ -81,7 +82,7 @@ class Preferences private constructor(context: Context) {
             params["action"] = "change_theme"
             params["theme"] = theme.name
             CandyBarApplication.getConfiguration().analyticsHandler?.logEvent("click", params)
-            sharedPreferences.edit().putInt(KEY_THEME, theme.ordinal).apply()
+            sharedPreferences.edit { putInt(KEY_THEME, theme.ordinal) }
         }
 
     var isMaterialYou: Boolean
@@ -92,11 +93,11 @@ class Preferences private constructor(context: Context) {
                 mContext.resources.getBoolean(R.bool.material_you_by_default)
             )
         }
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_MATERIAL_YOU, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_MATERIAL_YOU, bool) }
 
     var isNotificationsEnabled: Boolean
         get() = sharedPreferences.getBoolean(KEY_NOTIFICATIONS, true)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_NOTIFICATIONS, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_NOTIFICATIONS, bool) }
 
     val isToolbarShadowEnabled: Boolean
         get() = CandyBarApplication.getConfiguration().shadowOptions.isToolbarEnabled
@@ -112,7 +113,7 @@ class Preferences private constructor(context: Context) {
 
     var isWifiOnly: Boolean
         get() = sharedPreferences.getBoolean(KEY_WIFI_ONLY, false)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_WIFI_ONLY, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_WIFI_ONLY, bool) }
 
     val wallsDirectory: String
         get() = sharedPreferences.getString(KEY_WALLS_DIRECTORY, "") ?: ""
@@ -122,62 +123,68 @@ class Preferences private constructor(context: Context) {
             KEY_PREMIUM_REQUEST_ENABLED,
             mContext.resources.getBoolean(R.bool.enable_premium_request)
         )
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_PREMIUM_REQUEST_ENABLED, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_PREMIUM_REQUEST_ENABLED, bool) }
 
     var isPremiumRequest: Boolean
         get() = sharedPreferences.getBoolean(KEY_PREMIUM_REQUEST, false)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_PREMIUM_REQUEST, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_PREMIUM_REQUEST, bool) }
 
     var premiumRequestProductId: String
         get() = sharedPreferences.getString(KEY_PREMIUM_REQUEST_PRODUCT, "") ?: ""
-        set(productId) = sharedPreferences.edit().putString(KEY_PREMIUM_REQUEST_PRODUCT, productId).apply()
+        set(productId) = sharedPreferences.edit { putString(KEY_PREMIUM_REQUEST_PRODUCT, productId) }
 
     var premiumRequestCount: Int
         get() = sharedPreferences.getInt(KEY_PREMIUM_REQUEST_COUNT, 0)
-        set(count) = sharedPreferences.edit().putInt(KEY_PREMIUM_REQUEST_COUNT, count).apply()
+        set(count) = sharedPreferences.edit { putInt(KEY_PREMIUM_REQUEST_COUNT, count) }
 
     var premiumRequestTotal: Int
         get() {
             val count = premiumRequestCount
             return sharedPreferences.getInt(KEY_PREMIUM_REQUEST_TOTAL, count)
         }
-        set(count) = sharedPreferences.edit().putInt(KEY_PREMIUM_REQUEST_TOTAL, count).apply()
+        set(count) = sharedPreferences.edit { putInt(KEY_PREMIUM_REQUEST_TOTAL, count) }
 
     var regularRequestUsed: Int
         get() = sharedPreferences.getInt(KEY_REGULAR_REQUEST_USED, 0)
-        set(used) = sharedPreferences.edit().putInt(KEY_REGULAR_REQUEST_USED, used).apply()
+        set(used) = sharedPreferences.edit { putInt(KEY_REGULAR_REQUEST_USED, used) }
 
     val isRegularRequestLimit: Boolean
         get() = mContext.resources.getBoolean(R.bool.enable_icon_request_limit)
 
     var inAppBillingType: Int
         get() = sharedPreferences.getInt(KEY_INAPP_BILLING_TYPE, -1)
-        set(type) = sharedPreferences.edit().putInt(KEY_INAPP_BILLING_TYPE, type).apply()
+        set(type) = sharedPreferences.edit { putInt(KEY_INAPP_BILLING_TYPE, type) }
 
     var isCropWallpaper: Boolean
         get() = sharedPreferences.getBoolean(KEY_CROP_WALLPAPER, false)
-        set(bool) = sharedPreferences.edit().putBoolean(KEY_CROP_WALLPAPER, bool).apply()
+        set(bool) = sharedPreferences.edit { putBoolean(KEY_CROP_WALLPAPER, bool) }
 
     var latestCrashLog: String
         get() = sharedPreferences.getString(KEY_LATEST_CRASHLOG, "") ?: ""
-        set(string) = sharedPreferences.edit().putString(KEY_LATEST_CRASHLOG, string).apply()
+        set(string) = sharedPreferences.edit { putString(KEY_LATEST_CRASHLOG, string) }
 
     var availableWallpapersCount: Int
         get() = sharedPreferences.getInt(KEY_AVAILABLE_WALLPAPERS_COUNT, 0)
-        set(count) = sharedPreferences.edit().putInt(KEY_AVAILABLE_WALLPAPERS_COUNT, count).apply()
+        set(count) = sharedPreferences.edit { putInt(KEY_AVAILABLE_WALLPAPERS_COUNT, count) }
 
     val isPlayStoreCheckEnabled: Boolean
         get() = mContext.resources.getBoolean(R.bool.playstore_check_enabled)
 
     private var version: Int
         get() = sharedPreferences.getInt(KEY_APP_VERSION, 0)
-        set(version) = sharedPreferences.edit().putInt(KEY_APP_VERSION, version).apply()
+        set(version) = sharedPreferences.edit { putInt(KEY_APP_VERSION, version) }
 
     val isNewVersion: Boolean
         get() {
             var currentVersion = 0
             try {
-                currentVersion = mContext.packageManager.getPackageInfo(mContext.packageName, 0).versionCode
+                val packageInfo = mContext.packageManager.getPackageInfo(mContext.packageName, 0)
+                currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    packageInfo.longVersionCode.toInt()
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageInfo.versionCode
+                }
             } catch (ignored: PackageManager.NameNotFoundException) {
             }
             return if (currentVersion > version) {
@@ -198,12 +205,12 @@ class Preferences private constructor(context: Context) {
         set(code) = setCurrentLocale(code.toString())
 
     fun setCurrentLocale(code: String) {
-        sharedPreferences.edit().putString(KEY_CURRENT_LOCALE, code).apply()
+        sharedPreferences.edit { putString(KEY_CURRENT_LOCALE, code) }
     }
 
     var isTimeToSetLanguagePreference: Boolean
         get() = sharedPreferences.getBoolean(KEY_LANGUAGE_PREFERENCE, true)
-        private set(bool) = sharedPreferences.edit().putBoolean(KEY_LANGUAGE_PREFERENCE, bool).apply()
+        private set(bool) = sharedPreferences.edit { putBoolean(KEY_LANGUAGE_PREFERENCE, bool) }
 
     fun setLanguagePreference() {
         val locale = Locale.getDefault()
@@ -236,25 +243,39 @@ class Preferences private constructor(context: Context) {
     }
 
     val isConnectedToNetwork: Boolean
+        @Suppress("DEPRECATION")
         get() {
             return try {
                 val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                val activeNetworkInfo = connectivityManager.activeNetworkInfo
-                activeNetworkInfo != null && activeNetworkInfo.isConnected
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val network = connectivityManager.activeNetwork ?: return false
+                    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+                    capabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                } else {
+                    val activeNetworkInfo = connectivityManager.activeNetworkInfo
+                    activeNetworkInfo != null && activeNetworkInfo.isConnected
+                }
             } catch (e: Exception) {
                 false
             }
         }
 
     val isConnectedAsPreferred: Boolean
+        @Suppress("DEPRECATION")
         get() {
             return try {
                 if (isWifiOnly) {
                     val connectivityManager = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    val activeNetworkInfo = connectivityManager.activeNetworkInfo
-                    return activeNetworkInfo != null &&
-                            activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI &&
-                            activeNetworkInfo.isConnected
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        val network = connectivityManager.activeNetwork ?: return false
+                        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+                        return capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)
+                    } else {
+                        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+                        return activeNetworkInfo != null &&
+                                activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI &&
+                                activeNetworkInfo.isConnected
+                    }
                 }
                 true
             } catch (e: Exception) {

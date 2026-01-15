@@ -13,7 +13,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import candybar.lib.R
 import candybar.lib.items.Credit
 import candybar.lib.utils.CandyBarGlideModule
@@ -119,11 +118,9 @@ class CreditsAdapter(private val context: Context, private val credits: List<Cre
 
         init {
             val color = ColorHelper.getAttributeColor(context, android.R.attr.textColorSecondary)
-            ViewCompat.setBackground(
-                image, DrawableHelper.getTintedDrawable(
+            image.background = DrawableHelper.getTintedDrawable(
                     context, R.drawable.ic_toolbar_circle, ColorHelper.setColorAlpha(color, 0.4f)
                 )
-            )
         }
     }
 }

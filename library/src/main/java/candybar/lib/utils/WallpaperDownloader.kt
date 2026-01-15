@@ -3,6 +3,7 @@ package candybar.lib.utils
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -153,12 +154,7 @@ class WallpaperDownloader(private val mContext: Context) {
                     }
                     os.close()
 
-                    mContext.sendBroadcast(
-                        Intent(
-                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                            Uri.fromFile(output)
-                        )
-                    )
+                    MediaScannerConnection.scanFile(mContext, arrayOf(output.absolutePath), null, null)
 
                     showOpenFileCafeBar(R.string.wallpaper_download_success, output)
                 }

@@ -3,6 +3,7 @@ package candybar.lib.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -203,7 +204,7 @@ class RequestAdapter(
                             .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
                             .title(request.name)
                             .content(request.infoText.orEmpty())
-                            .positiveText(android.R.string.yes)
+                            .positiveText(R.string.close)
                             .show()
                     }
                 }
@@ -305,8 +306,8 @@ class RequestAdapter(
             val accent = ColorHelper.getAttributeColor(mContext, com.google.android.material.R.attr.colorSecondary)
             button.setTextColor(ColorHelper.getTitleTextColor(primary))
 
-            premProgress.progressDrawable.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
-            regProgress.progressDrawable.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
+            premProgress.progressDrawable.colorFilter = PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN)
+            regProgress.progressDrawable.colorFilter = PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN)
 
             button.setOnClickListener(this)
         }
@@ -464,7 +465,7 @@ class RequestAdapter(
                         .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
                         .title(mContext.resources.getString(R.string.request_not_available))
                         .content(mRequests[position].infoText.orEmpty())
-                        .positiveText(android.R.string.yes)
+                        .positiveText(R.string.close)
                         .show()
                 }
             } else {

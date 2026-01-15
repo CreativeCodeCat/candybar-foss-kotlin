@@ -18,10 +18,13 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -119,7 +122,6 @@ class RequestFragment : Fragment(), View.OnClickListener {
             params
         )
 
-        setHasOptionsMenu(false)
         resetRecyclerViewPadding(resources.configuration.orientation)
 
         mProgress.indeterminateDrawable.colorFilter = PorterDuffColorFilter(
@@ -156,6 +158,31 @@ class RequestFragment : Fragment(), View.OnClickListener {
         mAsyncTask = MissingAppsLoader().execute()
     }
 
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_request, menu)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                val id = item.itemId
+                if (id == R.id.menu_select_all) {
+                    mMenuItem = item
+                    val adapter = mAdapter ?: return false
+                    if (adapter.selectAll()) {
+                        item.setIcon(R.drawable.ic_toolbar_select_all_selected)
+                        return true
+                    }
+
+                    item.setIcon(R.drawable.ic_toolbar_select_all)
+                    return true
+                }
+                return false
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         resetRecyclerViewPadding(newConfig.orientation)
@@ -183,10 +210,6 @@ class RequestFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_request, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
     override fun onDestroy() {
         if (mAsyncTask != null) {
@@ -195,21 +218,6 @@ class RequestFragment : Fragment(), View.OnClickListener {
         super.onDestroy()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.menu_select_all) {
-            mMenuItem = item
-            val adapter = mAdapter ?: return false
-            if (adapter.selectAll()) {
-                item.setIcon(R.drawable.ic_toolbar_select_all_selected)
-                return true
-            }
-
-            item.setIcon(R.drawable.ic_toolbar_select_all)
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
 
     override fun onClick(view: View) {
         val id = view.id
@@ -345,7 +353,7 @@ class RequestFragment : Fragment(), View.OnClickListener {
             mProgress.visibility = View.GONE
 
             if (ok) {
-                setHasOptionsMenu(true)
+                setupMenu()
                 mAdapter = RequestAdapter(
                     requireActivity(),
                     requests ?: ArrayList(), mManager?.spanCount ?: 1
@@ -591,7 +599,10 @@ class RequestFragment : Fragment(), View.OnClickListener {
                     val disableRequestBelow = disableRequestObj.optLong("below", 0)
                     val disableRequestOn = disableRequestObj.optString("on", "")
                     val appVersionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                        packageInfo.longVersionCode else packageInfo.versionCode.toLong()
+                        packageInfo.longVersionCode else {
+                        @Suppress("DEPRECATION")
+                        packageInfo.versionCode.toLong()
+                    }
 
                     if ((appVersionCode < disableRequestBelow) ||
                         disableRequestOn.contains("\\b$appVersionCode\\b".toRegex())

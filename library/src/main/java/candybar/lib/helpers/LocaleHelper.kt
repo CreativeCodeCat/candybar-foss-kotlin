@@ -78,14 +78,14 @@ object LocaleHelper {
                 return language
             }
         }
-        return Language("English", Locale("en", "US"))
+        return Language("English", Locale.Builder().setLanguage("en").setRegion("US").build())
     }
 
     @JvmStatic
     fun getLocale(language: String): Locale {
         val codes = language.split("_").toTypedArray()
         if (codes.size == 2) {
-            return Locale(codes[0], codes[1])
+            return Locale.Builder().setLanguage(codes[0]).setRegion(codes[1]).build()
         }
         return Locale.getDefault()
     }

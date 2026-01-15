@@ -18,7 +18,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -79,6 +82,9 @@ class IconsSearchFragment : Fragment() {
         return view
     }
 
+
+// ... in class ...
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -89,7 +95,7 @@ class IconsSearchFragment : Fragment() {
             params
         )
 
-        setHasOptionsMenu(true)
+        // setHasOptionsMenu(true) removed
 
         mRecyclerView.setHasFixedSize(true)
         mRecyclerView.itemAnimator = DefaultItemAnimator()
@@ -101,63 +107,71 @@ class IconsSearchFragment : Fragment() {
         setFastScrollColor(mFastScroll)
         mFastScroll.attachRecyclerView(mRecyclerView)
         mAsyncTask = IconsLoader().execute()
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_icons_search, menu)
+                val search = menu.findItem(R.id.menu_search)
+                val iconShape = menu.findItem(R.id.menu_icon_shape)
+                val searchView = search.actionView!!
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+                    !requireActivity().resources.getBoolean(R.bool.includes_adaptive_icons)
+                ) {
+                    iconShape.isVisible = false
+                } else {
+                    searchView.findViewById<View>(R.id.container).setPadding(0, 0, 0, 0)
+                }
+
+                val clearQueryButton = searchView.findViewById<View>(R.id.clear_query_button)
+                mSearchInput = searchView.findViewById(R.id.search_input)
+                mSearchInput?.setHint(R.string.search_icon)
+
+                search.expandActionView()
+
+                search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                        return true
+                    }
+
+                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                        requireActivity().supportFragmentManager.popBackStack()
+
+                        val activity = requireActivity()
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            (activity as SearchListener).onSearchExpanded(false)
+                        }, 500)
+                        return true
+                    }
+                })
+
+                mSearchInput?.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                    override fun afterTextChanged(editable: Editable) {}
+
+                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                        val query = charSequence.toString()
+                        filterSearch(query)
+                        clearQueryButton.visibility = if (query == "") View.GONE else View.VISIBLE
+                    }
+                })
+
+                clearQueryButton.setOnClickListener { mSearchInput?.setText("") }
+
+                iconShape.setOnMenuItemClickListener {
+                    IconShapeChooserFragment.showIconShapeChooser(requireActivity().supportFragmentManager)
+                    false
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_icons_search, menu)
-        val search = menu.findItem(R.id.menu_search)
-        val iconShape = menu.findItem(R.id.menu_icon_shape)
-        val searchView = search.actionView!!
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
-            !requireActivity().resources.getBoolean(R.bool.includes_adaptive_icons)
-        ) {
-            iconShape.isVisible = false
-        } else {
-            searchView.findViewById<View>(R.id.container).setPadding(0, 0, 0, 0)
-        }
-
-        val clearQueryButton = searchView.findViewById<View>(R.id.clear_query_button)
-        mSearchInput = searchView.findViewById(R.id.search_input)
-        mSearchInput?.setHint(R.string.search_icon)
-
-        search.expandActionView()
-
-        search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                requireActivity().supportFragmentManager.popBackStack()
-
-                val activity = requireActivity()
-                Handler(Looper.getMainLooper()).postDelayed({
-                    (activity as SearchListener).onSearchExpanded(false)
-                }, 500)
-                return true
-            }
-        })
-
-        mSearchInput?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                val query = charSequence.toString()
-                filterSearch(query)
-                clearQueryButton.visibility = if (query == "") View.GONE else View.VISIBLE
-            }
-        })
-
-        clearQueryButton.setOnClickListener { mSearchInput?.setText("") }
-
-        iconShape.setOnMenuItemClickListener {
-            IconShapeChooserFragment.showIconShapeChooser(requireActivity().supportFragmentManager)
-            false
-        }
-    }
+    // onCreateOptionsMenu overrides removed
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

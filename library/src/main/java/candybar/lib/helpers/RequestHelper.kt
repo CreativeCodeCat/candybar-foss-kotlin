@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.danimahardhika.android.helpers.core.TimeHelper
 import com.danimahardhika.android.helpers.core.utils.LogUtil
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import java.io.BufferedInputStream
@@ -203,10 +204,8 @@ object RequestHelper {
             .setType(okhttp3.MultipartBody.FORM)
             .addFormDataPart("apps", buildJsonForPacific(requests))
             .addFormDataPart(
-                "archive", "icons.zip", okhttp3.RequestBody.create(
-                    "application/zip".toMediaType(),
-                    getZipFile(iconFiles, directory.toString(), "icons.zip")!!
-                )
+                "archive", "icons.zip", getZipFile(iconFiles, directory.toString(), "icons.zip")!!
+                    .asRequestBody("application/zip".toMediaType())
             )
             .build()
 
@@ -350,7 +349,7 @@ object RequestHelper {
             val activity = "$packageName/${app.activityInfo.name}"
             val value = appFilter[activity]
             if (value == null) {
-                var name = LocaleHelper.getOtherAppLocaleName(context, Locale("en"), activity)
+                var name = LocaleHelper.getOtherAppLocaleName(context, Locale.ENGLISH, activity)
                 if (name == null) {
                     name = app.activityInfo.loadLabel(packageManager).toString()
                 }

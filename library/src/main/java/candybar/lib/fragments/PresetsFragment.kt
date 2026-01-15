@@ -139,7 +139,6 @@ class PresetsFragment : Fragment() {
         if (mAsyncTask != null) mAsyncTask!!.cancel(true)
         val activity = activity
         if (activity != null) Glide.get(activity).clearMemory()
-        setHasOptionsMenu(false)
         super.onDestroy()
     }
 

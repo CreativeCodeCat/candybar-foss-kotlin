@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -569,6 +570,7 @@ class HomeAdapter(
                     val appVersionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         packageInfo.longVersionCode
                     } else {
+                        @Suppress("DEPRECATION")
                         packageInfo.versionCode.toLong()
                     }
 
@@ -797,7 +799,7 @@ class HomeAdapter(
             )
 
             val accent = ColorHelper.getAttributeColor(context, com.google.android.material.R.attr.colorSecondary)
-            progress.progressDrawable.setColorFilter(accent, PorterDuff.Mode.SRC_IN)
+            progress.progressDrawable.colorFilter = PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN)
 
             container.setOnClickListener(this)
         }

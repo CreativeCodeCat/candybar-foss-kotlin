@@ -13,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -86,68 +88,79 @@ class IconsBaseFragment : Fragment() {
         return view
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_icons_search, menu)
-        val search = menu.findItem(R.id.menu_search)
-        val iconShape = menu.findItem(R.id.menu_icon_shape)
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        lateinit var menuProvider: MenuProvider
+        menuProvider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_icons_search, menu)
+                val search = menu.findItem(R.id.menu_search)
+                val iconShape = menu.findItem(R.id.menu_icon_shape)
 
-        search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                val fm = requireActivity().supportFragmentManager
-                setHasOptionsMenu(false)
-                val view = requireActivity().findViewById<View>(R.id.shadow)
-                if (view != null) view.animate().translationY(-mTabLayout!!.height.toFloat())
-                    .setDuration(200).start()
-                mTabLayout!!.animate().translationY(-mTabLayout!!.height.toFloat()).setDuration(200)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            super.onAnimationEnd(animation)
-                            val prev = fm.findFragmentByTag("home")
-                            if (prev != null) return
+                search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                        val fm = requireActivity().supportFragmentManager
+                        menuHost.removeMenuProvider(menuProvider)
+                        val view = requireActivity().findViewById<View>(R.id.shadow)
+                        if (view != null) view.animate().translationY(-mTabLayout!!.height.toFloat())
+                            .setDuration(200).start()
+                        mTabLayout!!.animate().translationY(-mTabLayout!!.height.toFloat()).setDuration(200)
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator) {
+                                    super.onAnimationEnd(animation)
+                                    val prev = fm.findFragmentByTag("home")
+                                    if (prev != null) return
 
-                            val adapter = mPager!!.adapter as PagerIconsAdapter?
-                            if (adapter == null) return
+                                    val adapter = mPager!!.adapter as PagerIconsAdapter?
+                                    if (adapter == null) return
 
-                            val listener = requireActivity() as SearchListener
-                            listener.onSearchExpanded(true)
+                                    val listener = requireActivity() as SearchListener
+                                    listener.onSearchExpanded(true)
 
-                            val ft = fm.beginTransaction()
-                                .replace(
-                                    R.id.container,
-                                    IconsSearchFragment(),
-                                    IconsSearchFragment.TAG
-                                )
-                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                                .addToBackStack(null)
+                                    val ft = fm.beginTransaction()
+                                        .replace(
+                                            R.id.container,
+                                            IconsSearchFragment(),
+                                            IconsSearchFragment.TAG
+                                        )
+                                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                        .addToBackStack(null)
 
-                            try {
-                                ft.commit()
-                            } catch (e: Exception) {
-                                ft.commitAllowingStateLoss()
-                            }
-                        }
-                    }).start()
+                                    try {
+                                        ft.commit()
+                                    } catch (e: Exception) {
+                                        ft.commitAllowingStateLoss()
+                                    }
+                                }
+                            }).start()
 
-                return true
+                        return true
+                    }
+
+                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                        return true
+                    }
+                })
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+                    !requireActivity().resources.getBoolean(R.bool.includes_adaptive_icons)
+                ) {
+                    iconShape.isVisible = false
+                }
+
+                iconShape.setOnMenuItemClickListener {
+                    IconShapeChooserFragment.showIconShapeChooser(requireActivity().supportFragmentManager)
+                    false
+                }
             }
 
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                return true
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
             }
-        })
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
-            !requireActivity().resources.getBoolean(R.bool.includes_adaptive_icons)
-        ) {
-            iconShape.isVisible = false
         }
-
-        iconShape.setOnMenuItemClickListener {
-            IconShapeChooserFragment.showIconShapeChooser(requireActivity().supportFragmentManager)
-            false
-        }
+        menuHost.addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
 
     override fun onDestroy() {
         if (mGetIcons != null) {
@@ -207,7 +220,7 @@ class IconsBaseFragment : Fragment() {
             mGetIcons = null
             mProgress!!.visibility = View.GONE
             if (ok) {
-                setHasOptionsMenu(true)
+                setupMenu()
 
                 val adapter = PagerIconsAdapter(
                     childFragmentManager, lifecycle, CandyBarMainActivity.sSections ?: emptyList()

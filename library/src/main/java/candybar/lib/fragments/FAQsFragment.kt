@@ -15,7 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -92,56 +95,63 @@ class FAQsFragment : Fragment() {
         mAsyncTask = FAQsLoader().executeOnThreadPool()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
-        val search = menu.findItem(R.id.menu_search)
+    private fun setupMenu() {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_search, menu)
+                val search = menu.findItem(R.id.menu_search)
 
-        val searchView = search.actionView!!
-        val searchInput = searchView.findViewById<EditText>(R.id.search_input)
-        val clearQueryButton = searchView.findViewById<View>(R.id.clear_query_button)
+                val searchView = search.actionView!!
+                val searchInput = searchView.findViewById<EditText>(R.id.search_input)
+                val clearQueryButton = searchView.findViewById<View>(R.id.clear_query_button)
 
-        searchInput.hint = requireActivity().resources.getString(R.string.search_faqs)
+                searchInput.hint = requireActivity().resources.getString(R.string.search_faqs)
 
-        searchInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {}
+                searchInput.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+                    override fun afterTextChanged(editable: Editable) {}
 
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                val query = charSequence.toString()
-                filterSearch(query)
-                clearQueryButton.visibility = if (query == "") View.GONE else View.VISIBLE
-            }
-        })
-
-        clearQueryButton.setOnClickListener { searchInput.setText("") }
-
-        search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
-                searchInput.requestFocus()
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (activity != null) {
-                        SoftKeyboardHelper.openKeyboard(requireActivity())
+                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                        val query = charSequence.toString()
+                        filterSearch(query)
+                        clearQueryButton.visibility = if (query == "") View.GONE else View.VISIBLE
                     }
-                }, 1000)
+                })
 
-                return true
+                clearQueryButton.setOnClickListener { searchInput.setText("") }
+
+                search.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                    override fun onMenuItemActionExpand(menuItem: MenuItem): Boolean {
+                        searchInput.requestFocus()
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (activity != null) {
+                                SoftKeyboardHelper.openKeyboard(requireActivity())
+                            }
+                        }, 1000)
+
+                        return true
+                    }
+
+                    override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
+                        searchInput.setText("")
+                        return true
+                    }
+                })
             }
 
-            override fun onMenuItemActionCollapse(menuItem: MenuItem): Boolean {
-                searchInput.setText("")
-                return true
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
             }
-        })
-
-        super.onCreateOptionsMenu(menu, inflater)
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
 
     override fun onDestroy() {
         if (mAsyncTask != null) {
             mAsyncTask!!.cancel(true)
         }
-        setHasOptionsMenu(false)
         super.onDestroy()
     }
 
@@ -196,7 +206,7 @@ class FAQsFragment : Fragment() {
 
             mAsyncTask = null
             if (ok) {
-                setHasOptionsMenu(true)
+                setupMenu()
                 mAdapter = FAQsAdapter(requireActivity(), faqs)
                 mRecyclerView.adapter = mAdapter
             }
