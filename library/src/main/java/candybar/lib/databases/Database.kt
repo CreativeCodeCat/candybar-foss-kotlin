@@ -376,9 +376,10 @@ class Database(private val context: Context) : SQLiteOpenHelper(context, DATABAS
             values.put(KEY_MIME_TYPE, wallpaper.mimeType)
         }
 
-        if (wallpaper.dimensions != null) {
-            values.put(KEY_WIDTH, wallpaper.dimensions.width)
-            values.put(KEY_HEIGHT, wallpaper.dimensions.height)
+        val dimensions = wallpaper.dimensions
+        if (dimensions != null) {
+            values.put(KEY_WIDTH, dimensions.width)
+            values.put(KEY_HEIGHT, dimensions.height)
         }
 
         if (wallpaper.color != 0) {

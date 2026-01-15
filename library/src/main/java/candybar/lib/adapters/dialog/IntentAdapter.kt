@@ -106,9 +106,8 @@ class IntentAdapter(
                 if (CandyBarApplication.sRequestProperty == null) {
                     CandyBarApplication.sRequestProperty = Request.Property(null, null, null)
                 }
-                CandyBarApplication.sRequestProperty!!.setComponentName(
+                CandyBarApplication.sRequestProperty!!.componentName =
                     ComponentName(app.applicationInfo.packageName, app.name)
-                )
 
                 if (type == IntentChooserFragment.ICON_REQUEST) {
                     asyncTask = IconRequestBuilderTask(context) {

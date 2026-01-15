@@ -55,8 +55,8 @@ object JsonHelper {
             return Wallpaper.Builder()
                 .name(obj[jsonStructure.name] as? String)
                 .author(getAuthor(obj))
-                .url(obj[jsonStructure.url] as? String)
-                .thumbUrl(getThumbUrl(obj))
+                .url((obj[jsonStructure.url] as? String).orEmpty())
+                .thumbUrl(getThumbUrl(obj).orEmpty())
                 .build()
         }
         return null

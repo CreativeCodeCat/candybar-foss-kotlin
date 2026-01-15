@@ -194,7 +194,7 @@ class RequestAdapter(
                     holder.checkbox.isEnabled = true
                 }
 
-                if (request.infoText.isNotEmpty()) {
+                if (request.infoText.orEmpty().isNotEmpty()) {
                     holder.infoIcon.visibility = View.VISIBLE
                     holder.infoIcon.setImageDrawable(AppCompatResources.getDrawable(mContext, R.drawable.ic_drawer_about))
                     holder.infoIcon.setColorFilter(mTextColorSecondary)
@@ -202,7 +202,7 @@ class RequestAdapter(
                         MaterialDialog.Builder(mContext)
                             .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
                             .title(request.name)
-                            .content(request.infoText)
+                            .content(request.infoText.orEmpty())
                             .positiveText(android.R.string.yes)
                             .show()
                     }
@@ -459,11 +459,11 @@ class RequestAdapter(
                 }
             } else if (!mRequests[position].isAvailableForRequest) {
                 toggleListener.onNegativeResult()
-                if (mRequests[position].infoText.isNotEmpty()) {
+                if (mRequests[position].infoText.orEmpty().isNotEmpty()) {
                     MaterialDialog.Builder(mContext)
                         .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
                         .title(mContext.resources.getString(R.string.request_not_available))
-                        .content(mRequests[position].infoText)
+                        .content(mRequests[position].infoText.orEmpty())
                         .positiveText(android.R.string.yes)
                         .show()
                 }

@@ -118,7 +118,7 @@ class WallpapersAdapter(
             mWallpapers.addAll(mWallpapersAll)
         } else {
             for (wallpaper in mWallpapersAll) {
-                if (wallpaper.name.lowercase(Locale.getDefault()).contains(query)) {
+                if (wallpaper.name.orEmpty().lowercase(Locale.getDefault()).contains(query)) {
                     mWallpapers.add(wallpaper)
                 }
             }

@@ -406,9 +406,9 @@ class CandyBarWallpaperActivity : AppCompatActivity(), View.OnClickListener, Vie
     override fun onPropertiesReceived(wallpaper: Wallpaper?) {
         if (wallpaper == null) return
 
-        mWallpaper?.setDimensions(wallpaper.dimensions)
-        mWallpaper?.setSize(wallpaper.size)
-        mWallpaper?.setMimeType(wallpaper.mimeType)
+        mWallpaper?.dimensions = wallpaper.dimensions
+        mWallpaper?.size = wallpaper.size
+        mWallpaper?.mimeType = wallpaper.mimeType
     }
 
     private fun initBottomBar() {
