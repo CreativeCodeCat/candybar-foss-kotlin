@@ -2,14 +2,10 @@ package candybar.lib.databases
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import android.database.sqlite.SQLiteStatement
 import android.text.TextUtils
 import android.util.Log
-import candybar.lib.R
 import candybar.lib.helpers.DrawableHelper
 import candybar.lib.helpers.JsonHelper
 import candybar.lib.items.Icon
@@ -462,7 +458,7 @@ class Database(private val context: Context) : SQLiteOpenHelper(context, DATABAS
         return wallpaper
     }
 
-    fun getWallpapers(db: SQLiteDatabase?): List<Wallpaper> {
+    fun getWallpapers(db: SQLiteDatabase?): MutableList<Wallpaper> {
         var database = db
         if (database == null) {
             if (!openDatabase()) {

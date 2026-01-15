@@ -1,10 +1,8 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import android.content.Context;
-import android.view.View;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.view.ContextThemeWrapper;
+import android.content.Context
+import android.view.View
+import androidx.appcompat.view.ContextThemeWrapper
 
 /*
  * CandyBar - Material Dashboard
@@ -24,14 +22,14 @@ import androidx.appcompat.view.ContextThemeWrapper;
  * limitations under the License.
  */
 
-class ContextHelper {
+internal object ContextHelper {
 
-    @NonNull
-    static Context getBaseContext(@NonNull View view) {
-        Context context = view.getContext();
-        if (context instanceof ContextThemeWrapper) {
-            context = ((ContextThemeWrapper) view.getContext()).getBaseContext();
+    @JvmStatic
+    fun getBaseContext(view: View): Context {
+        var context = view.context
+        if (context is ContextThemeWrapper) {
+            context = (view.context as ContextThemeWrapper).baseContext
         }
-        return context;
+        return context
     }
 }

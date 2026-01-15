@@ -1,49 +1,40 @@
-package candybar.lib.adapters;
+package candybar.lib.adapters
 
-import android.animation.AnimatorInflater;
-import android.animation.StateListAnimator;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.card.MaterialCardView;
-import com.kogitune.activitytransition.ActivityTransitionLauncher;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import candybar.lib.R;
-import candybar.lib.activities.CandyBarWallpaperActivity;
-import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.helpers.ViewHelper;
-import candybar.lib.items.PopupItem;
-import candybar.lib.items.Wallpaper;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.tasks.WallpaperApplyTask;
-import candybar.lib.utils.CandyBarGlideModule;
-import candybar.lib.utils.Extras;
-import candybar.lib.utils.ImageConfig;
-import candybar.lib.utils.Popup;
-import candybar.lib.utils.WallpaperDownloader;
-import candybar.lib.utils.views.HeaderView;
+import android.animation.AnimatorInflater
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import candybar.lib.R
+import candybar.lib.activities.CandyBarWallpaperActivity
+import candybar.lib.applications.CandyBarApplication
+import candybar.lib.helpers.ViewHelper
+import candybar.lib.items.PopupItem
+import candybar.lib.items.Wallpaper
+import candybar.lib.preferences.Preferences
+import candybar.lib.tasks.WallpaperApplyTask
+import candybar.lib.utils.CandyBarGlideModule
+import candybar.lib.utils.Extras
+import candybar.lib.utils.ImageConfig
+import candybar.lib.utils.Popup
+import candybar.lib.utils.WallpaperDownloader
+import candybar.lib.utils.views.HeaderView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.material.card.MaterialCardView
+import com.kogitune.activitytransition.ActivityTransitionLauncher
+import java.util.Locale
 
 /*
  * CandyBar - Material Dashboard
@@ -62,195 +53,187 @@ import candybar.lib.utils.views.HeaderView;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class WallpapersAdapter(
+    private val mContext: Context,
+    private val mWallpapers: MutableList<Wallpaper>
+) : RecyclerView.Adapter<WallpapersAdapter.ViewHolder>() {
 
-public class WallpapersAdapter extends RecyclerView.Adapter<WallpapersAdapter.ViewHolder> {
+    private val mWallpapersAll: List<Wallpaper> = ArrayList(mWallpapers)
+    private val mIsShowName: Boolean = mContext.resources.getBoolean(R.bool.wallpaper_show_name_author)
 
-    private final Context mContext;
-    private final List<Wallpaper> mWallpapers;
-    private final List<Wallpaper> mWallpapersAll;
-
-    public static boolean sIsClickable = true;
-    private final boolean mIsShowName;
-
-    public WallpapersAdapter(@NonNull Context context, @NonNull List<Wallpaper> wallpapers) {
-        mContext = context;
-        mWallpapers = wallpapers;
-        mWallpapersAll = new ArrayList<>(wallpapers);
-        mIsShowName = mContext.getResources().getBoolean(R.bool.wallpaper_show_name_author);
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        if (mIsShowName) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_wallpapers_item_grid, parent, false);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layoutId = if (mIsShowName) {
+            R.layout.fragment_wallpapers_item_grid
         } else {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_wallpapers_item_grid_alt, parent, false);
+            R.layout.fragment_wallpapers_item_grid_alt
         }
-        return new ViewHolder(view);
+        val view = LayoutInflater.from(mContext).inflate(layoutId, parent, false)
+        return ViewHolder(view)
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Wallpaper wallpaper = mWallpapers.get(position);
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val wallpaper = mWallpapers[position]
         if (mIsShowName) {
-            holder.name.setText(wallpaper.getName());
-            holder.author.setText(wallpaper.getAuthor());
+            holder.name?.text = wallpaper.name
+            holder.author?.text = wallpaper.author
         }
 
         if (CandyBarGlideModule.isValidContextForGlide(mContext)) {
             Glide.with(mContext)
-                    .asBitmap()
-                    .load(wallpaper.getThumbUrl())
-                    .override(ImageConfig.getThumbnailSize())
-                    .transition(BitmapTransitionOptions.withCrossFade(300))
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .listener(new RequestListener<>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
-                        }
+                .asBitmap()
+                .load(wallpaper.thumbUrl)
+                .override(ImageConfig.getThumbnailSize())
+                .transition(BitmapTransitionOptions.withCrossFade(300))
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Bitmap>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
 
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                            holder.thumbnailBitmap = resource;
-                            return false;
-                        }
-                    })
-                    .into(holder.image);
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        model: Any?,
+                        target: Target<Bitmap>,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        holder.thumbnailBitmap = resource
+                        return false
+                    }
+                })
+                .into(holder.image)
         }
     }
 
-    public void search(String string) {
-        String query = string.toLowerCase(Locale.getDefault()).trim();
-        mWallpapers.clear();
-        if (query.isEmpty()) mWallpapers.addAll(mWallpapersAll);
-        else {
-            for (int i = 0; i < mWallpapersAll.size(); i++) {
-                Wallpaper wallpaper = mWallpapersAll.get(i);
-                if (wallpaper.getName().toLowerCase(Locale.getDefault()).contains(query)) {
-                    mWallpapers.add(wallpaper);
+    @SuppressLint("NotifyDataSetChanged")
+    fun search(string: String) {
+        val query = string.lowercase(Locale.getDefault()).trim { it <= ' ' }
+        mWallpapers.clear()
+        if (query.isEmpty()) {
+            mWallpapers.addAll(mWallpapersAll)
+        } else {
+            for (wallpaper in mWallpapersAll) {
+                if (wallpaper.name.lowercase(Locale.getDefault()).contains(query)) {
+                    mWallpapers.add(wallpaper)
                 }
             }
         }
-        notifyDataSetChanged();
+        notifyDataSetChanged()
     }
 
-    @Override
-    public int getItemCount() {
-        return mWallpapers.size();
+    override fun getItemCount(): Int {
+        return mWallpapers.size
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
-            View.OnLongClickListener {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, View.OnLongClickListener {
+        val image: HeaderView = itemView.findViewById(R.id.image)
+        var name: TextView? = null
+        var author: TextView? = null
+        var thumbnailBitmap: Bitmap? = null
 
-        private final HeaderView image;
-        private TextView name;
-        private TextView author;
-        private Bitmap thumbnailBitmap;
+        init {
+            val viewStyle = mContext.resources.getString(R.string.wallpaper_grid_preview_style)
+            val ratio = ViewHelper.getWallpaperViewRatio(viewStyle)
+            image.setRatio(ratio.x, ratio.y)
 
-        ViewHolder(View itemView) {
-            super(itemView);
-            String viewStyle = mContext.getResources().getString(
-                    R.string.wallpaper_grid_preview_style);
-            Point ratio = ViewHelper.getWallpaperViewRatio(viewStyle);
-
-            image = itemView.findViewById(R.id.image);
-            image.setRatio(ratio.x, ratio.y);
-
-            MaterialCardView card = itemView.findViewById(R.id.card);
-            if (CandyBarApplication.getConfiguration().getWallpapersGrid() == CandyBarApplication.GridStyle.FLAT) {
-                card.setCardElevation(0);
-                card.setMaxCardElevation(0);
+            val card: MaterialCardView = itemView.findViewById(R.id.card)
+            if (CandyBarApplication.getConfiguration().wallpapersGrid == CandyBarApplication.GridStyle.FLAT) {
+                card.cardElevation = 0f
+                card.maxCardElevation = 0f
             }
 
-            if (!Preferences.get(mContext).isCardShadowEnabled()) {
-                card.setCardElevation(0);
+            if (!Preferences.get(mContext).isCardShadowEnabled) {
+                card.cardElevation = 0f
             }
 
-            StateListAnimator stateListAnimator = AnimatorInflater
-                    .loadStateListAnimator(mContext, R.animator.card_lift);
-            card.setStateListAnimator(stateListAnimator);
+            val stateListAnimator = AnimatorInflater.loadStateListAnimator(mContext, R.animator.card_lift)
+            card.stateListAnimator = stateListAnimator
 
             if (mIsShowName) {
-                name = itemView.findViewById(R.id.name);
-                author = itemView.findViewById(R.id.author);
+                name = itemView.findViewById(R.id.name)
+                author = itemView.findViewById(R.id.author)
             }
 
-            card.setOnClickListener(this);
-            card.setOnLongClickListener(this);
+            card.setOnClickListener(this)
+            card.setOnLongClickListener(this)
         }
 
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-            int position = getBindingAdapterPosition();
+        override fun onClick(view: View) {
+            val id = view.id
+            val position = bindingAdapterPosition
             if (id == R.id.card) {
                 if (sIsClickable) {
-                    sIsClickable = false;
+                    sIsClickable = false
                     try {
-                        final Intent intent = new Intent(mContext, CandyBarWallpaperActivity.class);
-                        intent.putExtra(Extras.EXTRA_URL, mWallpapers.get(position).getURL());
-
-                        ActivityTransitionLauncher.with((AppCompatActivity) mContext)
-                                .from(image, Extras.EXTRA_IMAGE)
-                                .image(thumbnailBitmap)
-                                .launch(intent);
-                    } catch (Exception e) {
-                        sIsClickable = true;
+                        val intent = Intent(mContext, CandyBarWallpaperActivity::class.java)
+                        intent.putExtra(Extras.EXTRA_URL, mWallpapers[position].url)
+                        ActivityTransitionLauncher.`with`(mContext as AppCompatActivity)
+                            .from(image, Extras.EXTRA_IMAGE)
+                            .image(thumbnailBitmap)
+                            .launch(intent)
+                    } catch (e: Exception) {
+                        sIsClickable = true
                     }
                 }
             }
         }
 
-        @Override
-        public boolean onLongClick(View view) {
-            int id = view.getId();
-            int position = getBindingAdapterPosition();
+        override fun onLongClick(view: View): Boolean {
+            val id = view.id
+            val position = bindingAdapterPosition
             if (id == R.id.card) {
-                if (position < 0 || position > mWallpapers.size()) {
-                    return false;
+                if (position !in mWallpapers.indices) {
+                    return false
                 }
 
-                Popup popup = Popup.Builder(mContext)
-                        .to(name != null ? name : view)
-                        .list(PopupItem.getApplyItems(mContext))
-                        .callback((applyPopup, i) -> {
-                            PopupItem item = applyPopup.getItems().get(i);
-                            if (item.getType() == PopupItem.Type.WALLPAPER_CROP) {
-                                Preferences.get(mContext).setCropWallpaper(!item.getCheckboxValue());
-                                item.setCheckboxValue(Preferences.get(mContext).isCropWallpaper());
-
-                                applyPopup.updateItem(i, item);
-                                return;
-                            } else if (item.getType() == PopupItem.Type.DOWNLOAD) {
-                                WallpaperDownloader.prepare(mContext)
-                                        .wallpaper(mWallpapers.get(position))
-                                        .start();
-                            } else {
-                                WallpaperApplyTask task = new WallpaperApplyTask(mContext, mWallpapers.get(position));
-
-                                if (item.getType() == PopupItem.Type.LOCKSCREEN) {
-                                    task.to(WallpaperApplyTask.Apply.LOCKSCREEN);
-                                } else if (item.getType() == PopupItem.Type.HOMESCREEN) {
-                                    task.to(WallpaperApplyTask.Apply.HOMESCREEN);
-                                } else if (item.getType() == PopupItem.Type.HOMESCREEN_LOCKSCREEN) {
-                                    task.to(WallpaperApplyTask.Apply.HOMESCREEN_LOCKSCREEN);
-                                }
-
-                                task.executeOnThreadPool();
+                val popup = Popup.Builder(mContext)
+                    .to(name ?: view)
+                    .list(PopupItem.getApplyItems(mContext))
+                    .callback { applyPopup, i ->
+                        val item = applyPopup.items[i]
+                        when (item.type) {
+                            PopupItem.Type.WALLPAPER_CROP -> {
+                                Preferences.get(mContext).isCropWallpaper = !item.checkboxValue
+                                item.checkboxValue = Preferences.get(mContext).isCropWallpaper
+                                applyPopup.updateItem(i, item)
+                                return@callback
                             }
-                            applyPopup.dismiss();
-                        })
-                        .build();
 
-                popup.show();
-                return true;
+                            PopupItem.Type.DOWNLOAD -> {
+                                WallpaperDownloader.prepare(mContext)
+                                    .wallpaper(mWallpapers[position])
+                                    .start()
+                            }
+
+                            else -> {
+                                val task = WallpaperApplyTask(mContext, mWallpapers[position])
+                                when (item.type) {
+                                    PopupItem.Type.LOCKSCREEN -> task.to(WallpaperApplyTask.Apply.LOCKSCREEN)
+                                    PopupItem.Type.HOMESCREEN -> task.to(WallpaperApplyTask.Apply.HOMESCREEN)
+                                    PopupItem.Type.HOMESCREEN_LOCKSCREEN -> task.to(WallpaperApplyTask.Apply.HOMESCREEN_LOCKSCREEN)
+                                    else -> {}
+                                }
+                                task.executeOnThreadPool()
+                            }
+                        }
+                        applyPopup.dismiss()
+                    }
+                    .build()
+                popup.show()
+                return true
             }
-            return false;
+            return false
         }
+    }
+
+    companion object {
+        @JvmStatic
+        var sIsClickable: Boolean = true
     }
 }

@@ -211,7 +211,7 @@ class WallpapersFragment : Fragment() {
 
     private inner class WallpapersLoader(private val refreshing: Boolean) : AsyncTaskBase() {
 
-        private var wallpapers: List<Wallpaper>? = null
+        private var wallpapers: MutableList<Wallpaper>? = null
 
         override fun preRun() {
             if (!refreshing) mProgress.visibility = View.VISIBLE
@@ -263,7 +263,7 @@ class WallpapersFragment : Fragment() {
             if (ok) {
                 setHasOptionsMenu(true)
 
-                mRecyclerView.adapter = WallpapersAdapter(requireActivity(), wallpapers ?: ArrayList())
+                mRecyclerView.adapter = WallpapersAdapter(requireActivity(), wallpapers ?: mutableListOf())
 
                 (requireActivity() as WallpapersListener)
                     .onWallpapersChecked(Database.get(requireActivity()).wallpapersCount)

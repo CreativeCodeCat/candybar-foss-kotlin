@@ -1,49 +1,40 @@
-package candybar.lib.adapters;
+package candybar.lib.adapters
 
-import android.animation.AnimatorInflater;
-import android.animation.StateListAnimator;
-import android.app.WallpaperManager;
-import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
-import com.danimahardhika.android.helpers.core.ColorHelper;
-import com.danimahardhika.android.helpers.core.DrawableHelper;
-import com.danimahardhika.android.helpers.core.utils.LogUtil;
-import com.google.android.material.card.MaterialCardView;
-
-import org.kustom.api.preset.AssetPresetFile;
-import org.kustom.api.preset.PresetInfoLoader;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import candybar.lib.R;
-import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.helpers.TypefaceHelper;
-import candybar.lib.items.Preset;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.utils.CandyBarGlideModule;
-import candybar.lib.utils.views.HeaderView;
+import android.animation.AnimatorInflater
+import android.app.WallpaperManager
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import candybar.lib.R
+import candybar.lib.applications.CandyBarApplication
+import candybar.lib.helpers.TypefaceHelper
+import candybar.lib.items.Preset
+import candybar.lib.preferences.Preferences
+import candybar.lib.utils.CandyBarGlideModule
+import candybar.lib.utils.views.HeaderView
+import com.afollestad.materialdialogs.MaterialDialog
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.danimahardhika.android.helpers.core.ColorHelper
+import com.danimahardhika.android.helpers.core.DrawableHelper
+import com.danimahardhika.android.helpers.core.utils.LogUtil
+import com.google.android.material.card.MaterialCardView
+import org.kustom.api.preset.AssetPresetFile
+import org.kustom.api.preset.PresetInfoLoader
+import java.util.Locale
 
 /*
  * CandyBar - Material Dashboard
@@ -62,253 +53,256 @@ import candybar.lib.utils.views.HeaderView;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class PresetsAdapter(
+    private val mContext: Context,
+    private val mPresets: List<Preset>
+) : RecyclerView.Adapter<PresetsAdapter.ViewHolder>() {
 
-public class PresetsAdapter extends RecyclerView.Adapter<PresetsAdapter.ViewHolder> {
+    private var wallpaperDrawable: Drawable? = null
 
-    private final Context mContext;
-    private final List<Preset> mPresets;
-    private Drawable wallpaperDrawable = null;
-
-    private final int TYPE_HEADER = 0;
-    private final int TYPE_CONTENT = 1;
-
-    public PresetsAdapter(@NonNull Context context, List<Preset> presets) {
-        mContext = context;
-        mPresets = presets;
+    init {
         try {
-            wallpaperDrawable = WallpaperManager.getInstance(context).getDrawable();
-        } catch (Exception ignored) {
-            LogUtil.e("Unable to load wallpaper. Storage permission is not granted.");
+            wallpaperDrawable = WallpaperManager.getInstance(mContext).drawable
+        } catch (ignored: Exception) {
+            LogUtil.e("Unable to load wallpaper. Storage permission is not granted.")
         }
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = null;
-        if (viewType == TYPE_HEADER) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_presets_item_header, parent, false);
-        } else if (viewType == TYPE_CONTENT) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_presets_item_grid, parent, false);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = when (viewType) {
+            TYPE_HEADER -> LayoutInflater.from(mContext).inflate(
+                R.layout.fragment_presets_item_header, parent, false
+            )
+
+            TYPE_CONTENT -> LayoutInflater.from(mContext).inflate(
+                R.layout.fragment_presets_item_grid, parent, false
+            )
+
+            else -> throw IllegalArgumentException("Invalid view type")
         }
-        return new ViewHolder(view, viewType);
+        return ViewHolder(view, viewType)
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Preset preset = mPresets.get(position);
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val preset = mPresets[position]
 
-        if (holder.getItemViewType() == TYPE_HEADER) {
-            holder.name.setText(preset.getHeaderText());
-            holder.setType(preset.getHeaderText());
-        } else if (holder.getItemViewType() == TYPE_CONTENT) {
-            PresetInfoLoader.create(new AssetPresetFile(preset.getPath()))
-                    .load(mContext, info -> holder.name.setText(info.getTitle().replaceAll("_", "")));
+        if (holder.itemViewType == TYPE_HEADER) {
+            holder.name.text = preset.headerText
+            holder.setType(preset.headerText ?: "")
+        } else if (holder.itemViewType == TYPE_CONTENT) {
+            PresetInfoLoader.create(AssetPresetFile(preset.path))
+                .load(mContext) { info ->
+                    holder.name.text = info.title.replace("_", "")
+                }
 
             if (CandyBarGlideModule.isValidContextForGlide(mContext)) {
                 Glide.with(mContext)
-                        .asBitmap()
-                        .load(new AssetPresetFile(preset.getPath()))
-                        .transition(BitmapTransitionOptions.withCrossFade(300))
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(holder.image);
+                    .asBitmap()
+                    .load(AssetPresetFile(preset.path))
+                    .transition(BitmapTransitionOptions.withCrossFade(300))
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(holder.image!!)
             }
         }
     }
 
-    public boolean isHeader(int position) {
-        return mPresets.get(position).isHeader();
+    fun isHeader(position: Int): Boolean = mPresets[position].isHeader
+
+    override fun getItemCount(): Int = mPresets.size
+
+    override fun getItemViewType(position: Int): Int {
+        return if (isHeader(position)) TYPE_HEADER else TYPE_CONTENT
     }
 
-    @Override
-    public int getItemCount() {
-        return mPresets.size();
-    }
+    inner class ViewHolder(itemView: View, viewType: Int) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
+        var image: HeaderView? = null
+        val name: TextView = itemView.findViewById(R.id.name)
+        val card: MaterialCardView = itemView.findViewById(R.id.card)
 
-    @Override
-    public int getItemViewType(int position) {
-        if (isHeader(position)) return TYPE_HEADER;
-        return TYPE_CONTENT;
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private HeaderView image;
-        private TextView name;
-        private final MaterialCardView card;
-
-        ViewHolder(View itemView, int viewType) {
-            super(itemView);
-
-            name = itemView.findViewById(R.id.name);
-            card = itemView.findViewById(R.id.card);
-
+        init {
             if (viewType == TYPE_HEADER) {
-                if (mContext.getResources().getBoolean(R.bool.use_flat_card)) {
-                    card.setStrokeWidth(mContext.getResources().getDimensionPixelSize(R.dimen.card_stroke_width));
-                    card.setCardElevation(0);
-                    card.setUseCompatPadding(false);
-                    int marginTop = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin_top);
-                    int marginLeft = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin_left);
-                    int marginRight = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin_right);
-                    int marginBottom = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin_bottom);
-                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) card.getLayoutParams();
-                    params.setMargins(marginLeft, marginTop, marginRight, marginBottom);
+                if (mContext.resources.getBoolean(R.bool.use_flat_card)) {
+                    card.strokeWidth = mContext.resources.getDimensionPixelSize(R.dimen.card_stroke_width)
+                    card.cardElevation = 0f
+                    card.useCompatPadding = false
+                    val marginTop = mContext.resources.getDimensionPixelSize(R.dimen.card_margin_top)
+                    val marginLeft = mContext.resources.getDimensionPixelSize(R.dimen.card_margin_left)
+                    val marginRight = mContext.resources.getDimensionPixelSize(R.dimen.card_margin_right)
+                    val marginBottom = mContext.resources.getDimensionPixelSize(R.dimen.card_margin_bottom)
+                    (card.layoutParams as? LinearLayout.LayoutParams)?.setMargins(
+                        marginLeft, marginTop, marginRight, marginBottom
+                    )
                 }
             } else if (viewType == TYPE_CONTENT) {
-                name = itemView.findViewById(R.id.name);
-                image = itemView.findViewById(R.id.image);
+                image = itemView.findViewById(R.id.image)
 
-                if (CandyBarApplication.getConfiguration().getWallpapersGrid() == CandyBarApplication.GridStyle.FLAT) {
-                    card.setCardElevation(0);
-                    card.setMaxCardElevation(0);
+                if (CandyBarApplication.getConfiguration().wallpapersGrid == CandyBarApplication.GridStyle.FLAT) {
+                    card.cardElevation = 0f
+                    card.maxCardElevation = 0f
                 }
 
-                if (!Preferences.get(mContext).isCardShadowEnabled()) {
-                    card.setCardElevation(0);
+                if (!Preferences.get(mContext).isCardShadowEnabled) {
+                    card.cardElevation = 0f
                 }
 
-                StateListAnimator stateListAnimator = AnimatorInflater
-                        .loadStateListAnimator(mContext, R.animator.card_lift);
-                card.setStateListAnimator(stateListAnimator);
+                val stateListAnimator = AnimatorInflater.loadStateListAnimator(mContext, R.animator.card_lift)
+                card.stateListAnimator = stateListAnimator
 
-                if (wallpaperDrawable != null) {
-                    ((HeaderView) itemView.findViewById(R.id.wallpaper_bg)).setImageDrawable(wallpaperDrawable);
+                wallpaperDrawable?.let {
+                    itemView.findViewById<HeaderView>(R.id.wallpaper_bg)?.setImageDrawable(it)
                 }
 
-                card.setOnClickListener(this);
+                card.setOnClickListener(this)
             }
         }
 
-        public boolean isPackageInstalled(String pkgName) {
-            try {
-                mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                return true;
-            } catch (PackageManager.NameNotFoundException e) {
-                return false;
+        private fun isPackageInstalled(pkgName: String): Boolean {
+            return try {
+                mContext.packageManager.getPackageInfo(pkgName, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
             }
         }
 
-        public List<String[]> getRequiredApps(String type) {
-            type = type.toLowerCase(Locale.ROOT);
-            String nameBase = "";
-            String pkgBase = "";
+        private fun getRequiredApps(type: String): List<Array<String>> {
+            val typeLower = type.lowercase(Locale.ROOT)
+            var nameBase = ""
+            var pkgBase = ""
 
-            switch (type) {
-                case "lockscreens":
-                    nameBase = "KLCK";
-                    pkgBase = "org.kustom.lockscreen";
-                    break;
-                case "wallpapers":
-                    nameBase = "KLWP";
-                    pkgBase = "org.kustom.wallpaper";
-                    break;
-                case "widgets":
-                    nameBase = "KWGT";
-                    pkgBase = "org.kustom.widget";
-                    break;
+            when (typeLower) {
+                "lockscreens" -> {
+                    nameBase = "KLCK"
+                    pkgBase = "org.kustom.lockscreen"
+                }
+
+                "wallpapers" -> {
+                    nameBase = "KLWP"
+                    pkgBase = "org.kustom.wallpaper"
+                }
+
+                "widgets" -> {
+                    nameBase = "KWGT"
+                    pkgBase = "org.kustom.widget"
+                }
             }
 
-            String namePro = nameBase + " Pro";
-            String pkgPro = pkgBase + ".pro";
+            val namePro = "$nameBase Pro"
+            val pkgPro = "$pkgBase.pro"
 
-            List<String[]> requiredApps = new ArrayList<>();
+            val requiredApps = mutableListOf<Array<String>>()
 
             if (!isPackageInstalled(pkgBase)) {
-                requiredApps.add(new String[]{nameBase, pkgBase});
+                requiredApps.add(arrayOf(nameBase, pkgBase))
             }
             if (!isPackageInstalled(pkgPro)) {
-                requiredApps.add(new String[]{namePro, pkgPro});
+                requiredApps.add(arrayOf(namePro, pkgPro))
             }
 
-            return requiredApps;
+            return requiredApps
         }
 
-        public void setType(String type) {
-            List<String[]> requiredApps = getRequiredApps(type);
-            LinearLayout linearLayout = itemView.findViewById(R.id.container);
+        fun setType(type: String) {
+            val requiredApps = getRequiredApps(type)
+            val linearLayout = itemView.findViewById<LinearLayout>(R.id.container)
 
-            if (!requiredApps.isEmpty()) {
-                for (String[] requiredApp : requiredApps) {
-                    View item = LayoutInflater.from(mContext).inflate(R.layout.fragment_presets_item_header_list, linearLayout, false);
-                    ((TextView) item.findViewById(R.id.name)).setText(requiredApp[0]);
-                    int color = ColorHelper.getAttributeColor(mContext, android.R.attr.textColorPrimary);
-                    ((ImageView) item.findViewById(R.id.kustom_icon)).setImageDrawable(
-                            DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_drawer_presets, color));
-                    item.setOnClickListener(v -> {
+            if (requiredApps.isNotEmpty()) {
+                for (requiredApp in requiredApps) {
+                    val item = LayoutInflater.from(mContext).inflate(
+                        R.layout.fragment_presets_item_header_list, linearLayout, false
+                    )
+                    (item.findViewById<View>(R.id.name) as TextView).text = requiredApp[0]
+                    val color = ColorHelper.getAttributeColor(mContext, android.R.attr.textColorPrimary)
+                    (item.findViewById<View>(R.id.kustom_icon) as ImageView).setImageDrawable(
+                        DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_drawer_presets, color)
+                    )
+                    item.setOnClickListener {
                         try {
-                            Intent store = new Intent(Intent.ACTION_VIEW, Uri.parse(
-                                    "https://play.google.com/store/apps/details?id=" + requiredApp[1]));
-                            mContext.startActivity(store);
-                        } catch (ActivityNotFoundException e) {
-                            Toast.makeText(mContext, mContext.getResources().getString(
-                                    R.string.no_browser), Toast.LENGTH_LONG).show();
+                            val store = Intent(
+                                Intent.ACTION_VIEW, Uri.parse(
+                                    "https://play.google.com/store/apps/details?id=${requiredApp[1]}"
+                                )
+                            )
+                            mContext.startActivity(store)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(
+                                mContext, mContext.resources.getString(
+                                    R.string.no_browser
+                                ), Toast.LENGTH_LONG
+                            ).show()
                         }
-                    });
-                    ((ImageView) item.findViewById(R.id.forward_icon)).setImageDrawable(
-                            DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_arrow_forward, color));
-                    linearLayout.addView(item);
+                    }
+                    (item.findViewById<View>(R.id.forward_icon) as ImageView).setImageDrawable(
+                        DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_arrow_forward, color)
+                    )
+                    linearLayout.addView(item)
                 }
             } else {
-                card.setVisibility(View.GONE);
+                card.visibility = View.GONE
             }
         }
 
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-            int position = getBindingAdapterPosition();
+        override fun onClick(view: View) {
+            val id = view.id
+            val position = bindingAdapterPosition
             if (id == R.id.card) {
-                Preset preset = mPresets.get(position);
-                String type = preset.getPath().split("/")[0];
+                val preset = mPresets[position]
+                val type = preset.path.split("/")[0]
 
-                if (!type.equals("komponents")) {
-                    String pkg = null, cls = null;
+                if (type != "komponents") {
+                    var pkg = ""
+                    var cls = ""
 
-                    switch (type) {
-                        case "lockscreens":
-                            pkg = "org.kustom.lockscreen";
-                            cls = "org.kustom.lib.editor.LockAdvancedEditorActivity";
-                            break;
-                        case "wallpapers":
-                            pkg = "org.kustom.wallpaper";
-                            cls = "org.kustom.lib.editor.WpAdvancedEditorActivity";
-                            break;
-                        case "widgets":
-                            pkg = "org.kustom.widget";
-                            cls = "org.kustom.widget.picker.WidgetPicker";
-                            break;
+                    when (type) {
+                        "lockscreens" -> {
+                            pkg = "org.kustom.lockscreen"
+                            cls = "org.kustom.lib.editor.LockAdvancedEditorActivity"
+                        }
+
+                        "wallpapers" -> {
+                            pkg = "org.kustom.wallpaper"
+                            cls = "org.kustom.lib.editor.WpAdvancedEditorActivity"
+                        }
+
+                        "widgets" -> {
+                            pkg = "org.kustom.widget"
+                            cls = "org.kustom.widget.picker.WidgetPicker"
+                        }
                     }
 
-                    Intent intent = new Intent();
-                    intent.setComponent(new ComponentName(pkg, cls));
+                    val intent = Intent()
+                    intent.component = ComponentName(pkg, cls)
 
                     try {
-                        intent.setData(new Uri.Builder()
-                                .scheme("kfile")
-                                .authority(mContext.getPackageName() + ".kustom.provider")
-                                .appendPath(preset.getPath())
-                                .build());
-                    } catch (Exception ignored) {
-                        intent.setData(Uri.parse("kfile://" + mContext.getPackageName() + "/" + preset.getPath()));
+                        intent.data = Uri.Builder()
+                            .scheme("kfile")
+                            .authority("${mContext.packageName}.kustom.provider")
+                            .appendPath(preset.path)
+                            .build()
+                    } catch (e: Exception) {
+                        intent.data = Uri.parse("kfile://${mContext.packageName}/${preset.path}")
                     }
 
-                    if (!getRequiredApps(type).isEmpty()) {
-                        new MaterialDialog.Builder(mContext)
-                                .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
-                                .content(R.string.presets_required_apps_not_installed)
-                                .positiveText(R.string.close)
-                                .show();
+                    if (getRequiredApps(type).isNotEmpty()) {
+                        MaterialDialog.Builder(mContext)
+                            .typeface(TypefaceHelper.getMedium(mContext), TypefaceHelper.getRegular(mContext))
+                            .content(R.string.presets_required_apps_not_installed)
+                            .positiveText(R.string.close)
+                            .show()
                     } else {
-                        mContext.startActivity(intent);
+                        mContext.startActivity(intent)
                     }
                 } else {
                     // TODO: Handle Komponent click
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_CONTENT = 1
     }
 }

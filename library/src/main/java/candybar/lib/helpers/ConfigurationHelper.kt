@@ -1,17 +1,12 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import static com.danimahardhika.android.helpers.core.DrawableHelper.get;
-
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-
-import com.danimahardhika.android.helpers.core.ColorHelper;
-
-import candybar.lib.R;
-import candybar.lib.applications.CandyBarApplication;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
+import candybar.lib.R
+import candybar.lib.applications.CandyBarApplication
+import com.danimahardhika.android.helpers.core.ColorHelper
+import com.danimahardhika.android.helpers.core.DrawableHelper as CBDrawableHelper
 
 /*
  * CandyBar - Material Dashboard
@@ -31,23 +26,26 @@ import candybar.lib.applications.CandyBarApplication;
  * limitations under the License.
  */
 
-public class ConfigurationHelper {
+object ConfigurationHelper {
 
-    public static Drawable getNavigationIcon(@NonNull Context context, @NonNull CandyBarApplication.NavigationIcon navigationIcon) {
-        return switch (navigationIcon) {
-            case DEFAULT -> new DrawerArrowDrawable(context);
-            case STYLE_1 -> get(context, R.drawable.ic_toolbar_navigation);
-            case STYLE_2 -> get(context, R.drawable.ic_toolbar_navigation_2);
-            case STYLE_3 -> get(context, R.drawable.ic_toolbar_navigation_3);
-            case STYLE_4 -> get(context, R.drawable.ic_toolbar_navigation_4);
-            default -> get(context, R.drawable.ic_toolbar_navigation);
-        };
+    @JvmStatic
+    fun getNavigationIcon(context: Context, navigationIcon: CandyBarApplication.NavigationIcon): Drawable? {
+        return when (navigationIcon) {
+            CandyBarApplication.NavigationIcon.DEFAULT -> DrawerArrowDrawable(context)
+            CandyBarApplication.NavigationIcon.STYLE_1 -> CBDrawableHelper.get(context, R.drawable.ic_toolbar_navigation)
+            CandyBarApplication.NavigationIcon.STYLE_2 -> CBDrawableHelper.get(context, R.drawable.ic_toolbar_navigation_2)
+            CandyBarApplication.NavigationIcon.STYLE_3 -> CBDrawableHelper.get(context, R.drawable.ic_toolbar_navigation_3)
+            CandyBarApplication.NavigationIcon.STYLE_4 -> CBDrawableHelper.get(context, R.drawable.ic_toolbar_navigation_4)
+            else -> CBDrawableHelper.get(context, R.drawable.ic_toolbar_navigation)
+        }
     }
 
-    public static int getSocialIconColor(@NonNull Context context, @NonNull CandyBarApplication.IconColor iconColor) {
-        if (iconColor == CandyBarApplication.IconColor.ACCENT) {
-            return ColorHelper.getAttributeColor(context, com.google.android.material.R.attr.colorSecondary);
+    @JvmStatic
+    fun getSocialIconColor(context: Context, iconColor: CandyBarApplication.IconColor): Int {
+        return if (iconColor == CandyBarApplication.IconColor.ACCENT) {
+            ColorHelper.getAttributeColor(context, com.google.android.material.R.attr.colorSecondary)
+        } else {
+            ColorHelper.getAttributeColor(context, android.R.attr.textColorPrimary)
         }
-        return ColorHelper.getAttributeColor(context, android.R.attr.textColorPrimary);
     }
 }

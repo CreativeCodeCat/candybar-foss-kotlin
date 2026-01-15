@@ -1,48 +1,40 @@
-package candybar.lib.adapters;
+package candybar.lib.adapters
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.util.TypedValue;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.danimahardhika.android.helpers.core.ColorHelper;
-import com.danimahardhika.android.helpers.core.DrawableHelper;
-import com.danimahardhika.android.helpers.core.SoftKeyboardHelper;
-import com.google.android.material.tabs.TabLayout;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import candybar.lib.R;
-import candybar.lib.applications.CandyBarApplication;
-import candybar.lib.databases.Database;
-import candybar.lib.fragments.IconsFragment;
-import candybar.lib.helpers.IconsHelper;
-import candybar.lib.helpers.IntentHelper;
-import candybar.lib.items.Icon;
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.util.TypedValue
+import android.view.ActionMode
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import candybar.lib.R
+import candybar.lib.applications.CandyBarApplication
+import candybar.lib.databases.Database
+import candybar.lib.fragments.IconsFragment
+import candybar.lib.helpers.IconsHelper
+import candybar.lib.helpers.IntentHelper
+import candybar.lib.items.Icon
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.danimahardhika.android.helpers.core.ColorHelper
+import com.danimahardhika.android.helpers.core.DrawableHelper
+import com.danimahardhika.android.helpers.core.SoftKeyboardHelper
+import com.google.android.material.tabs.TabLayout
+import java.lang.ref.WeakReference
+import java.util.Locale
 
 /*
  * CandyBar - Material Dashboard
@@ -61,364 +53,298 @@ import candybar.lib.items.Icon;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class IconsAdapter(
+    private val mContext: Context,
+    private var mIcons: List<Icon>,
+    private val mFragment: Fragment,
+    private val mIsBookmarkMode: Boolean
+) : RecyclerView.Adapter<IconsAdapter.ViewHolder>() {
 
-public class IconsAdapter extends RecyclerView.Adapter<IconsAdapter.ViewHolder> {
+    private var mIconsAll: List<Icon>? = null
+    private var mRecyclerView: WeakReference<RecyclerView>? = null
+    private var mSelectedIcons: MutableList<Icon> = ArrayList()
 
-    private final Context mContext;
-    private List<Icon> mIcons;
-    private List<Icon> mIconsAll;
-    private final Fragment mFragment;
+    private var visibleStart: Int = 0
+    private var visibleEnd: Int = 0
 
-    private WeakReference<RecyclerView> mRecyclerView = null;
-    private List<Icon> mSelectedIcons = new ArrayList<>();
+    private val mIsShowIconName: Boolean = mContext.resources.getBoolean(R.bool.show_icon_name)
+    private var actionMode: ActionMode? = null
 
-    private int visibleStart;
-    private int visibleEnd;
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            actionMode = mode
+            mode.menuInflater.inflate(R.menu.menu_bookmark_icons, menu)
+            val activity = mContext as Activity
+            val tabLayout = activity.findViewById<TabLayout>(R.id.tab)
+            val shadow = activity.findViewById<View>(R.id.shadow)
 
-    private final boolean mIsShowIconName;
-    private final boolean mIsBookmarkMode;
+            shadow?.animate()?.translationY(-tabLayout.height.toFloat())?.setDuration(200)?.start()
 
-    // NOTE: In bookmark mode we don't need to optimize things a lot
-    // It's not like the users are going to bookmark a lot
-    private ActionMode actionMode;
-    private final ActionMode.Callback actionModeCallback = new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            actionMode = mode;
-            mode.getMenuInflater().inflate(R.menu.menu_bookmark_icons, menu);
-            Activity activity = (Activity) mContext;
-            TabLayout tabLayout = activity.findViewById(R.id.tab);
-            View shadow = activity.findViewById(R.id.shadow);
-            if (shadow != null) {
-                shadow.animate().translationY(-tabLayout.getHeight()).setDuration(200).start();
+            tabLayout.animate().translationY(-tabLayout.height.toFloat()).setDuration(200)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        tabLayout.visibility = View.GONE
+                        shadow?.translationY = 0f
+                        tabLayout.animate().setListener(null)
+                    }
+                }).start()
+
+            activity.findViewById<ViewPager2>(R.id.pager).isUserInputEnabled = false
+            activity.findViewById<DrawerLayout>(R.id.drawer_layout)
+                .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
+            for (i in mIcons.indices) {
+                getViewHolderAt(i)?.onActionModeChange()
             }
-            tabLayout.animate().translationY(-tabLayout.getHeight()).setDuration(200)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            tabLayout.setVisibility(View.GONE);
-                            if (shadow != null) {
-                                shadow.setTranslationY(0);
-                            }
-                            tabLayout.animate().setListener(null);
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            mode.title = mContext.resources.getString(R.string.items_selected, mSelectedIcons.size)
+            menu.findItem(R.id.menu_select_all).setIcon(
+                if (mSelectedIcons.size == mIcons.size) R.drawable.ic_toolbar_select_all_selected
+                else R.drawable.ic_toolbar_select_all
+            )
+            menu.findItem(R.id.menu_delete).isVisible = mSelectedIcons.isNotEmpty()
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
+                R.id.menu_delete -> {
+                    val drawableNames = mSelectedIcons.map { it.drawableName }
+                    Database.get(mContext).deleteBookmarkedIcons(drawableNames)
+                    IconsFragment.reloadBookmarks()
+                    mode.finish()
+                    true
+                }
+
+                R.id.menu_select_all -> {
+                    if (mSelectedIcons.size != mIcons.size) {
+                        for (i in mIcons.indices) {
+                            getViewHolderAt(i)?.setChecked(true, true)
                         }
-                    }).start();
-            ((ViewPager2) activity.findViewById(R.id.pager)).setUserInputEnabled(false);
-            ((DrawerLayout) activity.findViewById(R.id.drawer_layout))
-                    .setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-            for (int i = 0; i < mIcons.size(); i++) {
-                ViewHolder holder = getViewHolderAt(i);
-                if (holder != null) holder.onActionModeChange();
-            }
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            mode.setTitle(mContext.getResources().getString(R.string.items_selected, mSelectedIcons.size()));
-            menu.findItem(R.id.menu_select_all).setIcon(mSelectedIcons.size() == mIcons.size()
-                    ? R.drawable.ic_toolbar_select_all_selected : R.drawable.ic_toolbar_select_all);
-            menu.findItem(R.id.menu_delete).setVisible(!mSelectedIcons.isEmpty());
-            return true;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
-            int itemId = menuItem.getItemId();
-            if (itemId == R.id.menu_delete) {
-                List<String> drawableNames = new ArrayList<>();
-                for (Icon icon : mSelectedIcons) drawableNames.add(icon.getDrawableName());
-                Database.get(mContext).deleteBookmarkedIcons(drawableNames);
-                IconsFragment.reloadBookmarks();
-                mode.finish();
-                return true;
-            } else if (itemId == R.id.menu_select_all) {
-                if (mSelectedIcons.size() != mIcons.size()) {
-                    for (int i = 0; i < mIcons.size(); i++) {
-                        ViewHolder holder = getViewHolderAt(i);
-                        if (holder != null) holder.setChecked(true, true);
+                        mSelectedIcons = ArrayList(mIcons)
+                    } else {
+                        for (i in mIcons.indices) {
+                            getViewHolderAt(i)?.setChecked(false, true)
+                        }
+                        mSelectedIcons = ArrayList()
                     }
-                    mSelectedIcons = new ArrayList<>(mIcons);
-                } else {
-                    for (int i = 0; i < mIcons.size(); i++) {
-                        ViewHolder holder = getViewHolderAt(i);
-                        if (holder != null) holder.setChecked(false, true);
-                    }
-                    mSelectedIcons = new ArrayList<>();
+                    actionMode?.invalidate()
+                    true
                 }
-                actionMode.invalidate();
-            }
-            return false;
-        }
 
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            actionMode = null;
-            mSelectedIcons = new ArrayList<>();
-            Activity activity = (Activity) mContext;
-            TabLayout tabLayout = activity.findViewById(R.id.tab);
-            View shadow = activity.findViewById(R.id.shadow);
-            if (shadow != null) {
-                shadow.setTranslationY(-tabLayout.getHeight());
-                shadow.animate().translationY(0).setDuration(200).start();
-            }
-            tabLayout.setVisibility(View.VISIBLE);
-            tabLayout.animate().translationY(0).setDuration(200).start();
-            ((ViewPager2) activity.findViewById(R.id.pager)).setUserInputEnabled(true);
-            ((DrawerLayout) activity.findViewById(R.id.drawer_layout))
-                    .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-            for (int i = 0; i < mIcons.size(); i++) {
-                ViewHolder holder = getViewHolderAt(i);
-                if (holder != null) holder.onActionModeChange();
+                else -> false
             }
         }
-    };
 
-    public IconsAdapter(@NonNull Context context, @NonNull List<Icon> icons, Fragment fragment, boolean isBookmarkMode) {
-        mContext = context;
-        mFragment = fragment;
-        mIcons = icons;
-        mIsShowIconName = mContext.getResources().getBoolean(R.bool.show_icon_name);
-        mIsBookmarkMode = isBookmarkMode;
+        override fun onDestroyActionMode(mode: ActionMode) {
+            actionMode = null
+            mSelectedIcons = ArrayList()
+            val activity = mContext as Activity
+            val tabLayout = activity.findViewById<TabLayout>(R.id.tab)
+            val shadow = activity.findViewById<View>(R.id.shadow)
+
+            shadow?.let {
+                it.translationY = -tabLayout.height.toFloat()
+                it.animate().translationY(0f).setDuration(200).start()
+            }
+            tabLayout.visibility = View.VISIBLE
+            tabLayout.animate().translationY(0f).setDuration(200).start()
+
+            activity.findViewById<ViewPager2>(R.id.pager).isUserInputEnabled = true
+            activity.findViewById<DrawerLayout>(R.id.drawer_layout)
+                .setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+
+            for (i in mIcons.indices) {
+                getViewHolderAt(i)?.onActionModeChange()
+            }
+        }
     }
 
-    public void setIcons(@NonNull List<Icon> icons) {
-        mIcons = icons;
-        notifyDataSetChanged();
+    fun setIcons(icons: List<Icon>) {
+        mIcons = icons
+        notifyDataSetChanged()
     }
 
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-        mRecyclerView = new WeakReference<>(recyclerView);
-        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
-        if (manager instanceof GridLayoutManager glm && getItemCount() > 0) {
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mRecyclerView = WeakReference(recyclerView)
+        val manager = recyclerView.layoutManager
+        if (manager is GridLayoutManager && itemCount > 0) {
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    visibleStart = manager.findFirstVisibleItemPosition()
+                    visibleEnd = manager.findLastVisibleItemPosition()
                 }
-
-                @Override
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    visibleStart = glm.findFirstVisibleItemPosition();
-                    visibleEnd = glm.findLastVisibleItemPosition();
-                    // LogUtil.d(String.format(Locale.ENGLISH, "[Start, End]: [%d, %d]", visibleStart, visibleEnd));
-                }
-            });
+            })
         }
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(
-                R.layout.fragment_icons_item_grid, parent, false);
-        return new ViewHolder(view);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(mContext).inflate(
+            R.layout.fragment_icons_item_grid, parent, false
+        )
+        return ViewHolder(view)
     }
 
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Icon icon = mIcons.get(position);
-        holder.name.setText(icon.getTitle());
-        loadIconInto(holder.icon, position);
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val icon = mIcons[position]
+        holder.name.text = icon.title
+        loadIconInto(holder.icon, position)
         if (mIsBookmarkMode) {
-            holder.setCheckChangedListener(null);
-            holder.setChecked(mSelectedIcons.contains(icon), false);
-            holder.setCheckChangedListener(isChecked -> {
+            holder.setCheckChangedListener(null)
+            holder.setChecked(mSelectedIcons.contains(icon), false)
+            holder.setCheckChangedListener { isChecked ->
                 if (isChecked) {
-                    mSelectedIcons.add(icon);
+                    mSelectedIcons.add(icon)
                 } else {
-                    mSelectedIcons.remove(icon);
+                    mSelectedIcons.remove(icon)
                 }
-                if (actionMode != null) actionMode.invalidate();
-            });
+                actionMode?.invalidate()
+            }
         }
     }
 
-    @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        Glide.with(mFragment).clear(holder.icon);
-        super.onViewRecycled(holder);
+    override fun onViewRecycled(holder: ViewHolder) {
+        Glide.with(mFragment).clear(holder.icon)
+        super.onViewRecycled(holder)
     }
 
-    @Override
-    public int getItemCount() {
-        return mIcons.size();
+    override fun getItemCount(): Int = mIcons.size
+
+    private fun getViewHolderAt(position: Int): ViewHolder? {
+        return mRecyclerView?.get()?.findViewHolderForAdapterPosition(position) as? ViewHolder
     }
 
-    private ViewHolder getViewHolderAt(int position) {
-        return (ViewHolder) mRecyclerView.get().findViewHolderForAdapterPosition(position);
-    }
-
-    private void loadIconInto(ImageView imageView, int position) {
-        if (mFragment.getActivity() == null) return;
+    private fun loadIconInto(imageView: ImageView, position: Int) {
+        if (mFragment.activity == null) return
         Glide.with(mFragment)
-                .load("drawable://" + mIcons.get(position).getRes())
-                .skipMemoryCache(true)
-                .transition(DrawableTransitionOptions.withCrossFade(300))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(imageView);
+            .load("drawable://" + mIcons[position].res)
+            .skipMemoryCache(true)
+            .transition(DrawableTransitionOptions.withCrossFade(300))
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .into(imageView)
     }
 
-    public void reloadIcons() {
-        for (int i = visibleStart; i <= visibleEnd; i++) {
-            ViewHolder holder = getViewHolderAt(i);
-            if (holder != null) loadIconInto(holder.icon, i);
+    fun reloadIcons() {
+        for (i in visibleStart..visibleEnd) {
+            val holder = getViewHolderAt(i)
+            if (holder != null) loadIconInto(holder.icon, i)
         }
     }
 
-    private interface CheckChangedListener {
-        void onCheckChanged(boolean isChecked);
+    internal fun interface CheckChangedListener {
+        fun onCheckChanged(isChecked: Boolean)
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        private final ImageView icon;
-        private final TextView name;
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener, View.OnLongClickListener {
+        val icon: ImageView = itemView.findViewById(R.id.icon)
+        val name: TextView = itemView.findViewById(R.id.name)
+        private val container: View = itemView.findViewById(R.id.container)
+        private val innerContainer: View = itemView.findViewById(R.id.inner_container)
+        private val checkBackground: View = itemView.findViewById(R.id.check_background)
+        private var isChecked: Boolean = false
+        private var checkChangedListener: CheckChangedListener? = null
 
-        private final View container;
-        private final View innerContainer;
-        private final View checkBackground;
-        private boolean isChecked;
-        private CheckChangedListener checkChangedListener;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            icon = itemView.findViewById(R.id.icon);
-            name = itemView.findViewById(R.id.name);
-            innerContainer = itemView.findViewById(R.id.inner_container);
-            checkBackground = itemView.findViewById(R.id.check_background);
-
-            container = itemView.findViewById(R.id.container);
-            container.setOnClickListener(this);
-
+        init {
+            container.setOnClickListener(this)
             if (mIsBookmarkMode) {
-                container.setOnLongClickListener(this);
-                int color = ColorHelper.getAttributeColor(mContext, com.google.android.material.R.attr.colorSecondary);
-                ((ImageView) checkBackground.findViewById(R.id.checkmark))
-                        .setImageDrawable(DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_check_circle, color));
+                container.setOnLongClickListener(this)
+                val color = ColorHelper.getAttributeColor(mContext, com.google.android.material.R.attr.colorSecondary)
+                (checkBackground.findViewById<View>(R.id.checkmark) as ImageView)
+                    .setImageDrawable(DrawableHelper.getTintedDrawable(mContext, R.drawable.ic_check_circle, color))
             }
 
             if (!mIsShowIconName) {
-                name.setVisibility(View.GONE);
+                name.visibility = View.GONE
             }
 
-            onActionModeChange();
+            onActionModeChange()
         }
 
-        private void onActionModeChange() {
-            TypedValue outValue = new TypedValue();
+        fun onActionModeChange() {
+            val outValue = TypedValue()
             if (actionMode != null) {
-                mContext.getTheme().resolveAttribute(androidx.appcompat.R.attr.selectableItemBackground, outValue, true);
-                container.setBackgroundResource(outValue.resourceId);
-                innerContainer.setBackgroundResource(0);
+                mContext.theme.resolveAttribute(androidx.appcompat.R.attr.selectableItemBackground, outValue, true)
+                container.setBackgroundResource(outValue.resourceId)
+                innerContainer.setBackgroundResource(0)
             } else {
-                mContext.getTheme().resolveAttribute(androidx.appcompat.R.attr.selectableItemBackgroundBorderless, outValue, true);
-                container.setBackgroundResource(0);
-                innerContainer.setBackgroundResource(outValue.resourceId);
-                setChecked(false, true);
+                mContext.theme.resolveAttribute(androidx.appcompat.R.attr.selectableItemBackgroundBorderless, outValue, true)
+                container.setBackgroundResource(0)
+                innerContainer.setBackgroundResource(outValue.resourceId)
+                setChecked(false, true)
             }
         }
 
-        private void setCheckChangedListener(CheckChangedListener checkChangedListener) {
-            this.checkChangedListener = checkChangedListener;
+        internal fun setCheckChangedListener(checkChangedListener: CheckChangedListener?) {
+            this.checkChangedListener = checkChangedListener
         }
 
-        private void setChecked(boolean isChecked, boolean animate) {
-            this.isChecked = isChecked;
-            float scale = isChecked ? (float) 0.6 : 1;
+        fun setChecked(isChecked: Boolean, animate: Boolean) {
+            this.isChecked = isChecked
+            val scale = if (isChecked) 0.6f else 1f
             if (animate) {
-                checkBackground.animate().alpha(isChecked ? 1 : 0).setDuration(200).start();
-                icon.animate().scaleX(scale).scaleY(scale).setDuration(200).start();
+                checkBackground.animate().alpha(if (isChecked) 1f else 0f).setDuration(200).start()
+                icon.animate().scaleX(scale).scaleY(scale).setDuration(200).start()
             } else {
-                checkBackground.setAlpha(isChecked ? 1 : 0);
-                icon.setScaleX(scale);
-                icon.setScaleY(scale);
+                checkBackground.alpha = if (isChecked) 1f else 0f
+                icon.scaleX = scale
+                icon.scaleY = scale
             }
-            if (checkChangedListener != null) {
-                checkChangedListener.onCheckChanged(isChecked);
-            }
+            checkChangedListener?.onCheckChanged(isChecked)
         }
 
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-            int position = getBindingAdapterPosition();
+        override fun onClick(view: View) {
+            val id = view.id
+            val position = bindingAdapterPosition
             if (id == R.id.container) {
-                if (position < 0 || position > mIcons.size()) return;
+                if (position < 0 || position >= mIcons.size) return
                 if (actionMode != null) {
-                    setChecked(!isChecked, true);
+                    setChecked(!isChecked, true)
                 } else {
-                    SoftKeyboardHelper.closeKeyboard(mContext);
-                    IconsHelper.selectIcon(mContext, IntentHelper.sAction, mIcons.get(position));
+                    SoftKeyboardHelper.closeKeyboard(mContext)
+                    IconsHelper.selectIcon(mContext, IntentHelper.sAction, mIcons[position])
                 }
             }
         }
 
-        @Override
-        public boolean onLongClick(View view) {
+        override fun onLongClick(view: View): Boolean {
             if (actionMode == null) {
-                ((Activity) mContext).startActionMode(actionModeCallback);
+                (mContext as Activity).startActionMode(actionModeCallback)
             }
-            setChecked(!isChecked, true);
-            return true;
+            setChecked(!isChecked, true)
+            return true
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void search(String string) {
+    fun search(string: String) {
         if (mIconsAll == null) {
-            // For searching, mIcons
-            //      - Contains all icons
-            //      - Icons are sorted
-            // Check IconSearchFragment.java line 205-275
-            // We don't need to do any sorting here
-
-            // Copy icons to `mIconsAll`
-            mIconsAll = mIcons;
+            mIconsAll = mIcons
         }
 
-        String query = string.toLowerCase(Locale.ENGLISH).trim();
-        mIcons = new ArrayList<>();
-        if (query.isEmpty()) mIcons.addAll(mIconsAll);
-        else {
-            Locale defaultLocale = Locale.getDefault();
-            for (int i = 0; i < mIconsAll.size(); i++) {
-                Icon icon = mIconsAll.get(i);
-                String name = icon.getTitle();
-                name = name.toLowerCase(Locale.ENGLISH);
-                if (name.contains(query)) {
-                    mIcons.add(icon);
-                }
-            }
-        }
-
-        if (mIcons.isEmpty()) {
-            CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                    "click",
-                    new HashMap<>() {{
-                        put("section", "icons");
-                        put("action", "search");
-                        put("item", query);
-                        put("found", "no");
-                        put("number_of_icons", mIcons.size());
-                    }}
-            );
+        val query = string.lowercase(Locale.ENGLISH).trim()
+        mIcons = if (query.isEmpty()) {
+            mIconsAll!!
         } else {
-            CandyBarApplication.getConfiguration().getAnalyticsHandler().logEvent(
-                    "click",
-                    new HashMap<>() {{
-                        put("section", "icons");
-                        put("action", "search");
-                        put("item", query);
-                        put("found", "yes");
-                        put("number_of_icons", mIcons.size());
-                    }}
-            );
+            mIconsAll!!.filter { it.title.lowercase(Locale.ENGLISH).contains(query) }
         }
 
-        notifyDataSetChanged();
+        val analyticsHandler = CandyBarApplication.getConfiguration().analyticsHandler
+        val params = hashMapOf<String, Any>(
+            "section" to "icons",
+            "action" to "search",
+            "item" to query,
+            "found" to if (mIcons.isEmpty()) "no" else "yes",
+            "number_of_icons" to mIcons.size
+        )
+        analyticsHandler?.logEvent("click", params)
+
+        notifyDataSetChanged()
     }
 }

@@ -1,29 +1,23 @@
-package candybar.lib.adapters;
+package candybar.lib.adapters
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
-
-import java.util.List;
-
-import candybar.lib.R;
-import candybar.lib.helpers.LauncherHelper;
-import candybar.lib.items.Icon;
-import candybar.lib.preferences.Preferences;
-import candybar.lib.utils.CandyBarGlideModule;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import candybar.lib.R
+import candybar.lib.helpers.LauncherHelper
+import candybar.lib.items.Icon
+import candybar.lib.preferences.Preferences
+import candybar.lib.utils.CandyBarGlideModule
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
 
 /*
  * CandyBar - Material Dashboard
@@ -42,133 +36,127 @@ import candybar.lib.utils.CandyBarGlideModule;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+class LauncherAdapter(
+    private val mContext: Context,
+    private val mLaunchers: List<Icon>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-public class LauncherAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private final Context mContext;
-    private final List<Icon> mLaunchers;
-
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_CONTENT = 1;
-    private static final int TYPE_FOOTER = 2;
-
-    public LauncherAdapter(@NonNull Context context, @NonNull List<Icon> launchers) {
-        mContext = context;
-        mLaunchers = launchers;
-    }
-
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = null;
-        if (viewType == TYPE_HEADER) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_apply_item_header, parent, false);
-        } else if (viewType == TYPE_CONTENT) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_apply_item_list, parent, false);
-        } else if (viewType == TYPE_FOOTER) {
-            view = LayoutInflater.from(mContext).inflate(
-                    R.layout.fragment_apply_item_footer, parent, false);
-
-            return new FooterViewHolder(view);
-        }
-        return new ViewHolder(view, viewType);
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder.getItemViewType() == TYPE_HEADER) {
-            ((ViewHolder) holder).name.setText(mLaunchers.get(position).getTitle());
-        } else if (holder.getItemViewType() == TYPE_CONTENT) {
-            ViewHolder contentViewHolder = ((ViewHolder) holder);
-            contentViewHolder.name.setText(mLaunchers.get(position).getTitle());
-
-            if (CandyBarGlideModule.isValidContextForGlide(mContext)) {
-                Glide.with(mContext)
-                        .asBitmap()
-                        .load("drawable://" + mLaunchers.get(position).getRes())
-                        .transition(BitmapTransitionOptions.withCrossFade(300))
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .into(contentViewHolder.icon);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val layoutInflater = LayoutInflater.from(mContext)
+        return when (viewType) {
+            TYPE_HEADER -> {
+                val view = layoutInflater.inflate(R.layout.fragment_apply_item_header, parent, false)
+                ViewHolder(view, viewType)
             }
-        }
-    }
 
-    @Override
-    public int getItemCount() {
-        return mLaunchers.size() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (position == getFirstHeaderPosition() || position == getLastHeaderPosition() || position == getMiddleHeaderPosition()) {
-            return TYPE_HEADER;
-        }
-        if (position == getItemCount() - 1) return TYPE_FOOTER;
-        return TYPE_CONTENT;
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        private TextView name;
-        private ImageView icon;
-
-        ViewHolder(View itemView, int viewType) {
-            super(itemView);
-            if (viewType == TYPE_HEADER) {
-                name = itemView.findViewById(R.id.name);
-            } else if (viewType == TYPE_CONTENT) {
-                icon = itemView.findViewById(R.id.icon);
-                name = itemView.findViewById(R.id.name);
-                LinearLayout container = itemView.findViewById(R.id.container);
-
-                container.setOnClickListener(this);
+            TYPE_CONTENT -> {
+                val view = layoutInflater.inflate(R.layout.fragment_apply_item_list, parent, false)
+                ViewHolder(view, viewType)
             }
-        }
 
-        @SuppressLint("StringFormatInvalid")
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-            int position = getBindingAdapterPosition();
-            if (id == R.id.container) {
-                if (position < 0 || position > getItemCount()) return;
-                try {
-                    LauncherHelper.getLauncher(mLaunchers.get(position).getPackageName()).apply(mContext);
-                } catch (Exception e) {
-                    Toast.makeText(mContext, mContext.getResources().getString(
-                                    R.string.apply_launch_failed, mLaunchers.get(position).getTitle()),
-                            Toast.LENGTH_LONG).show();
+            TYPE_FOOTER -> {
+                val view = layoutInflater.inflate(R.layout.fragment_apply_item_footer, parent, false)
+                FooterViewHolder(view)
+            }
+
+            else -> throw IllegalArgumentException("Invalid view type")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is ViewHolder -> {
+                if (holder.itemViewType == TYPE_HEADER) {
+                    holder.name?.text = mLaunchers[position].title
+                } else if (holder.itemViewType == TYPE_CONTENT) {
+                    holder.name?.text = mLaunchers[position].title
+                    if (CandyBarGlideModule.isValidContextForGlide(mContext)) {
+                        Glide.with(mContext)
+                            .asBitmap()
+                            .load("drawable://" + mLaunchers[position].res)
+                            .transition(BitmapTransitionOptions.withCrossFade(300))
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .into(holder.icon!!)
+                    }
                 }
             }
         }
     }
 
-    class FooterViewHolder extends RecyclerView.ViewHolder {
+    override fun getItemCount(): Int = mLaunchers.size + 1
 
-        FooterViewHolder(View itemView) {
-            super(itemView);
-            if (!Preferences.get(mContext).isCardShadowEnabled()) {
-                View shadow = itemView.findViewById(R.id.shadow);
-                shadow.setVisibility(View.GONE);
+    override fun getItemViewType(position: Int): Int {
+        if (position == firstHeaderPosition || position == lastHeaderPosition || position == middleHeaderPosition) {
+            return TYPE_HEADER
+        }
+        return if (position == itemCount - 1) TYPE_FOOTER else TYPE_CONTENT
+    }
+
+    inner class ViewHolder(itemView: View, viewType: Int) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
+        var name: TextView? = null
+        var icon: ImageView? = null
+
+        init {
+            if (viewType == TYPE_HEADER) {
+                name = itemView.findViewById(R.id.name)
+            } else if (viewType == TYPE_CONTENT) {
+                icon = itemView.findViewById(R.id.icon)
+                name = itemView.findViewById(R.id.name)
+                val container = itemView.findViewById<LinearLayout>(R.id.container)
+                container.setOnClickListener(this)
+            }
+        }
+
+        @SuppressLint("StringFormatInvalid")
+        override fun onClick(view: View) {
+            val id = view.id
+            val position = bindingAdapterPosition
+            if (id == R.id.container) {
+                if (position < 0 || position >= mLaunchers.size) return
+                try {
+                    LauncherHelper.getLauncher(mLaunchers[position].packageName).apply(mContext)
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        mContext,
+                        mContext.resources.getString(
+                            R.string.apply_launch_failed, mLaunchers[position].title
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }
 
-    public int getFirstHeaderPosition() {
-        return mLaunchers.indexOf(new Icon(
-                mContext.getResources().getString(R.string.apply_installed), -1, null));
+    inner class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        init {
+            if (!Preferences.get(mContext).isCardShadowEnabled) {
+                val shadow = itemView.findViewById<View>(R.id.shadow)
+                shadow?.visibility = View.GONE
+            }
+        }
     }
 
-    public int getMiddleHeaderPosition() {
-        return mLaunchers.indexOf(new Icon(
-                mContext.getResources().getString(R.string.apply_installed_launchers), -3, null));
-    }
+    val firstHeaderPosition: Int
+        get() = mLaunchers.indexOf(
+            Icon(mContext.resources.getString(R.string.apply_installed), -1, null)
+        )
 
-    public int getLastHeaderPosition() {
-        return mLaunchers.indexOf(new Icon(
-                mContext.getResources().getString(R.string.apply_supported), -2, null));
+    val middleHeaderPosition: Int
+        get() = mLaunchers.indexOf(
+            Icon(mContext.resources.getString(R.string.apply_installed_launchers), -3, null)
+        )
+
+    val lastHeaderPosition: Int
+        get() = mLaunchers.indexOf(
+            Icon(mContext.resources.getString(R.string.apply_supported), -2, null)
+        )
+
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_CONTENT = 1
+        private const val TYPE_FOOTER = 2
     }
 }

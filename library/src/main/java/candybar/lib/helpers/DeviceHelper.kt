@@ -1,14 +1,10 @@
-package candybar.lib.helpers;
+package candybar.lib.helpers
 
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.util.DisplayMetrics;
-
-import androidx.annotation.NonNull;
-
-import candybar.lib.BuildConfig;
-import candybar.lib.R;
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import candybar.lib.BuildConfig
+import candybar.lib.R
 
 /*
  * CandyBar - Material Dashboard
@@ -28,37 +24,39 @@ import candybar.lib.R;
  * limitations under the License.
  */
 
-public class DeviceHelper {
+object DeviceHelper {
 
-    @NonNull
-    public static String getDeviceInfo(@NonNull Context context) {
-        DisplayMetrics displaymetrics = context.getResources().getDisplayMetrics();
-        StringBuilder sb = new StringBuilder();
-        final int height = displaymetrics.heightPixels;
-        final int width = displaymetrics.widthPixels;
+    @JvmStatic
+    fun getDeviceInfo(context: Context): String {
+        val displayMetrics = context.resources.displayMetrics
+        val height = displayMetrics.heightPixels
+        val width = displayMetrics.widthPixels
 
-        String appVersion = "";
+        var appVersion = ""
         try {
-            appVersion = context.getPackageManager().getPackageInfo(
-                    context.getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException ignored) {
+            @Suppress("DEPRECATION")
+            appVersion = context.packageManager.getPackageInfo(
+                context.packageName, 0
+            ).versionName ?: ""
+        } catch (ignored: PackageManager.NameNotFoundException) {
         }
 
-        sb.append("Manufacturer : ").append(Build.MANUFACTURER)
-                .append("\r\nModel : ").append(Build.MODEL)
-                .append("\r\nProduct : ").append(Build.PRODUCT)
-                .append("\r\nScreen Resolution : ")
-                .append(width).append(" x ").append(height).append(" pixels")
-                .append("\r\nAndroid Version : ").append(Build.VERSION.RELEASE)
-                .append("\r\nApp Version : ").append(appVersion)
-                .append("\r\nCandyBar Version : ").append(BuildConfig.VERSION_NAME)
-                .append("\r\n");
-        return sb.toString();
+        return StringBuilder()
+            .append("Manufacturer : ").append(Build.MANUFACTURER)
+            .append("\r\nModel : ").append(Build.MODEL)
+            .append("\r\nProduct : ").append(Build.PRODUCT)
+            .append("\r\nScreen Resolution : ")
+            .append(width).append(" x ").append(height).append(" pixels")
+            .append("\r\nAndroid Version : ").append(Build.VERSION.RELEASE)
+            .append("\r\nApp Version : ").append(appVersion)
+            .append("\r\nCandyBar Version : ").append(BuildConfig.VERSION_NAME)
+            .append("\r\n")
+            .toString()
     }
 
-    @NonNull
-    public static String getDeviceInfoForCrashReport(@NonNull Context context) {
-        return "Icon Pack Name : " + context.getResources().getString(R.string.app_name)
-                + "\r\n" + getDeviceInfo(context);
+    @JvmStatic
+    fun getDeviceInfoForCrashReport(context: Context): String {
+        return "Icon Pack Name : " + context.resources.getString(R.string.app_name) +
+                "\r\n" + getDeviceInfo(context)
     }
 }
